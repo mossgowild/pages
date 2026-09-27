@@ -180,6 +180,20 @@
       "path": "assets/posters/article-2247814620-1.jpg",
       "kind": "活动封面",
       "thumbnail": "assets/posters/article-2247814620-1.thumb.jpg"
+    },
+    {
+      "source": "https://cdn.ma.to/prod/0bd40a25-a9ed-4d90-9a1b-614ec12b7106-original.webp",
+      "page": "https://ma.to/event/headfirst-fireworks-pool-party-01-oct-2026",
+      "path": "assets/posters/headfirst.webp",
+      "kind": "活动海报",
+      "thumbnail": "assets/posters/headfirst.thumb.jpg"
+    },
+    {
+      "source": "https://event-cf.plvr.io/events/6d6ccece-41ed-4f9a-9a52-011364f2cdca.webp",
+      "page": "https://www.plvr.io/events/verknipt-hong-kong-2026",
+      "path": "assets/posters/verknipt.webp",
+      "kind": "活动海报",
+      "thumbnail": "assets/posters/verknipt.thumb.jpg"
     }
   ]
 }

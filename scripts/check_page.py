@@ -53,6 +53,15 @@ def check():
         times = []
         for row in re.findall(r'<tr>.*?</tr>', table, re.S):
             assert 'href=' in row, 'Event must have a source or booking link'
+            cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S)
+            assert not re.search(r'（[^）]*[\u4e00-\u9fff]', cells[2]), 'Remove genre translations'
+            poster = cells[5]
+            if '<img' in poster:
+                links = re.findall(r'href="([^"]+)"', poster)
+                assert links and all(link.startswith('assets/posters/') for link in links), 'Poster links must open bundled images'
+                assert all((ROOT / link).is_file() for link in links), 'Missing full-size poster'
+            else:
+                assert 'href=' not in poster, 'Do not repeat event links in the poster column'
             time = re.search(r'class="event-time">(.*?)</span>', row, re.S)[1]
             match = re.search(r'(\d{1,2}):(\d{2})', time)
             times.append(int(match[1]) * 60 + int(match[2]) if match else 9999)
