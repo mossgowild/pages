@@ -236,6 +236,13 @@
       "path": "assets/posters/jaba-oct5.jpg",
       "thumbnail": "assets/posters/jaba-oct5.thumb.jpg",
       "kind": "演出时间表"
+    },
+    {
+      "source": "https://events.nowshenzhen.com/event/event-schedule-play-x",
+      "path": "assets/posters/playx-golden-week.jpg",
+      "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+      "kind": "全厅排期海报",
+      "provenance": "主办排期海报，由读者提供原图；9/30–10/6，未标注开场时间"
     }
   ]
 }
