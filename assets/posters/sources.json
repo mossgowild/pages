@@ -194,6 +194,48 @@
       "path": "assets/posters/verknipt.webp",
       "kind": "活动海报",
       "thumbnail": "assets/posters/verknipt.thumb.jpg"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/9DMIcBQBEAxqmibXKLmxGXaeZ9cxUyDEcf4HnibuxsLWdpZh8PHhf7nIzOk5vVHicqKakWhCrKrmGX6FXnYNbdAXic6fl88B0ibcKvQbch88fuaA/640?wx_fmt=jpeg&from=appmsg",
+      "path": "assets/posters/make-you-dance.jpg",
+      "thumbnail": "assets/posters/make-you-dance.thumb.jpg",
+      "kind": "活动海报"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/9DMIcBQBEAylOb2KicyMFbaZ1ibPVLfLOqQg5VqhTZTotBbXNyJDtoCnew8EHzQ5qOq5KcGGHAaQiciaIfADx1EEQ68XHKjdln7lQXcm9ouojUA/640?wx_fmt=jpeg&from=appmsg",
+      "path": "assets/posters/tuodi-improv.jpg",
+      "thumbnail": "assets/posters/tuodi-improv.thumb.jpg",
+      "kind": "活动海报"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/mmbiz_png/RtUkB7CMT2mKlHPYWwLZFCUDHZQsBsQ3YhB4bp4FEXn1IGWEATnLW9hQpGBmiaHrSSgVlyfeOhHYGTuGb7YWicAmDNQxfpT6JO2J7DHDJ0NkA/640?wx_fmt=png",
+      "path": "assets/posters/afropulz.jpg",
+      "thumbnail": "assets/posters/afropulz.thumb.jpg",
+      "kind": "活动海报"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/mmbiz_png/xq660TJ9mmHGjWue41EJ93zJwWc6hYkod7Znx16cLWy1rHUKAymqLh4tPD5UQVOsrp4WJ0twe8aG7ibLwwWicuWok0Z8aibQAFNh1Gt0t0icdbw/640?wx_fmt=png",
+      "path": "assets/posters/sow-xlab.jpg",
+      "thumbnail": "assets/posters/sow-xlab.thumb.jpg",
+      "kind": "活动海报"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/mmbiz_png/h7k3Hib69Cq9WyHk3jFVKzxJ0sHwt4zacJlH3mYlXjx0AsFjjQZvZm1m7XwrpQKotEnjyCgFiblxjwIcn0pnzeeSqt3aWxWQS6NE79X5DKamc/640?wx_fmt=png&from=appmsg",
+      "path": "assets/posters/gxp-anniversary.jpg",
+      "thumbnail": "assets/posters/gxp-anniversary.thumb.jpg",
+      "kind": "活动海报"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/XzY5503ecvTyeABcibkfGtdmjwic3PIZhRgmOWxC3bXibqxcyz76t5RIptef1UPRPicXuJtHqPRkZrVQSZPqv0fYkEupkD5UtGWw37f5ScUMwibM/640?wx_fmt=jpeg",
+      "path": "assets/posters/jaba-oct2-4.jpg",
+      "thumbnail": "assets/posters/jaba-oct2-4.thumb.jpg",
+      "kind": "演出时间表"
+    },
+    {
+      "source": "https://mmbiz.qpic.cn/mmbiz_jpg/XzY5503ecvTZon5amAqialPGTFb6gY9GbEKYVEia0giaSRYHdwxgPcpx9qcxAibgiamZFHicrLxKszMicjeD4fxibuQN8PkgMegQKd853R9sVlHgWZ0/640?wx_fmt=jpeg",
+      "path": "assets/posters/jaba-oct5.jpg",
+      "thumbnail": "assets/posters/jaba-oct5.thumb.jpg",
+      "kind": "演出时间表"
     }
   ]
 }
