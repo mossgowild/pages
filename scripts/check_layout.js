@@ -3,6 +3,16 @@ function checkLayout() {
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
   const viewport = document.documentElement.clientWidth;
   assert(document.documentElement.scrollWidth <= viewport, 'Page overflows horizontally');
+  const controls = [...document.querySelectorAll('.filter-field input, .filter-field select')]
+    .filter(control => control.getClientRects().length);
+  for (const control of controls) {
+    const box = control.getBoundingClientRect();
+    const field = control.closest('.filter-field').getBoundingClientRect();
+    assert(box.left >= field.left - 1 && box.right <= field.right + 1,
+      `${control.id}: filter control overflows its field`);
+    assert(Math.abs(box.height - controls[0].getBoundingClientRect().height) < 1,
+      `${control.id}: inconsistent filter control height`);
+  }
   const hero = document.querySelector('.hero-stage');
   if (hero) {
     const box = hero.getBoundingClientRect();
