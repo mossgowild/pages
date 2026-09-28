@@ -1,4 +1,113 @@
 {
+  "genre_families": {
+    "Techno": [
+      "Techno",
+      "Acid Techno",
+      "Hard Techno",
+      "Hypnotic Techno",
+      "Melodic Techno",
+      "Peak-time Techno",
+      "Raw Techno",
+      "Schranz",
+      "Deep Techno"
+    ],
+    "House": [
+      "House",
+      "Afro House",
+      "Bass House",
+      "Brazilian Bass",
+      "Future House",
+      "Progressive House",
+      "Deep House",
+      "Tech House",
+      "Deep Progressive House"
+    ],
+    "Trance": [
+      "Trance"
+    ],
+    "Psytrance": [
+      "Psytrance",
+      "Forest Psytrance",
+      "Darkpsy",
+      "Psycore"
+    ],
+    "Hard Dance / Hardcore": [
+      "Hard Dance",
+      "Hardstyle"
+    ],
+    "Drum & Bass / Jungle": [
+      "Drum & Bass",
+      "Jungle"
+    ],
+    "Dubstep": [
+      "Dubstep"
+    ],
+    "Trap / Future Bass": [
+      "Trap",
+      "Future Bass"
+    ],
+    "Breaks / UK Bass": [
+      "Breaks",
+      "UK Bass"
+    ],
+    "UK Garage / Bassline": [
+      "UK Garage"
+    ],
+    "Bass / Club": [
+      "Bass",
+      "Club",
+      "Experimental Club",
+      "Gqom"
+    ],
+    "Electro": [
+      "Electro"
+    ],
+    "Indie Dance": [
+      "Indie Dance"
+    ],
+    "Disco / Funk / Soul": [
+      "Disco",
+      "Funk",
+      "Soul"
+    ],
+    "Ambient / Experimental": [
+      "Ambient",
+      "Experimental",
+      "IDM",
+      "Left-field",
+      "Experimental Club"
+    ],
+    "Afrobeats": [
+      "Afrobeats"
+    ],
+    "Amapiano": [
+      "Amapiano"
+    ],
+    "Dub / Reggae": [
+      "Dub"
+    ],
+    "Hip-Hop / R&B": [
+      "Hip-Hop",
+      "Boom Bap",
+      "Trap",
+      "R&B"
+    ],
+    "Pop / Rock": [
+      "Pop",
+      "Eco-Pop",
+      "Hyperpop",
+      "Indie Rock",
+      "Shoegaze",
+      "Emo"
+    ],
+    "Latin": [
+      "Latin"
+    ],
+    "Open Format / Multi-Genre": [
+      "Open Format",
+      "Multi-Genre"
+    ]
+  },
   "title": {
     "region": "大湾区",
     "topic": "国庆电音",
@@ -10,7 +119,7 @@
   },
   "start_date": "2026-09-30",
   "end_date": "2026-10-07",
-  "updated_at": "2026-09-27T22:51+08:00",
+  "updated_at": "2026-09-28T20:38+08:00",
   "featured": [
     "event-18",
     "event-43",
@@ -45,7 +154,15 @@
     "event-46",
     "event-48",
     "event-52",
-    "event-53"
+    "event-53",
+    "event-2",
+    "event-51",
+    "event-54",
+    "event-55",
+    "event-56",
+    "event-57",
+    "event-58",
+    "event-59"
   ],
   "events": [
     {
@@ -153,7 +270,15 @@
         "Techno",
         "Trance",
         "Mental",
-        "Psytrance"
+        "Psytrance",
+        "Bass",
+        "Psychedelic",
+        "Hypnotic",
+        "Experimental",
+        "Deep Techno",
+        "UK Bass",
+        "Darkpsy",
+        "Psycore"
       ],
       "starts": [
         1320
@@ -169,40 +294,73 @@
         {
           "names": [
             "Wei"
-          ]
+          ],
+          "time": "22:00–23:30"
         },
         {
           "names": [
             "Jan Swam"
-          ]
+          ],
+          "time": "23:30–翌01:30"
         },
         {
           "names": [
             "Solma"
+          ],
+          "time": "翌01:30–03:30",
+          "genres": [
+            "Deep Techno",
+            "UK Bass"
           ]
         },
         {
           "names": [
             "Greentech"
+          ],
+          "time": "翌03:30–04:30",
+          "genres": [
+            "Darkpsy",
+            "Psycore"
           ]
         },
         {
           "names": [
-            "kenan"
-          ]
+            "Kenan"
+          ],
+          "time": "翌04:30–06:00"
         }
       ],
       "genre_lines": [
-        "Techno · Trance · Mental · Psytrance"
+        "Techno · Psytrance · Mental · Bass",
+        "Psychedelic · Hypnotic · Experimental",
+        "Trance · Deep Techno · UK Bass · Darkpsy · Psycore"
       ],
       "genre_notes": [],
       "location": [
         "广州 · Club Droowning",
         "越秀区 289 艺术园区生产楼 101 铺"
       ],
-      "posters": [],
+      "posters": [
+        {
+          "image": "assets/posters/verdant-vein-2026.webp",
+          "thumbnail": "assets/posters/verdant-vein-2026.thumb.jpg",
+          "alt": "Verdant Vein 青脉 · 2026 双日海报",
+          "label": "海报 ↗"
+        },
+        {
+          "image": "assets/posters/verdant-vein-day1-timeline.webp",
+          "thumbnail": "assets/posters/verdant-vein-day1-timeline.thumb.jpg",
+          "alt": "Verdant Vein 青脉 · 9/30 DJ 时间表",
+          "label": "时间表 ↗"
+        }
+      ],
       "more_info": {
-        "prices": [],
+        "prices": [
+          "单日预售 ¥98",
+          "单日现场 ¥120",
+          "双日预售 ¥188",
+          "三人现场 ¥340"
+        ],
         "booking": [
           {
             "type": "link",
@@ -210,11 +368,20 @@
             "url": "https://ra.co/events/2542304"
           }
         ],
-        "details": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办详情与时间表",
+            "url": "https://www.xiaohongshu.com/explore/6aba0fae000000000202a478?xsec_token=AB1-HERpqCwMqdbuTjqSOFeGtXVJ3dUsUnfiWSs81FoTA%3D&xsec_source=pc_user"
+          }
+        ],
         "notes": [
           "18+。"
         ]
-      }
+      },
+      "artist_notes": [
+        "Deco：LICHEN.obj · VJ：Hua"
+      ]
     },
     {
       "id": "event-3",
@@ -777,6 +944,102 @@
       }
     },
     {
+      "id": "event-58",
+      "date": "2026-10-01",
+      "city": "深圳",
+      "venues": [
+        "浮流小馆"
+      ],
+      "genres": [
+        "Techno",
+        "Tech House",
+        "Afro House",
+        "Deep House",
+        "Deep Progressive House"
+      ],
+      "starts": [
+        960
+      ],
+      "unknown": false,
+      "name": "MIXBLOOD × MKS · Rooftop Party",
+      "time": [
+        "10/1",
+        "16:00–翌02:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "TONIA"
+          ]
+        },
+        {
+          "names": [
+            "KD"
+          ]
+        },
+        {
+          "names": [
+            "GIGII"
+          ]
+        },
+        {
+          "names": [
+            "MARKO"
+          ]
+        },
+        {
+          "names": [
+            "CHLOE"
+          ]
+        },
+        {
+          "names": [
+            "TEMOER"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno · Tech House · Afro House · Deep House · Deep Progressive House"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · 浮流小馆",
+        "南山区海上世界文化艺术中心 4F 露台"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/mixblood-mks-rooftop-2026.webp",
+          "thumbnail": "assets/posters/mixblood-mks-rooftop-2026.thumb.jpg",
+          "alt": "MIXBLOOD × MKS · 10/1 露台派对海报",
+          "label": "海报 ↗"
+        },
+        {
+          "image": "assets/posters/mixblood-mks-lineup-2026.webp",
+          "thumbnail": "assets/posters/mixblood-mks-lineup-2026.thumb.jpg",
+          "alt": "MIXBLOOD × MKS · 10/1 艺人阵容",
+          "label": "阵容海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "报名：联系小红书主办「MIXBLOOD」。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动详情",
+            "url": "https://www.xiaohongshu.com/explore/6ab11739000000003b010fb2?xsec_token=ABc_p72EfP5BHXnP-M-tYHe37-dXFifllcJNeW7ibOz3c%3D"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
       "id": "event-10",
       "date": "2026-10-01",
       "city": "香港",
@@ -932,6 +1195,134 @@
       }
     },
     {
+      "id": "event-57",
+      "date": "2026-10-01",
+      "city": "深圳",
+      "venues": [
+        "PEPPER"
+      ],
+      "genres": [
+        "House"
+      ],
+      "starts": [
+        1080,
+        1350
+      ],
+      "unknown": false,
+      "name": "PEPPER × Ours · Opening Party",
+      "time": [
+        "10/1",
+        "Lounge 18:00–22:30",
+        "Club DJ 22:30–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "YOOLO"
+          ],
+          "stage": "Lounge",
+          "time": "18:00–19:30"
+        },
+        {
+          "names": [
+            "COOKIE"
+          ],
+          "stage": "Lounge",
+          "time": "19:30–21:00",
+          "format": "DJ + Live Show"
+        },
+        {
+          "names": [
+            "SAN3"
+          ],
+          "stage": "Lounge",
+          "time": "21:00–22:30",
+          "note": "Ours"
+        },
+        {
+          "names": [
+            "LAMB"
+          ],
+          "stage": "Club",
+          "time": "22:30–翌00:00",
+          "format": "DJ + Live Show"
+        },
+        {
+          "names": [
+            "TANYA"
+          ],
+          "stage": "Club",
+          "time": "翌00:00–01:30",
+          "note": "Ours"
+        },
+        {
+          "names": [
+            "PURP"
+          ],
+          "stage": "Club",
+          "time": "翌01:30–03:00",
+          "note": "Ours"
+        },
+        {
+          "names": [
+            "HEIN"
+          ],
+          "stage": "Club",
+          "time": "翌03:00–Late"
+        }
+      ],
+      "genre_lines": [
+        "House"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · PEPPER Lounge / Club",
+        "福田区购物公园一层 128 号（中心二路）"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/pepper-club-opening-2026.webp",
+          "thumbnail": "assets/posters/pepper-club-opening-2026.thumb.jpg",
+          "alt": "PEPPER × Ours · Club 开幕派对海报",
+          "label": "海报 ↗"
+        },
+        {
+          "image": "assets/posters/pepper-lounge-opening-2026.webp",
+          "thumbnail": "assets/posters/pepper-lounge-opening-2026.thumb.jpg",
+          "alt": "PEPPER × Ours · Lounge 开幕派对海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "Lounge ¥199 / 人 · 18:00–21:00 餐点自助与调酒畅饮",
+          "Club Dance Party · Free Entry"
+        ],
+        "booking": [
+          {
+            "type": "text",
+            "text": "餐饮预订：联系小红书主办「Ours.pres」。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动详情",
+            "url": "https://www.xiaohongshu.com/explore/6ab7d555000000001802f0e3?xsec_source=app_share&xsec_token=CBX0BSyuv6PBlEfEUQPjMYmrWxy2LN4wVPucwNs9YYoms%3D"
+          },
+          {
+            "type": "link",
+            "label": "场地与地址",
+            "url": "https://www.xiaohongshu.com/user/profile/675d4545000000001801c047"
+          }
+        ],
+        "notes": [
+          "Club 海报标示 21:00 开放，DJ 时间表从 22:30 开始。"
+        ]
+      }
+    },
+    {
       "id": "event-12",
       "date": "2026-10-01",
       "city": "深圳",
@@ -1022,7 +1413,11 @@
         "Techno",
         "Psytrance",
         "Forest Psytrance",
-        "Mental"
+        "Mental",
+        "Bass",
+        "Psychedelic",
+        "Hypnotic",
+        "Experimental"
       ],
       "starts": [
         1320
@@ -1037,42 +1432,69 @@
       "artists": [
         {
           "names": [
-            "DJ Jia"
-          ]
+            "DJ Jià"
+          ],
+          "time": "22:00–23:30"
         },
         {
           "names": [
             "Autogenesis"
-          ]
+          ],
+          "time": "23:30–翌01:30"
         },
         {
           "names": [
-            "HWA aka Elvis.T"
-          ]
+            "Elvis.T aka HWA"
+          ],
+          "time": "翌01:30–03:30"
         },
         {
           "names": [
             "TEI TEI"
+          ],
+          "time": "翌03:30–05:00",
+          "genres": [
+            "Forest Psytrance"
           ]
         },
         {
           "names": [
             "PsychoLok"
-          ]
+          ],
+          "time": "翌05:00–06:00"
         }
       ],
       "genre_lines": [
-        "Techno · Psytrance",
-        "Forest Psytrance · Mental"
+        "Techno · Psytrance · Mental · Bass",
+        "Psychedelic · Hypnotic · Experimental",
+        "Forest Psytrance"
       ],
       "genre_notes": [],
       "location": [
         "广州 · Club Droowning",
         "越秀区 289 艺术园区生产楼 101 铺"
       ],
-      "posters": [],
+      "posters": [
+        {
+          "image": "assets/posters/verdant-vein-2026.webp",
+          "thumbnail": "assets/posters/verdant-vein-2026.thumb.jpg",
+          "alt": "Verdant Vein 青脉 · 2026 双日海报",
+          "label": "海报 ↗"
+        },
+        {
+          "image": "assets/posters/verdant-vein-day2-timeline.webp",
+          "thumbnail": "assets/posters/verdant-vein-day2-timeline.thumb.jpg",
+          "alt": "Verdant Vein 青脉 · 10/1 DJ 时间表",
+          "label": "时间表 ↗"
+        }
+      ],
       "more_info": {
-        "prices": [],
+        "prices": [
+          "单日预售 ¥98",
+          "单日现场 ¥120",
+          "双日预售 ¥188",
+          "三人现场 ¥340"
+        ],
         "booking": [
           {
             "type": "link",
@@ -1080,9 +1502,18 @@
             "url": "https://ra.co/events/2542309"
           }
         ],
-        "details": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办详情与时间表",
+            "url": "https://www.xiaohongshu.com/explore/6aba0fae000000000202a478?xsec_token=AB1-HERpqCwMqdbuTjqSOFeGtXVJ3dUsUnfiWSs81FoTA%3D&xsec_source=pc_user"
+          }
+        ],
         "notes": []
-      }
+      },
+      "artist_notes": [
+        "Deco：LICHEN.obj · VJ：Hua"
+      ]
     },
     {
       "id": "event-14",
@@ -1184,7 +1615,7 @@
         "陀地士多"
       ],
       "genres": [
-        "Live"
+        "TBA"
       ],
       "starts": [
         1320
@@ -1214,7 +1645,7 @@
         }
       ],
       "genre_lines": [
-        "模块合成器 · 电子手碟 · 即兴电子 Live"
+        "未知"
       ],
       "genre_notes": [],
       "location": [
@@ -1239,7 +1670,10 @@
           }
         ],
         "notes": []
-      }
+      },
+      "artist_notes": [
+        "模块合成器 · 电子手碟 · 即兴电子 Live"
+      ]
     },
     {
       "id": "event-16",
@@ -1855,6 +2289,77 @@
         "notes": [
           "18+。"
         ]
+      }
+    },
+    {
+      "id": "event-54",
+      "date": "2026-10-02",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        1350
+      ],
+      "unknown": false,
+      "name": "Droowning Tonight Rave",
+      "time": [
+        "10/2",
+        "22:30"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Gueisen."
+          ]
+        },
+        {
+          "names": [
+            "Ryan"
+          ]
+        },
+        {
+          "names": [
+            "Basisk."
+          ]
+        },
+        {
+          "names": [
+            "Salvyyya"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/droowning-tonight-2026.webp",
+          "thumbnail": "assets/posters/droowning-tonight-2026.thumb.jpg",
+          "alt": "Droowning Tonight Rave · 10/2 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "场地最新排期",
+            "url": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user"
+          }
+        ],
+        "notes": []
       }
     },
     {
@@ -2587,87 +3092,6 @@
       }
     },
     {
-      "id": "event-31",
-      "date": "2026-10-03",
-      "city": "广州",
-      "venues": [
-        "Club Droowning"
-      ],
-      "genres": [
-        "Techno"
-      ],
-      "starts": [
-        1320
-      ],
-      "unknown": false,
-      "name": "Woody92",
-      "time": [
-        "10/3",
-        "22:00–翌06:00"
-      ],
-      "notes": [],
-      "artists": [
-        {
-          "names": [
-            "Greentech"
-          ]
-        },
-        {
-          "names": [
-            "Vick"
-          ]
-        },
-        {
-          "names": [
-            "PAX"
-          ]
-        },
-        {
-          "names": [
-            "Woody92"
-          ]
-        },
-        {
-          "names": [
-            "Wei"
-          ]
-        },
-        {
-          "names": [
-            "WhiTe"
-          ]
-        }
-      ],
-      "genre_lines": [
-        "Techno"
-      ],
-      "genre_notes": [],
-      "location": [
-        "广州 · Club Droowning",
-        "越秀区 289 艺术园区生产楼 101 铺"
-      ],
-      "posters": [
-        {
-          "image": "assets/posters/woody-gz.jpg",
-          "thumbnail": "assets/posters/woody-gz.thumb.jpg",
-          "alt": "Woody92 · 活动海报",
-          "label": "海报 ↗"
-        }
-      ],
-      "more_info": {
-        "prices": [],
-        "booking": [
-          {
-            "type": "link",
-            "label": "RA 购票",
-            "url": "https://ra.co/events/2539031"
-          }
-        ],
-        "details": [],
-        "notes": []
-      }
-    },
-    {
       "id": "event-32",
       "date": "2026-10-03",
       "city": "香港",
@@ -2801,6 +3225,93 @@
             "type": "link",
             "label": "演出详情",
             "url": "https://music.apple.com/us/concerts/ce.0db6139b-0b67-4302-944e-247cc74aeb2f"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-31",
+      "date": "2026-10-03",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Techno"
+      ],
+      "starts": [
+        1350
+      ],
+      "unknown": false,
+      "name": "Woody92",
+      "time": [
+        "10/3",
+        "22:30–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Greentech"
+          ]
+        },
+        {
+          "names": [
+            "Vick"
+          ]
+        },
+        {
+          "names": [
+            "PAX"
+          ]
+        },
+        {
+          "names": [
+            "Woody92"
+          ]
+        },
+        {
+          "names": [
+            "Wei"
+          ]
+        },
+        {
+          "names": [
+            "WhiTe"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/woody92-gz-2026-latest.webp",
+          "thumbnail": "assets/posters/woody92-gz-2026-latest.thumb.jpg",
+          "alt": "Woody92 · 10/3 广州活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2539031"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "场地最新排期",
+            "url": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
@@ -3303,6 +3814,62 @@
       }
     },
     {
+      "id": "event-59",
+      "date": "2026-10-03",
+      "city": "深圳",
+      "venues": [
+        "SPinMix udg club"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "SPinMix · Open Deck",
+      "time": [
+        "10/3",
+        "尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · SPinMix udg club",
+        "南山前海 · 具体地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/spinmix-open-deck-2026.webp",
+          "thumbnail": "assets/posters/spinmix-open-deck-2026.thumb.jpg",
+          "alt": "SPinMix · 国庆 Open Deck 排期",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "Free Entry"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方排期与 DJ 报名",
+            "url": "https://www.xiaohongshu.com/explore/6ab4e215000000001403b388?xsec_token=AB2FkUZp05Row8VupwGOte0VxnQYCiN6BzCO4lcWHFS44%3D"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
       "id": "event-41",
       "date": "2026-10-04",
       "city": "广州",
@@ -3450,6 +4017,121 @@
         "notes": [
           "18+。"
         ]
+      }
+    },
+    {
+      "id": "event-55",
+      "date": "2026-10-04",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Hard Techno",
+        "Hard Dance",
+        "Hardstyle",
+        "Bass",
+        "Breaks",
+        "UK Garage",
+        "Hyperpop",
+        "Indie Dance",
+        "Experimental Club"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "SECONDARY SKIN 第二层皮",
+      "time": [
+        "10/4",
+        "22:00–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "SHU"
+          ],
+          "note": "FAQ.",
+          "genres": [
+            "Hard Techno",
+            "Hardstyle"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "GOSSIMA"
+          ],
+          "genres": [
+            "Bass · Breaks · UK Garage",
+            "Hyperpop · Indie Dance · Experimental Club"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "Simon B"
+          ],
+          "note": "PAAK"
+        },
+        {
+          "names": [
+            "XHANKONKON"
+          ],
+          "note": "OUTT"
+        },
+        {
+          "names": [
+            "YEYE"
+          ],
+          "note": "OUTT"
+        }
+      ],
+      "genre_lines": [
+        "Hard Techno · Hard Dance"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "个人风格参考见艺人表；"
+          },
+          {
+            "type": "link",
+            "label": "艺人介绍",
+            "url": "https://www.xiaohongshu.com/explore/6ab8da790000000014001aba?xsec_source=app_share&xsec_token=CB8eZPCvqSi9VWNj4D9K42Xyln8TZSO9KP0FzrPoa616M%3D"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/secondary-skin-2026.webp",
+          "thumbnail": "assets/posters/secondary-skin-2026.thumb.jpg",
+          "alt": "SECONDARY SKIN · 10/4 广州活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动与艺人介绍",
+            "url": "https://www.xiaohongshu.com/explore/6ab8da790000000014001aba?xsec_source=app_share&xsec_token=CB8eZPCvqSi9VWNj4D9K42Xyln8TZSO9KP0FzrPoa616M%3D"
+          },
+          {
+            "type": "link",
+            "label": "场地最新排期",
+            "url": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user"
+          }
+        ],
+        "notes": []
       }
     },
     {
@@ -3671,6 +4353,62 @@
         "notes": [
           "园区活动 10:00–21:30，DJ 演出时段尚不明确。"
         ]
+      }
+    },
+    {
+      "id": "event-60",
+      "date": "2026-10-04",
+      "city": "深圳",
+      "venues": [
+        "SPinMix udg club"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "SPinMix · Open Deck",
+      "time": [
+        "10/4",
+        "尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · SPinMix udg club",
+        "南山前海 · 具体地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/spinmix-open-deck-2026.webp",
+          "thumbnail": "assets/posters/spinmix-open-deck-2026.thumb.jpg",
+          "alt": "SPinMix · 国庆 Open Deck 排期",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "Free Entry"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方排期与 DJ 报名",
+            "url": "https://www.xiaohongshu.com/explore/6ab4e215000000001403b388?xsec_token=AB2FkUZp05Row8VupwGOte0VxnQYCiN6BzCO4lcWHFS44%3D"
+          }
+        ],
+        "notes": []
       }
     },
     {
@@ -4116,6 +4854,96 @@
       }
     },
     {
+      "id": "event-56",
+      "date": "2026-10-05",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Acid Techno",
+        "Bass",
+        "Breaks",
+        "Electro",
+        "Jungle"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "Sea Dweller · TAG. presents Lawrence Lee",
+      "time": [
+        "10/5",
+        "尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Salvyyya"
+          ]
+        },
+        {
+          "names": [
+            "Shenghao"
+          ]
+        },
+        {
+          "names": [
+            "Lawrence Lee"
+          ],
+          "genres": [
+            "Acid Techno · Bass · Breaks",
+            "Electro · Jungle"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "Zarah"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Acid Techno · Bass · Breaks · Electro · Jungle"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "Lawrence Lee 风格参考 · "
+          },
+          {
+            "type": "link",
+            "label": "场地介绍",
+            "url": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/sea-dweller-lawrence-lee-2026.webp",
+          "thumbnail": "assets/posters/sea-dweller-lawrence-lee-2026.thumb.jpg",
+          "alt": "Sea Dweller · Lawrence Lee · 10/5 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "场地排期与艺人介绍",
+            "url": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
       "id": "event-51",
       "date": "2026-10-06",
       "city": "广州",
@@ -4123,7 +4951,9 @@
         "广州塔剧场"
       ],
       "genres": [
-        "TBA"
+        "Afro",
+        "House",
+        "EDM"
       ],
       "starts": [
         960
@@ -4140,42 +4970,79 @@
       "artists": [
         {
           "names": [
-            "Hovy Lee"
+            "HOVY LEE"
           ]
         },
         {
           "names": [
-            "兔 MEGURU"
+            "MEGURU"
           ]
         },
         {
           "names": [
-            "钱润玉 Runyu"
+            "钱润玉 RUNYU"
           ]
         },
         {
           "names": [
-            "D.JerryC"
+            "DJ YIDA"
           ]
         },
         {
           "names": [
-            "DJ Yida"
+            "JERRY C"
+          ]
+        },
+        {
+          "names": [
+            "CRAVE"
+          ]
+        },
+        {
+          "names": [
+            "CELA"
+          ]
+        },
+        {
+          "names": [
+            "张含之"
+          ]
+        },
+        {
+          "names": [
+            "宝姨"
           ]
         }
       ],
       "genre_lines": [
-        "未知"
+        "Afro · House · EDM"
       ],
       "genre_notes": [],
       "location": [
         "广州 · 广州塔剧场"
       ],
-      "posters": [],
+      "posters": [
+        {
+          "image": "assets/posters/tea-rave-2026.webp",
+          "thumbnail": "assets/posters/tea-rave-2026.thumb.jpg",
+          "alt": "TEA RAVE · 10/6 广州活动海报",
+          "label": "海报 ↗"
+        }
+      ],
       "more_info": {
         "prices": [],
-        "booking": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「TEA RAVE」购票。"
+          }
+        ],
         "details": [
+          {
+            "type": "link",
+            "label": "主办活动详情",
+            "url": "https://www.xiaohongshu.com/explore/6ab4ee100000000014038a2a?xsec_token=AB2FkUZp05Row8VupwGOte0Vgqq6Rq0m9JU7EH7srjmGg%3D"
+          },
           {
             "type": "link",
             "label": "广州日报活动报道",
@@ -4188,7 +5055,9 @@
           }
         ],
         "notes": [
-          "具体入场安排尚不明确。"
+          "具体入场安排尚不明确。",
+          "Dress code：旗袍、汉服、唐装、中山装、新中式或国潮穿搭。",
+          "官方 Afterparty：空瓶子 LIVE SHOW；海珠区广州塔路 8 号广州塔广场首层 168 号。时间尚不明确。"
         ]
       }
     },
@@ -4372,6 +5241,118 @@
             "type": "link",
             "label": "XLAB 专场",
             "url": "https://mp.weixin.qq.com/s/LsajE_cfrSjSvtihfhQCQQ"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-61",
+      "date": "2026-10-06",
+      "city": "深圳",
+      "venues": [
+        "SPinMix udg club"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "SPinMix · Open Deck",
+      "time": [
+        "10/6",
+        "尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · SPinMix udg club",
+        "南山前海 · 具体地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/spinmix-open-deck-2026.webp",
+          "thumbnail": "assets/posters/spinmix-open-deck-2026.thumb.jpg",
+          "alt": "SPinMix · 国庆 Open Deck 排期",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "Free Entry"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方排期与 DJ 报名",
+            "url": "https://www.xiaohongshu.com/explore/6ab4e215000000001403b388?xsec_token=AB2FkUZp05Row8VupwGOte0VxnQYCiN6BzCO4lcWHFS44%3D"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-62",
+      "date": "2026-10-07",
+      "city": "深圳",
+      "venues": [
+        "SPinMix udg club"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "SPinMix · Open Deck",
+      "time": [
+        "10/7",
+        "尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · SPinMix udg club",
+        "南山前海 · 具体地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/spinmix-open-deck-2026.webp",
+          "thumbnail": "assets/posters/spinmix-open-deck-2026.thumb.jpg",
+          "alt": "SPinMix · 国庆 Open Deck 排期",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "Free Entry"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方排期与 DJ 报名",
+            "url": "https://www.xiaohongshu.com/explore/6ab4e215000000001403b388?xsec_token=AB2FkUZp05Row8VupwGOte0VxnQYCiN6BzCO4lcWHFS44%3D"
           }
         ],
         "notes": []

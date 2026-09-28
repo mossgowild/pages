@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-27",
+  "updated": "2026-09-28",
   "images": [
     {
       "source": "https://mmbiz.qpic.cn/sz_mmbiz_jpg/NlmBfibsP3anSqX7N6REE3WNFPHHX6pTGL4CmZ4oyjxiaicb7UsPj0W8zwX7RE57GwK9PDIVGgApdia0yNLjIxxGqLxbVVYGAXJib6m7vEoesHoM/0?wx_fmt=jpeg",
@@ -323,6 +323,136 @@
       "provenance": "主办排期海报，由读者提供原图；9/30–10/6，未标注开场时间",
       "width": 1440,
       "height": 2560
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/a91cf2eb80507b5347537595a39c135c/notes_pre_post/1040g3k0325lbnuaf5g6g5od0thvk0i6vrp8d058!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6aba0fae000000000202a478?xsec_token=AB1-HERpqCwMqdbuTjqSOFeGtXVJ3dUsUnfiWSs81FoTA%3D&xsec_source=pc_user",
+      "image_index": 1,
+      "path": "assets/posters/verdant-vein-2026.webp",
+      "kind": "Verdant Vein 青脉 · 2026 双日海报",
+      "thumbnail": "assets/posters/verdant-vein-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/4946418af323367d9155660a9579e571/notes_pre_post/1040g3k8325lcjvnvl67g5od0thvk0i6v4d9daro!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6aba0fae000000000202a478?xsec_token=AB1-HERpqCwMqdbuTjqSOFeGtXVJ3dUsUnfiWSs81FoTA%3D&xsec_source=pc_user",
+      "image_index": 3,
+      "path": "assets/posters/verdant-vein-day1-timeline.webp",
+      "kind": "Verdant Vein 青脉 · 9/30 DJ 时间表",
+      "thumbnail": "assets/posters/verdant-vein-day1-timeline.thumb.jpg",
+      "width": 1080,
+      "height": 1242
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/ef8a44692df374ad1096f8868a931db8/notes_pre_post/1040g3k8325lcjvnvl6805od0thvk0i6v4jm88h8!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6aba0fae000000000202a478?xsec_token=AB1-HERpqCwMqdbuTjqSOFeGtXVJ3dUsUnfiWSs81FoTA%3D&xsec_source=pc_user",
+      "image_index": 4,
+      "path": "assets/posters/verdant-vein-day2-timeline.webp",
+      "kind": "Verdant Vein 青脉 · 10/1 DJ 时间表",
+      "thumbnail": "assets/posters/verdant-vein-day2-timeline.thumb.jpg",
+      "width": 1080,
+      "height": 1137
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/332dbd11288dee16aca3ec6321a5a5b0/notes_pre_post/1040g3k0325ke4ekml0105od0thvk0i6v6t8ej60!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user",
+      "image_index": 3,
+      "path": "assets/posters/woody92-gz-2026-latest.webp",
+      "kind": "Woody92 · 10/3 广州活动海报",
+      "thumbnail": "assets/posters/woody92-gz-2026-latest.thumb.jpg",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282014/09afce5557a0697aa95a77e5f339f660/notes_pre_post/1040g3k0325gbqasr4e005ojho568csr5pjs386o!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab4ee100000000014038a2a?xsec_token=AB2FkUZp05Row8VupwGOte0Vgqq6Rq0m9JU7EH7srjmGg%3D",
+      "image_index": 0,
+      "path": "assets/posters/tea-rave-2026.webp",
+      "kind": "TEA RAVE · 10/6 广州活动海报",
+      "thumbnail": "assets/posters/tea-rave-2026.thumb.jpg",
+      "width": 906,
+      "height": 1208
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/19c63ef73213f85c352bfa4d7e162851/notes_pre_post/1040g3k0325ke4ekml00g5od0thvk0i6vr50jjng!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user",
+      "image_index": 2,
+      "path": "assets/posters/droowning-tonight-2026.webp",
+      "kind": "Droowning Tonight Rave · 10/2 活动海报",
+      "thumbnail": "assets/posters/droowning-tonight-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1350
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/c29bf1814ae27409d660002d5d4b4b6f/notes_pre_post/1040g3k0325ke4ekml01g5od0thvk0i6vosuk12o!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user",
+      "image_index": 4,
+      "path": "assets/posters/secondary-skin-2026.webp",
+      "kind": "SECONDARY SKIN · 10/4 广州活动海报",
+      "thumbnail": "assets/posters/secondary-skin-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1440
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282022/299db948d6465a209a9fb5146517ddc5/notes_pre_post/1040g3k0325ke4ekml0205od0thvk0i6vhq7o2f0!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab919400000000018016e87?xsec_token=ABBMs1TRBbGnDlEF9otG0CvN4swok8kD750sAku5aC6Ag%3D&xsec_source=pc_user",
+      "image_index": 0,
+      "path": "assets/posters/sea-dweller-lawrence-lee-2026.webp",
+      "kind": "Sea Dweller · Lawrence Lee · 10/5 活动海报",
+      "thumbnail": "assets/posters/sea-dweller-lawrence-lee-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1429
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282019/ea58d0471db9f76236189c0c2cc97bcc/1040g2sg325j6rjsd46lg5ppndimn3fkiefgoci0!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab7d555000000001802f0e3?xsec_source=app_share&xsec_token=CBX0BSyuv6PBlEfEUQPjMYmrWxy2LN4wVPucwNs9YYoms%3D",
+      "image_index": 2,
+      "path": "assets/posters/pepper-club-opening-2026.webp",
+      "kind": "PEPPER × Ours · Club 开幕派对海报",
+      "thumbnail": "assets/posters/pepper-club-opening-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1440
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282019/93bd3cbbcd7e050244ac937f3da19c78/1040g2sg325j6rjsd46l05ppndimn3fkie7cg48g!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab7d555000000001802f0e3?xsec_source=app_share&xsec_token=CBX0BSyuv6PBlEfEUQPjMYmrWxy2LN4wVPucwNs9YYoms%3D",
+      "image_index": 1,
+      "path": "assets/posters/pepper-lounge-opening-2026.webp",
+      "kind": "PEPPER × Ours · Lounge 开幕派对海报",
+      "thumbnail": "assets/posters/pepper-lounge-opening-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1440
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282017/e93bf1799d7699df21dfca4631442dcd/1040g2sg325cjus6el0s05o2ijacgbtj73n5die8!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab11739000000003b010fb2?xsec_token=ABc_p72EfP5BHXnP-M-tYHe37-dXFifllcJNeW7ibOz3c%3D",
+      "image_index": 1,
+      "path": "assets/posters/mixblood-mks-rooftop-2026.webp",
+      "kind": "MIXBLOOD × MKS · 10/1 露台派对海报",
+      "thumbnail": "assets/posters/mixblood-mks-rooftop-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1440
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282017/b4b11e1fe1fc752a6ecd9e4f085c86c1/1040g2sg325cjus6el0t05o2ijacgbtj7lfnckcg!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab11739000000003b010fb2?xsec_token=ABc_p72EfP5BHXnP-M-tYHe37-dXFifllcJNeW7ibOz3c%3D",
+      "image_index": 4,
+      "path": "assets/posters/mixblood-mks-lineup-2026.webp",
+      "kind": "MIXBLOOD × MKS · 10/1 艺人阵容",
+      "thumbnail": "assets/posters/mixblood-mks-lineup-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1080
+    },
+    {
+      "source": "https://sns-webpic-qc.xhscdn.com/202609282016/76f43ea88a6004e910921269717dfcb6/1040g008325gapcgg506g5o8b7o3098apfe320vg!nd_dft_wlteh_webp_3",
+      "page": "https://www.xiaohongshu.com/explore/6ab4e215000000001403b388?xsec_token=AB2FkUZp05Row8VupwGOte0VxnQYCiN6BzCO4lcWHFS44%3D",
+      "image_index": 0,
+      "path": "assets/posters/spinmix-open-deck-2026.webp",
+      "kind": "SPinMix · 国庆 Open Deck 排期",
+      "thumbnail": "assets/posters/spinmix-open-deck-2026.thumb.jpg",
+      "width": 1080,
+      "height": 1440
     }
   ]
 }

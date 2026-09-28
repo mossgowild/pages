@@ -116,6 +116,9 @@ def check():
         assert attrs['data-city'] == event['city']
         for key in ('venues', 'genres', 'starts', 'unknown'):
             assert json.loads(attrs['data-' + key]) == event[key], 'Preserve filter data'
+        families = [name for name, members in data['genre_families'].items()
+                    if set(members).intersection(event['genres'])]
+        assert json.loads(attrs['data-families']) == families, 'Preserve genre family membership'
         assert event['name'] in fields['name']['text']
         assert fields['info']['links'], 'Event must have a source or booking link'
         match = re.search(r'(\d{1,2}):(\d{2})', fields['name']['text'])

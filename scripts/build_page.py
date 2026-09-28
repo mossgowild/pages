@@ -108,8 +108,9 @@ def poster_path(value):
     return escape(value, quote=True)
 
 
-def event_card(event, images):
-    attrs = {'id': event['id']}
+def event_card(event, images, genre_families):
+    families = [name for name, members in genre_families.items() if set(members).intersection(event['genres'])]
+    attrs = {'id': event['id'], 'data-families': json.dumps(families, ensure_ascii=False, separators=(',', ':'))}
     for key in ('date', 'city', 'venues', 'genres', 'starts', 'unknown'):
         value = event[key]
         attrs['data-' + key] = json.dumps(value, ensure_ascii=False, separators=(',', ':')) if isinstance(value, (list, bool)) else value
@@ -155,6 +156,10 @@ def render():
     data = json.loads((ROOT / 'data/events.json').read_text())
     images = {image['path']: image for image in json.loads((ROOT / 'assets/posters/sources.json').read_text())['images']}
     events = data['events']
+    genre_families = data['genre_families']
+    for name, members in genre_families.items():
+        assert name and members and len(members) == len(set(members)), 'Invalid genre family'
+        assert 'TBA' not in members and 'Live' not in members, 'Unknown and performance formats are not genres'
     start, end = date.fromisoformat(data['start_date']), date.fromisoformat(data['end_date'])
     assert start <= end
     ids = [event['id'] for event in events]
@@ -174,7 +179,7 @@ def render():
                    f'{title}<small>{day:%a} / <span class="day-count">{len(daily)}</span> 场</small></h3>')
         if daily:
             content = ('<div class="event-grid">\n'
-                       + '\n'.join(event_card(event, images) for event in daily) + '\n</div>')
+                       + '\n'.join(event_card(event, images, genre_families) for event in daily) + '\n</div>')
         else:
             content = '<p class="empty-day">当日暂无活动信息。</p>'
         groups.append(f'<section class="day-group" data-date="{day.isoformat()}">{heading}\n{content}</section>')
@@ -213,7 +218,8 @@ def render():
         'start_date': start.isoformat(), 'end_date': end.isoformat(),
         'city_options': option('', '全部城市') + ''.join(option(city, city) for city in cities),
         'genre_options': option('', '全部风格') + '<optgroup label="风格大类 · 含子风格">'
-        + ''.join(option('family:' + genre, genre) for genre in ('Techno', 'House', 'Trance'))
+        + ''.join(option('family:' + name, name) for name, members in genre_families.items()
+                  if set(members).intersection(genres))
         + '</optgroup><optgroup label="具体风格">'
         + ''.join(option('genre:' + genre, genre) for genre in genres if genre != 'TBA')
         + '</optgroup>' + option('genre:TBA', '风格未知'),

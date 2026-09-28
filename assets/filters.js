@@ -12,8 +12,7 @@ function matchesEvent(event, filters) {
   if (filters.to && event.date > filters.to) return false;
   if (filters.genre) {
     const [type, genre] = filters.genre.split(':');
-    if (!event.genres.some(value => type === 'family'
-      ? value.toLowerCase().includes(genre.toLowerCase()) : value === genre)) return false;
+    if (!(type === 'family' ? event.families : event.genres).includes(genre)) return false;
   }
   if (filters.period === 'unknown' && !event.unknown) return false;
   if (filters.period === 'day' && !event.starts.some(time => time < 1080)) return false;
@@ -28,6 +27,7 @@ if (typeof document !== 'undefined') {
   const events = [...document.querySelectorAll('.event-card[data-date]')].map(card => ({
     card, date: card.dataset.date, city: card.dataset.city,
     venues: JSON.parse(card.dataset.venues), genres: JSON.parse(card.dataset.genres),
+    families: JSON.parse(card.dataset.families),
     starts: JSON.parse(card.dataset.starts), unknown: card.dataset.unknown === 'true'
   }));
   const groups = [...document.querySelectorAll('.day-group')];
