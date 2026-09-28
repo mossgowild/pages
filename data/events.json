@@ -1,0 +1,4381 @@
+{
+  "title": {
+    "region": "大湾区",
+    "topic": "国庆电音",
+    "guide": "指南"
+  },
+  "publisher": {
+    "name": "有氧",
+    "latin": "RAVERS"
+  },
+  "start_date": "2026-09-30",
+  "end_date": "2026-10-07",
+  "updated_at": "2026-09-27T22:51+08:00",
+  "featured": [
+    "event-18",
+    "event-43",
+    "event-8",
+    "event-1",
+    "event-3",
+    "event-4",
+    "event-5",
+    "event-6",
+    "event-7",
+    "event-9",
+    "event-10",
+    "event-11",
+    "event-12",
+    "event-14",
+    "event-15",
+    "event-17",
+    "event-20",
+    "event-21",
+    "event-22",
+    "event-23",
+    "event-25",
+    "event-28",
+    "event-30",
+    "event-31",
+    "event-32",
+    "event-35",
+    "event-36",
+    "event-37",
+    "event-38",
+    "event-42",
+    "event-46",
+    "event-48",
+    "event-52",
+    "event-53"
+  ],
+  "events": [
+    {
+      "id": "event-1",
+      "date": "2026-09-30",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Hip-Hop",
+        "Club",
+        "Bass"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "D1S × TURMOIL：Pluko + purp",
+      "time": [
+        "9/30",
+        "20:00 起"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Pluko"
+          ]
+        },
+        {
+          "names": [
+            "purp"
+          ]
+        },
+        {
+          "names": [
+            "DJ 86"
+          ]
+        },
+        {
+          "names": [
+            "Beibeilon"
+          ]
+        },
+        {
+          "names": [
+            "zzm"
+          ]
+        },
+        {
+          "names": [
+            "TiaNT"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hip-Hop · Club · Bass"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/pluko.jpg",
+          "thumbnail": "assets/posters/pluko.thumb.jpg",
+          "alt": "D1S × TURMOIL：Pluko + purp · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "官方预售票已售罄"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票与详情",
+            "url": "https://ra.co/events/2515159"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方售票通知",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzUyNDQwODQ3Ng==&mid=2247814566&idx=1&sn=e2c594b6a32a2828ea4c6995f925d2ff"
+          }
+        ],
+        "notes": [
+          "其他票档及现场票以主办通知为准。",
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-2",
+      "date": "2026-09-30",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Techno",
+        "Trance",
+        "Mental",
+        "Psytrance"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Verdant Vein 青脉 Day 1",
+      "time": [
+        "9/30",
+        "22:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Wei"
+          ]
+        },
+        {
+          "names": [
+            "Jan Swam"
+          ]
+        },
+        {
+          "names": [
+            "Solma"
+          ]
+        },
+        {
+          "names": [
+            "Greentech"
+          ]
+        },
+        {
+          "names": [
+            "kenan"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno · Trance · Mental · Psytrance"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票与详情",
+            "url": "https://ra.co/events/2542304"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-3",
+      "date": "2026-09-30",
+      "city": "广州",
+      "venues": [
+        "陀地士多"
+      ],
+      "genres": [
+        "Hip-Hop",
+        "Boom Bap",
+        "Trap"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "MAKE YOU DANCE Vol.4",
+      "time": [
+        "9/30",
+        "22:00–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "CRAZY SIX"
+          ]
+        },
+        {
+          "names": [
+            "LAMBO"
+          ]
+        },
+        {
+          "names": [
+            "WANGDONG"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hip-Hop · Boom Bap · Trap"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 陀地士多"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/make-you-dance.jpg",
+          "thumbnail": "assets/posters/make-you-dance.thumb.jpg",
+          "alt": "MAKE YOU DANCE Vol.4 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方活动详情与入场方式",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAwMTY3OTI4NA==&mid=2247498936&idx=1&sn=c4a415c7e2c947713ad4bb253eff2894"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-4",
+      "date": "2026-09-30",
+      "city": "香港",
+      "venues": [
+        "Ciclo"
+      ],
+      "genres": [
+        "Hip-Hop",
+        "R&B",
+        "Pop"
+      ],
+      "starts": [
+        1350
+      ],
+      "unknown": false,
+      "name": "Ciclo 三周年 · The Void",
+      "time": [
+        "9/30",
+        "22:30–翌01:30"
+      ],
+      "notes": [
+        "周年系列第一夜"
+      ],
+      "artists": [
+        {
+          "names": [
+            "MOMOKO"
+          ]
+        },
+        {
+          "names": [
+            "BRATTY DEB"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hip-Hop · R&B · Pop"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Ciclo",
+        "铜锣湾霎东街 15 号 Oliv 4 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/de9c30e16b06.webp",
+          "thumbnail": "assets/posters/de9c30e16b06.thumb.jpg",
+          "alt": "Ciclo 三周年 · The Void · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$180 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "活动与票务入口",
+            "url": "https://plvr.io/t/de9c30e16b06"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-5",
+      "date": "2026-09-30",
+      "city": "香港",
+      "venues": [
+        "Social Room"
+      ],
+      "genres": [
+        "Bass",
+        "Jungle"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "粤港澳低音快线",
+      "time": [
+        "9/30",
+        "23:00–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "KOLAK"
+          ]
+        },
+        {
+          "names": [
+            "Gelato"
+          ]
+        },
+        {
+          "names": [
+            "Fuwa.wav"
+          ]
+        },
+        {
+          "names": [
+            "OurKid"
+          ]
+        },
+        {
+          "names": [
+            "Glu"
+          ]
+        },
+        {
+          "names": [
+            "617"
+          ]
+        },
+        {
+          "names": [
+            "Rasrei"
+          ]
+        },
+        {
+          "names": [
+            "63"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Bass · Jungle"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Social Room",
+        "中环士丹利街 74–78 号旺兴大厦 3 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/canton.png",
+          "thumbnail": "assets/posters/canton.thumb.jpg",
+          "alt": "粤港澳低音快线 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "预售 HK$180 · 9/30 21:00 截止",
+          "现场 HK$250 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票与详情",
+            "url": "https://ra.co/events/2536690"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-6",
+      "date": "2026-09-30",
+      "city": "香港",
+      "venues": [
+        "Boomerang"
+      ],
+      "genres": [
+        "Acid Techno"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Marie Vaunt · THE HOLIDAY",
+      "time": [
+        "9/30",
+        "23:00–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Marie Vaunt"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Acid Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Boomerang"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/marievaunt-30sept-boomerang.png",
+          "thumbnail": "assets/posters/marievaunt-30sept-boomerang.thumb.jpg",
+          "alt": "Marie Vaunt · THE HOLIDAY · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$280.32 起 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RMBA 购票",
+            "url": "https://rmba.io/events/marievaunt-30sept-boomerang"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-7",
+      "date": "2026-09-30",
+      "city": "香港",
+      "venues": [
+        "Casa Dao"
+      ],
+      "genres": [
+        "Hypnotic Techno",
+        "Peak-time Techno",
+        "Hard Techno"
+      ],
+      "starts": [
+        1439
+      ],
+      "unknown": false,
+      "name": "[G]RAVERS 003 · SYSTEM BOOTING",
+      "time": [
+        "9/30",
+        "23:59–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Trey"
+          ]
+        },
+        {
+          "names": [
+            "kimmy6.6.6"
+          ]
+        },
+        {
+          "names": [
+            "Jeremy Cheung"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hypnotic Techno · Peak-time Techno · Hard Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Casa Dao",
+        "上环干诺道西 70–72 号金佑商业大厦 21 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/5ba472eebe52.webp",
+          "thumbnail": "assets/posters/5ba472eebe52.thumb.jpg",
+          "alt": "[G]RAVERS 003 · SYSTEM BOOTING · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "预售 HK$150",
+          "现场 HK$250 起"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "PLVR 购票与详情",
+            "url": "https://plvr.io/t/5ba472eebe52"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-8",
+      "date": "2026-09-30",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Future House",
+        "Bass House",
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · MESTO / NOYSE",
+      "time": [
+        "9/30",
+        "时间尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "MESTO"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Future House"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "NORA"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "NOYSE"
+          ],
+          "stage": "XLAB",
+          "genres": [
+            "Bass House"
+          ],
+          "genre_note": "艺人风格参考"
+        }
+      ],
+      "genre_lines": [
+        "主厅：Future House",
+        "XLAB：Bass House",
+        "Le Baron：未知"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "艺人风格参考："
+          },
+          {
+            "type": "link",
+            "label": "MESTO",
+            "url": "https://soundcloud.com/spinninrecords-talentpool/spinnin-sounds-future-house-vol-2"
+          },
+          {
+            "type": "text",
+            "text": " · "
+          },
+          {
+            "type": "link",
+            "label": "NOYSE",
+            "url": "https://gigmit-production.s3.amazonaws.com/uploads/media_item/1199109/EPK_NOYSE_2024.pdf"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-9",
+      "date": "2026-10-01",
+      "city": "深圳",
+      "venues": [
+        "Casablanca Beach Club"
+      ],
+      "genres": [
+        "House"
+      ],
+      "starts": [
+        960
+      ],
+      "unknown": false,
+      "name": "一起去海滩 Chill 一夏 · 日落 House 派对",
+      "time": [
+        "10/1",
+        "16:00–23:00"
+      ],
+      "notes": [
+        "Wild Dance × Chill Pill × Party Animal"
+      ],
+      "artists": [
+        {
+          "time": "16:00",
+          "names": [
+            "GAZA"
+          ]
+        },
+        {
+          "time": "17:30",
+          "names": [
+            "FLAPJACK"
+          ]
+        },
+        {
+          "time": "19:00",
+          "names": [
+            "LIMA"
+          ]
+        },
+        {
+          "time": "20:00",
+          "names": [
+            "TIME TRAVELERS"
+          ]
+        },
+        {
+          "time": "21:30",
+          "names": [
+            "INDICATE"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "House"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · Casablanca Beach Club",
+        "大鹏 · 卡萨布兰卡沙滩俱乐部"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/beach-45177-3.jpg",
+          "thumbnail": "assets/posters/beach-45177-3.thumb.jpg",
+          "alt": "一起去海滩 Chill 一夏 · 日落 House 派对 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "早鸟 ¥68",
+          "预售 ¥88",
+          "现场 ¥108"
+        ],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「取伙」搜索活动名报名，或扫描海报小程序码购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情与海报",
+            "url": "https://mp.weixin.qq.com/s?t=pages/image_detail&scene=1&__biz=MzUxODg1OTE4MA==&mid=2247485623&idx=1&sn=431eb5472c01712b1c0985e2e37521b2"
+          }
+        ],
+        "notes": [
+          "实际可售票档以报名页为准。"
+        ]
+      }
+    },
+    {
+      "id": "event-10",
+      "date": "2026-10-01",
+      "city": "香港",
+      "venues": [
+        "Soho House · House Studio"
+      ],
+      "genres": [
+        "Hard Techno",
+        "Schranz"
+      ],
+      "starts": [
+        1020
+      ],
+      "unknown": false,
+      "name": "BLAK ROOM · NIKOLINA 香港首演",
+      "time": [
+        "10/1",
+        "17:00–翌00:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "NIKOLINA"
+          ]
+        },
+        {
+          "names": [
+            "Athena"
+          ]
+        },
+        {
+          "names": [
+            "Jesyka"
+          ]
+        },
+        {
+          "names": [
+            "Kontomo"
+          ]
+        },
+        {
+          "names": [
+            "Telesummie"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hard Techno · Schranz"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Soho House · House Studio",
+        "上环德辅道西 33 号"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/6e9372bd42dc.webp",
+          "thumbnail": "assets/posters/6e9372bd42dc.thumb.jpg",
+          "alt": "BLAK ROOM · NIKOLINA 香港首演 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "BOOKYAY 购票",
+            "url": "https://www.bookyay.com/events/5629499537000955"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://plvr.io/t/6e9372bd42dc"
+          }
+        ],
+        "notes": [
+          "18+；17:00 为票务页入场时间。"
+        ]
+      }
+    },
+    {
+      "id": "event-11",
+      "date": "2026-10-01",
+      "city": "香港",
+      "venues": [
+        "金普顿酒店 Swim Club，50 楼"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        1080
+      ],
+      "unknown": false,
+      "name": "HEADFIRST 烟花泳池派对",
+      "time": [
+        "10/1",
+        "18:00–23:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "DJ Swei"
+          ]
+        },
+        {
+          "names": [
+            "D-Heezy"
+          ]
+        },
+        {
+          "names": [
+            "Seth Gutierrez"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · 金普顿酒店 Swim Club，50 楼",
+        "尖沙咀中间道 11 号"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/headfirst.webp",
+          "thumbnail": "assets/posters/headfirst.thumb.jpg",
+          "alt": "HEADFIRST 烟花泳池派对 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "常规 HK$1,388 + 10% 服务费 · 含餐饮畅享"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "酒店活动公告",
+            "url": "https://www.kimptonhongkong.com/"
+          }
+        ],
+        "notes": [
+          "18+；DJ 泳池派对。"
+        ]
+      }
+    },
+    {
+      "id": "event-12",
+      "date": "2026-10-01",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Techno"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "NOIR",
+      "time": [
+        "10/1 20:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Woody92"
+          ]
+        },
+        {
+          "names": [
+            "Xiorro"
+          ]
+        },
+        {
+          "names": [
+            "Sulk"
+          ]
+        },
+        {
+          "names": [
+            "Basisk"
+          ]
+        },
+        {
+          "names": [
+            "Ziggy Del Rey"
+          ]
+        },
+        {
+          "names": [
+            "Da’E"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/article-2247814142-1.jpg",
+          "thumbnail": "assets/posters/article-2247814142-1.thumb.jpg",
+          "alt": "NOIR · 活动封面",
+          "label": "封面 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2516074"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-13",
+      "date": "2026-10-01",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Techno",
+        "Psytrance",
+        "Forest Psytrance",
+        "Mental"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Verdant Vein 青脉 Day 2",
+      "time": [
+        "10/1",
+        "22:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "DJ Jia"
+          ]
+        },
+        {
+          "names": [
+            "Autogenesis"
+          ]
+        },
+        {
+          "names": [
+            "HWA aka Elvis.T"
+          ]
+        },
+        {
+          "names": [
+            "TEI TEI"
+          ]
+        },
+        {
+          "names": [
+            "PsychoLok"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno · Psytrance",
+        "Forest Psytrance · Mental"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2542309"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-14",
+      "date": "2026-10-01",
+      "city": "广州",
+      "venues": [
+        "GUM"
+      ],
+      "genres": [
+        "Techno",
+        "Trance"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "TWINS DIVE",
+      "time": [
+        "10/1",
+        "22:00–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Phát Paris"
+          ]
+        },
+        {
+          "names": [
+            "Vân Anh"
+          ]
+        },
+        {
+          "names": [
+            "C man"
+          ]
+        },
+        {
+          "names": [
+            "14Ala"
+          ]
+        },
+        {
+          "names": [
+            "SPIKE"
+          ]
+        },
+        {
+          "names": [
+            "Chinese archive"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno · Trance"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "Phát Paris / Vân Anh 风格参考",
+            "url": "https://soundcloud.com/arcansaigon/tracks"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · GUM",
+        "详细地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/article-2247491406-1.jpg",
+          "thumbnail": "assets/posters/article-2247491406-1.thumb.jpg",
+          "alt": "TWINS DIVE · 活动封面",
+          "label": "封面 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "GUM 活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzk4ODExMjI5Mg==&mid=2247491406&idx=1&sn=634354efa0d1ad523dc51001b192ae80"
+          }
+        ],
+        "notes": [
+          "详细地址与票价尚不明确。"
+        ]
+      }
+    },
+    {
+      "id": "event-15",
+      "date": "2026-10-01",
+      "city": "广州",
+      "venues": [
+        "陀地士多"
+      ],
+      "genres": [
+        "Live"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "陀地 · 一起即个兴",
+      "time": [
+        "10/1",
+        "22:00–Late"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Anthony"
+          ]
+        },
+        {
+          "names": [
+            "周一"
+          ]
+        },
+        {
+          "names": [
+            "base"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "模块合成器 · 电子手碟 · 即兴电子 Live"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 陀地士多"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/tuodi-improv.jpg",
+          "thumbnail": "assets/posters/tuodi-improv.thumb.jpg",
+          "alt": "陀地 · 一起即个兴 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "官方活动详情与入场方式",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzAwMTY3OTI4NA==&mid=2247498905&idx=1&sn=c97bf29719cbe3c049d537b588752918"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-16",
+      "date": "2026-10-01",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Melodic Techno",
+        "Techno",
+        "Progressive House",
+        "Bass"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · 国庆派对",
+      "time": [
+        "10/1 ",
+        "时间尚不明确"
+      ],
+      "notes": [
+        "Golden Face：Caribbean Night · 海盗沙滩泳装派对"
+      ],
+      "artists": [
+        {
+          "names": [
+            "Agents of Time"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Melodic Techno"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "DRAKO"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "SLVR"
+          ],
+          "stage": "XLAB",
+          "genres": [
+            "Techno",
+            "Progressive House",
+            "Bass"
+          ],
+          "genre_note": "艺人风格参考"
+        }
+      ],
+      "genre_lines": [
+        "主厅：Melodic Techno",
+        "XLAB：Techno / Progressive House / Bass"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "Agents of Time 风格参考",
+            "url": "https://www.beatport.com/artist/agents-of-time/383589"
+          },
+          {
+            "type": "text",
+            "text": " · "
+          },
+          {
+            "type": "link",
+            "label": "SLVR",
+            "url": "https://ja.ra.co/dj/slvr/biography"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB / Golden Face",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-17",
+      "date": "2026-10-02",
+      "city": "广州",
+      "venues": [
+        "中旅·阿那亚·九龙湖"
+      ],
+      "genres": [
+        "Dub",
+        "Ambient",
+        "Afro",
+        "Drum & Bass",
+        "Techno",
+        "House",
+        "Trance"
+      ],
+      "starts": [
+        960,
+        1080
+      ],
+      "unknown": false,
+      "name": "C+「爬踢」DJ 演出",
+      "time": [
+        "10/2",
+        "16:00–17:00 / 18:00–19:00"
+      ],
+      "notes": [
+        "C+Radio × Jaba 爪巴"
+      ],
+      "artists": [
+        {
+          "time": "16:00–17:00",
+          "names": [
+            "WORM SLIP AWAY"
+          ]
+        },
+        {
+          "time": "18:00–19:00",
+          "names": [
+            "1X4N"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Dub · Ambient · Afro · Drum & Bass · Techno · House · Trance"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "艺人风格参考"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · 中旅·阿那亚·九龙湖",
+        "旧礼堂前草坪"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/jaba-oct2-4.jpg",
+          "thumbnail": "assets/posters/jaba-oct2-4.thumb.jpg",
+          "alt": "C+「爬踢」DJ 演出 10/2 · 演出时间表",
+          "label": "时间表 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODgzNDkwNw==&mid=2247485506&idx=1&sn=9318872204ded071be4776aa196b4473"
+          },
+          {
+            "type": "link",
+            "label": "游玩指南",
+            "url": "https://www.guandian.cn/m/show/606199"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-18",
+      "date": "2026-10-02",
+      "city": "香港",
+      "venues": [
+        "启德邮轮码头候船大厅 A"
+      ],
+      "genres": [
+        "Hard Techno"
+      ],
+      "starts": [
+        960
+      ],
+      "unknown": false,
+      "name": "VERKNIPT Hong Kong",
+      "time": [
+        "10/2",
+        "16:00–翌00:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Athena",
+            "TELESUMMIE"
+          ],
+          "format": "B2B"
+        },
+        {
+          "names": [
+            "AZYR"
+          ]
+        },
+        {
+          "names": [
+            "BIG E",
+            "KONTOMO"
+          ],
+          "format": "B2B"
+        },
+        {
+          "names": [
+            "Fatima Hajji"
+          ]
+        },
+        {
+          "names": [
+            "JESYKA"
+          ]
+        },
+        {
+          "names": [
+            "KLOFAMA"
+          ]
+        },
+        {
+          "names": [
+            "Marie Vaunt"
+          ]
+        },
+        {
+          "names": [
+            "NOYSE"
+          ]
+        },
+        {
+          "names": [
+            "OMAKS"
+          ]
+        },
+        {
+          "names": [
+            "SCARO"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hard Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · 启德邮轮码头候船大厅 A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/verknipt.webp",
+          "thumbnail": "assets/posters/verknipt.thumb.jpg",
+          "alt": "VERKNIPT Hong Kong · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "PLVR 购票",
+            "url": "https://www.plvr.io/events/verknipt-hong-kong-2026"
+          },
+          {
+            "type": "link",
+            "label": "BOOKYAY 购票",
+            "url": "https://www.bookyay.com/events/6000855"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://ra.co/events/2512319"
+          }
+        ],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-19",
+      "date": "2026-10-02",
+      "city": "深圳",
+      "venues": [
+        "Casablanca Beach Club"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        960
+      ],
+      "unknown": false,
+      "name": "Golden Beach Party",
+      "time": [
+        "10/2",
+        "16:00–翌03:00"
+      ],
+      "notes": [
+        "Bambi Lab 潮玩社区"
+      ],
+      "artists": [
+        {
+          "names": [
+            "阵容尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · Casablanca Beach Club",
+        "大鹏 · 卡萨布兰卡沙滩俱乐部"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [
+          "常规票 ¥80"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "微信 · 取伙报名",
+            "url": "weixin://dl/business/?t=4YajE57weDm"
+          },
+          {
+            "type": "text",
+            "text": "如浏览器无法唤起微信，可在「取伙」搜索活动名。"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-20",
+      "date": "2026-10-02",
+      "city": "珠海",
+      "venues": [
+        "金湾区红旗1970艺术区"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        1110
+      ],
+      "unknown": false,
+      "name": "红旗1970 · 草地音悦汇 DJ 潮音专场",
+      "time": [
+        "10/2",
+        "18:30 起"
+      ],
+      "notes": [
+        "园区总排期海报"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DJ UKI"
+          ]
+        },
+        {
+          "names": [
+            "凯萨柚"
+          ]
+        },
+        {
+          "names": [
+            "刺客"
+          ]
+        },
+        {
+          "names": [
+            "DJ 淼淼"
+          ]
+        },
+        {
+          "names": [
+            "MC 凯利"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "珠海 · 金湾区红旗1970艺术区",
+        "原红旗糖厂 · 户外草坪舞台"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/zhuhai.jpg",
+          "thumbnail": "assets/posters/zhuhai.thumb.jpg",
+          "alt": "红旗1970 · 草地音悦汇 DJ 潮音专场 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "artist_notes": [
+        "以上为两日活动阵容；各日具体分场尚不明确。"
+      ],
+      "more_info": {
+        "prices": [
+          "早鸟 ¥38",
+          "正票 ¥68",
+          "双人 ¥118",
+          "VIP ¥88"
+        ],
+        "booking": [
+          {
+            "type": "text",
+            "text": "猫眼搜索活动名购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动公告与票务说明",
+            "url": "https://pub-zhtb.hizh.cn/a/202609/21/AP6ab0edaae4b0858d4777a2aa.html"
+          }
+        ],
+        "notes": [
+          "票档以实时页面为准。"
+        ]
+      }
+    },
+    {
+      "id": "event-21",
+      "date": "2026-10-02",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Techno"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "曲率驱动 Curvature-driven",
+      "time": [
+        "10/2 20:00 起"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Dold"
+          ]
+        },
+        {
+          "names": [
+            "djon9"
+          ]
+        },
+        {
+          "names": [
+            "DDD"
+          ]
+        },
+        {
+          "names": [
+            "新生 Rainfor"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL 双厅",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/dold.jpg",
+          "thumbnail": "assets/posters/dold.thumb.jpg",
+          "alt": "曲率驱动 Curvature-driven · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "¥128"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动页",
+            "url": "https://de.ra.co/events/2538255"
+          },
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzUyNDQwODQ3Ng==&mid=2247814238&idx=1&sn=dadcc09a2c788c2ede84ce41c9560832"
+          }
+        ],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-22",
+      "date": "2026-10-02",
+      "city": "香港",
+      "venues": [
+        "Mission"
+      ],
+      "genres": [
+        "Trance"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Cosmic Gate",
+      "time": [
+        "10/2 22:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Cosmic Gate"
+          ],
+          "genres": [
+            "Trance"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "KHAZED"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Trance"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "艺人风格参考"
+          }
+        ]
+      ],
+      "location": [
+        "香港 · Mission",
+        "中环 H Code, The Steps 3/F"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/d6c97d15fba9.png",
+          "thumbnail": "assets/posters/d6c97d15fba9.thumb.jpg",
+          "alt": "Cosmic Gate · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$330 起"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "PLVR 购票",
+            "url": "https://plvr.io/t/d6c97d15fba9"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "演出详情",
+            "url": "https://www.bandsintown.com/e/108884339-cosmic-gate-at-mission"
+          }
+        ],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-23",
+      "date": "2026-10-02",
+      "city": "香港",
+      "venues": [
+        "场地尚不明确"
+      ],
+      "genres": [
+        "Experimental",
+        "IDM",
+        "Hypnotic Techno"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Avyakta with Woody92",
+      "time": [
+        "10/2",
+        "23:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Woody92"
+          ]
+        },
+        {
+          "names": [
+            "ADRIANNA.C"
+          ]
+        },
+        {
+          "names": [
+            "Charlieowo"
+          ]
+        },
+        {
+          "names": [
+            "Chingyi"
+          ]
+        },
+        {
+          "names": [
+            "Faxtory"
+          ]
+        },
+        {
+          "names": [
+            "JFÜNG"
+          ]
+        },
+        {
+          "names": [
+            "Joemo"
+          ]
+        },
+        {
+          "names": [
+            "Konnection"
+          ]
+        },
+        {
+          "names": [
+            "Sean UNI"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Experimental · IDM",
+        "Hypnotic Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · 场地尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/avyakta.png",
+          "thumbnail": "assets/posters/avyakta.thumb.jpg",
+          "alt": "Avyakta with Woody92 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2531212"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-24",
+      "date": "2026-10-02",
+      "city": "香港",
+      "venues": [
+        "宀 Club"
+      ],
+      "genres": [
+        "House",
+        "Disco"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Reach × Mango Season",
+      "time": [
+        "10/2",
+        "23:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Pocari Sweaty"
+          ]
+        },
+        {
+          "names": [
+            "Andy-S"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "House · Disco"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · 宀 Club",
+        "上环德辅道中 279 号 4 楼"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [
+          "HK$150 / HK$250"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ja.ra.co/events/2520209"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "21+。"
+        ]
+      }
+    },
+    {
+      "id": "event-25",
+      "date": "2026-10-02",
+      "city": "香港",
+      "venues": [
+        "Boomerang"
+      ],
+      "genres": [
+        "Hardstyle"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Sub Zero Project · THE HOLIDAY",
+      "time": [
+        "10/2",
+        "23:00–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Sub Zero Project"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hardstyle"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Boomerang"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/subzeroproject-2oct-boomerang.png",
+          "thumbnail": "assets/posters/subzeroproject-2oct-boomerang.thumb.jpg",
+          "alt": "Sub Zero Project · THE HOLIDAY · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$280.32 起 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RMBA 购票",
+            "url": "https://rmba.io/events/subzeroproject-2oct-boomerang"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-26",
+      "date": "2026-10-02",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Brazilian Bass",
+        "Hard Techno"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · 国庆派对",
+      "time": [
+        "10/2 ",
+        "时间尚不明确"
+      ],
+      "notes": [
+        "XLAB：HARDWED Label Night / VOLTAGE",
+        "Golden Face：Caribbean Night · 海盗沙滩泳装派对"
+      ],
+      "artists": [
+        {
+          "names": [
+            "ALOK"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Brazilian Bass"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "SOUNDER"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "Jesyka"
+          ],
+          "stage": "XLAB"
+        },
+        {
+          "names": [
+            "SHU"
+          ],
+          "stage": "XLAB"
+        }
+      ],
+      "genre_lines": [
+        "主厅：Brazilian Bass",
+        "XLAB：Hard Techno"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "主厅：ALOK 风格参考",
+            "url": "https://www.youtube.com/watch?v=2h0PowwkgQM"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB / Golden Face",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          },
+          {
+            "type": "link",
+            "label": "VOLTAGE 单场推文",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzYzNDk2OTMzNA==&mid=2247483712&idx=1&sn=116e562cf50482be5ed66ad4f7577ff8"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-27",
+      "date": "2026-10-03",
+      "city": "广州",
+      "venues": [
+        "中旅·阿那亚·九龙湖"
+      ],
+      "genres": [
+        "House",
+        "Trance",
+        "Raw Techno"
+      ],
+      "starts": [
+        960,
+        1080
+      ],
+      "unknown": false,
+      "name": "C+「爬踢」DJ 演出",
+      "time": [
+        "10/3",
+        "16:00–17:00 / 18:00–19:00"
+      ],
+      "notes": [
+        "C+Radio × Jaba 爪巴"
+      ],
+      "artists": [
+        {
+          "time": "16:00–17:00",
+          "names": [
+            "TRIBES"
+          ]
+        },
+        {
+          "time": "18:00–19:00",
+          "names": [
+            "TWELVO"
+          ],
+          "genres": [
+            "House",
+            "Trance",
+            "Raw Techno"
+          ],
+          "genre_note": "艺人风格参考"
+        }
+      ],
+      "genre_lines": [
+        "House · Trance · Raw Techno"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "TWELVO 风格参考"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · 中旅·阿那亚·九龙湖",
+        "旧礼堂前草坪"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/jaba-oct2-4.jpg",
+          "thumbnail": "assets/posters/jaba-oct2-4.thumb.jpg",
+          "alt": "C+「爬踢」DJ 演出 10/3 · 演出时间表",
+          "label": "时间表 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODgzNDkwNw==&mid=2247485506&idx=1&sn=9318872204ded071be4776aa196b4473"
+          },
+          {
+            "type": "link",
+            "label": "游玩指南",
+            "url": "https://www.guandian.cn/m/show/606199"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-28",
+      "date": "2026-10-03",
+      "city": "广州",
+      "venues": [
+        "海珠万达广场"
+      ],
+      "genres": [
+        "House",
+        "Bass",
+        "Hard Techno",
+        "Drum & Bass",
+        "Hardstyle"
+      ],
+      "starts": [
+        1020,
+        1320
+      ],
+      "unknown": false,
+      "name": "GXP5.0 一周年庆派对",
+      "time": [
+        "10/3",
+        "17:00–21:00 户外",
+        "22:00–翌04:00 室内"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "VICKY"
+          ],
+          "stage": "户外"
+        },
+        {
+          "names": [
+            "RIMEN23"
+          ],
+          "stage": "户外"
+        },
+        {
+          "names": [
+            "SING"
+          ],
+          "stage": "户外"
+        },
+        {
+          "names": [
+            "PENGDEE"
+          ],
+          "stage": "户外"
+        },
+        {
+          "names": [
+            "NECROINFERNO"
+          ],
+          "stage": "户外"
+        },
+        {
+          "names": [
+            "SAM SUM"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "龙赐"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "66"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "iamWilliam"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "Dion Chen"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "KK",
+            "ROCKEY"
+          ],
+          "format": "B2B",
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "NINJA"
+          ],
+          "stage": "AP"
+        },
+        {
+          "names": [
+            "Ravek1d"
+          ],
+          "stage": "AP"
+        }
+      ],
+      "genre_lines": [
+        "House · Bass · Hard Techno · Drum & Bass · Hardstyle"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 海珠万达广场",
+        "室内场：负一层 fafa"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/gxp-anniversary.jpg",
+          "thumbnail": "assets/posters/gxp-anniversary.thumb.jpg",
+          "alt": "GXP5.0 一周年庆派对 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "全天免门票"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=Mzk3NTA1MTY5OA==&mid=2247485639&idx=1&sn=5441fcb5d090158874ac2638c529796d"
+          }
+        ],
+        "notes": [
+          "户外日落场 + 室内夜场。"
+        ]
+      }
+    },
+    {
+      "id": "event-29",
+      "date": "2026-10-03",
+      "city": "珠海",
+      "venues": [
+        "金湾区红旗1970艺术区"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        1110
+      ],
+      "unknown": false,
+      "name": "红旗1970 · 草地音悦汇 DJ 潮音专场",
+      "time": [
+        "10/3",
+        "18:30 起"
+      ],
+      "notes": [
+        "园区总排期海报"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DJ UKI"
+          ]
+        },
+        {
+          "names": [
+            "凯萨柚"
+          ]
+        },
+        {
+          "names": [
+            "刺客"
+          ]
+        },
+        {
+          "names": [
+            "DJ 淼淼"
+          ]
+        },
+        {
+          "names": [
+            "MC 凯利"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "珠海 · 金湾区红旗1970艺术区",
+        "原红旗糖厂 · 户外草坪舞台"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/zhuhai.jpg",
+          "thumbnail": "assets/posters/zhuhai.thumb.jpg",
+          "alt": "红旗1970 · 草地音悦汇 DJ 潮音专场 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "artist_notes": [
+        "以上为两日活动阵容；各日具体分场尚不明确。"
+      ],
+      "more_info": {
+        "prices": [
+          "早鸟 ¥38",
+          "正票 ¥68",
+          "双人 ¥118",
+          "VIP ¥88"
+        ],
+        "booking": [
+          {
+            "type": "text",
+            "text": "猫眼搜索活动名购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动公告与票务说明",
+            "url": "https://pub-zhtb.hizh.cn/a/202609/21/AP6ab0edaae4b0858d4777a2aa.html"
+          }
+        ],
+        "notes": [
+          "票档以实时页面为准。"
+        ]
+      }
+    },
+    {
+      "id": "event-30",
+      "date": "2026-10-03",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Experimental Club",
+        "Eco-Pop"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "Club Bby × mualot × hub",
+      "time": [
+        "10/3 20:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Ouri"
+          ]
+        },
+        {
+          "names": [
+            "bby.eco"
+          ],
+          "genres": [
+            "Eco-Pop"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "Replica.mp3"
+          ]
+        },
+        {
+          "names": [
+            "Manson"
+          ]
+        },
+        {
+          "names": [
+            "hatemebaby"
+          ]
+        },
+        {
+          "names": [
+            "Bi-NON"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Experimental",
+        "Club · Eco-Pop"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "Eco-Pop：bby.eco"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/club-bby.jpg",
+          "thumbnail": "assets/posters/club-bby.thumb.jpg",
+          "alt": "Club Bby × mualot × hub · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动页",
+            "url": "https://ra.co/events/2516079"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-31",
+      "date": "2026-10-03",
+      "city": "广州",
+      "venues": [
+        "Club Droowning"
+      ],
+      "genres": [
+        "Techno"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Woody92",
+      "time": [
+        "10/3",
+        "22:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Greentech"
+          ]
+        },
+        {
+          "names": [
+            "Vick"
+          ]
+        },
+        {
+          "names": [
+            "PAX"
+          ]
+        },
+        {
+          "names": [
+            "Woody92"
+          ]
+        },
+        {
+          "names": [
+            "Wei"
+          ]
+        },
+        {
+          "names": [
+            "WhiTe"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · Club Droowning",
+        "越秀区 289 艺术园区生产楼 101 铺"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/woody-gz.jpg",
+          "thumbnail": "assets/posters/woody-gz.thumb.jpg",
+          "alt": "Woody92 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2539031"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-32",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Migas"
+      ],
+      "genres": [
+        "House",
+        "Disco"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Not A Disco",
+      "time": [
+        "10/3",
+        "22:00–翌04:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "DJ Passion"
+          ]
+        },
+        {
+          "names": [
+            "Paul Michael"
+          ]
+        },
+        {
+          "names": [
+            "Patrice Escalante"
+          ]
+        },
+        {
+          "names": [
+            "Bad Bambino"
+          ]
+        },
+        {
+          "names": [
+            "Mack The Knife"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "House · Disco"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Migas",
+        "中环皇后大道中 80 号 H Queen’s 3 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/not-a-disco.jpg",
+          "thumbnail": "assets/posters/not-a-disco.thumb.jpg",
+          "alt": "Not A Disco · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动页",
+            "url": "https://ra.co/events/2540472"
+          }
+        ],
+        "notes": [
+          "18 岁及以上。"
+        ]
+      }
+    },
+    {
+      "id": "event-33",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Cassio"
+      ],
+      "genres": [
+        "House"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": false,
+      "name": "Made By Pete",
+      "time": [
+        "10/3 22:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Made By Pete"
+          ],
+          "genres": [
+            "House"
+          ],
+          "genre_note": "艺人风格参考"
+        }
+      ],
+      "genre_lines": [
+        "House"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "艺人风格参考",
+            "url": "https://aboveboarddist.co.uk/joeski-music-is-my-home-ft-troy-dillard-incl-made-by-pete-remix-crosstown-rebels/"
+          }
+        ]
+      ],
+      "location": [
+        "香港 · Cassio",
+        "中环云咸街 33 号 2 楼"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "演出详情",
+            "url": "https://music.apple.com/us/concerts/ce.0db6139b-0b67-4302-944e-247cc74aeb2f"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-34",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Ciclo"
+      ],
+      "genres": [
+        "House"
+      ],
+      "starts": [
+        1350
+      ],
+      "unknown": false,
+      "name": "Ciclo 三周年 · The Crescent",
+      "time": [
+        "10/3",
+        "22:30–翌01:30"
+      ],
+      "notes": [
+        "周年系列第二夜"
+      ],
+      "artists": [
+        {
+          "names": [
+            "CA$$I"
+          ]
+        },
+        {
+          "names": [
+            "DAYFU"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "House"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Ciclo",
+        "铜锣湾霎东街 15 号 Oliv 4 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/de9c30e16b06.webp",
+          "thumbnail": "assets/posters/de9c30e16b06.thumb.jpg",
+          "alt": "Ciclo 三周年 · The Crescent · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$180 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "活动与票务入口",
+            "url": "https://plvr.io/t/de9c30e16b06"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-35",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "宀 Club"
+      ],
+      "genres": [
+        "Acid",
+        "Left-field"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Dr. Nishimura + Yadin Moha",
+      "time": [
+        "10/3",
+        "23:00–翌06:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Dr. Nishimura"
+          ]
+        },
+        {
+          "names": [
+            "Yadin Moha"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Acid",
+        "Left-field"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · 宀 Club",
+        "上环德辅道中 279 号 4 楼"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/existing-1.jpg",
+          "thumbnail": "assets/posters/existing-1.thumb.jpg",
+          "alt": "Dr. Nishimura + Yadin Moha · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2520235"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "21 岁及以上。"
+        ]
+      }
+    },
+    {
+      "id": "event-36",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Acadana"
+      ],
+      "genres": [
+        "Techno",
+        "Bass"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "DROPSOUND 三周年",
+      "time": [
+        "10/3",
+        "23:00–翌07:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "ADRIANNA.C"
+          ]
+        },
+        {
+          "names": [
+            "Charlieowo"
+          ]
+        },
+        {
+          "names": [
+            "Dan-neo"
+          ]
+        },
+        {
+          "names": [
+            "Francis_kkk"
+          ]
+        },
+        {
+          "names": [
+            "Marco Yu"
+          ]
+        },
+        {
+          "names": [
+            "M8-MDM8"
+          ]
+        },
+        {
+          "names": [
+            "Mill.H"
+          ]
+        },
+        {
+          "names": [
+            "Tfeelscary"
+          ]
+        },
+        {
+          "names": [
+            "xylon"
+          ]
+        },
+        {
+          "names": [
+            "Zarah Fong"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno · Bass"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Acadana",
+        "入场地址尚不明确"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/existing-2.png",
+          "thumbnail": "assets/posters/existing-2.thumb.jpg",
+          "alt": "DROPSOUND 三周年 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2538571"
+          }
+        ],
+        "details": [],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-37",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Boomerang"
+      ],
+      "genres": [
+        "Psytrance"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Vini Vici · EDC THAI PRE-PARTY × THE HOLIDAY",
+      "time": [
+        "10/3",
+        "23:00–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Vini Vici"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Psytrance"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Boomerang"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/vini-vici.png",
+          "thumbnail": "assets/posters/vini-vici.thumb.jpg",
+          "alt": "Vini Vici · EDC THAI PRE-PARTY × THE HOLIDAY · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "HK$280.32 起 · 含 1 杯饮品"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RMBA 购票",
+            "url": "https://rmba.io/events/vinivici-3oct-boomerang"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-38",
+      "date": "2026-10-03",
+      "city": "香港",
+      "venues": [
+        "Immerse"
+      ],
+      "genres": [
+        "Progressive",
+        "Hypnotic Techno",
+        "Psytrance"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Sojourn · John 00 Fleming",
+      "time": [
+        "10/3",
+        "23:00–翌05:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "John 00 Fleming"
+          ],
+          "note": "6 小时 Open to Close · 海报时段",
+          "time": "23:00–翌05:00"
+        }
+      ],
+      "genre_lines": [
+        "Progressive · Hypnotic Techno · Psytrance"
+      ],
+      "genre_notes": [],
+      "location": [
+        "香港 · Immerse",
+        "观塘海滨道"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/b54461b9caa0.png",
+          "thumbnail": "assets/posters/b54461b9caa0.thumb.jpg",
+          "alt": "Sojourn · John 00 Fleming · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "预售 HK$390",
+          "现场 HK$450"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "PLVR 购票与详情",
+            "url": "https://plvr.io/t/b54461b9caa0"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "海报为 23:00–翌05:00；票务系统显示 23:30–翌05:30，请按最终票面入场。"
+        ]
+      }
+    },
+    {
+      "id": "event-39",
+      "date": "2026-10-03",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Trance",
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · Cosmic Gate / I Love Trance",
+      "time": [
+        "10/3 ",
+        "时间尚不明确"
+      ],
+      "notes": [
+        "XLAB：I Love Trance",
+        "Golden Face：Caribbean Night · 海盗沙滩泳装派对"
+      ],
+      "artists": [
+        {
+          "names": [
+            "Cosmic Gate"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Trance"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "KIM2Z"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "阵容尚不明确"
+          ],
+          "stage": "XLAB"
+        }
+      ],
+      "genre_lines": [
+        "主厅 / XLAB：Trance",
+        "Le Baron：未知"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "Cosmic Gate 风格参考",
+            "url": "https://www.insomniac.com/music/artists/cosmic-gate/"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB / Golden Face",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-40",
+      "date": "2026-10-03",
+      "city": "广州",
+      "venues": [
+        "场地尚不明确"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "YTS · 广州站",
+      "time": [
+        "10/3",
+        "时间尚不明确"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "阵容尚不明确"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 场地尚不明确"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「YTS斯泰克商店」搜索「YTS 10月3日 广州站」。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "国庆巡演公告",
+            "url": "https://mp.weixin.qq.com/s?t=pages/image_detail&scene=2&__biz=MzkyOTk0MDk0Nw==&mid=2247486605&idx=1&sn=3e75ef62579665568eaf84542b55d280"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-41",
+      "date": "2026-10-04",
+      "city": "广州",
+      "venues": [
+        "中旅·阿那亚·九龙湖"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        960,
+        1080
+      ],
+      "unknown": false,
+      "name": "C+「爬踢」DJ 演出",
+      "time": [
+        "10/4",
+        "16:00–17:00 / 18:00–19:00"
+      ],
+      "notes": [
+        "C+Radio × Jaba 爪巴"
+      ],
+      "artists": [
+        {
+          "time": "16:00–17:00",
+          "names": [
+            "NIIKA TUYA"
+          ]
+        },
+        {
+          "time": "18:00–19:00",
+          "names": [
+            "WOLAIFANGGE"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 中旅·阿那亚·九龙湖",
+        "旧礼堂前草坪"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/jaba-oct2-4.jpg",
+          "thumbnail": "assets/posters/jaba-oct2-4.thumb.jpg",
+          "alt": "C+「爬踢」DJ 演出 10/4 · 演出时间表",
+          "label": "时间表 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODgzNDkwNw==&mid=2247485506&idx=1&sn=9318872204ded071be4776aa196b4473"
+          },
+          {
+            "type": "link",
+            "label": "游玩指南",
+            "url": "https://www.guandian.cn/m/show/606199"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-42",
+      "date": "2026-10-04",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Techno"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "无序重力",
+      "time": [
+        "10/4 20:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Gina Demarchi"
+          ]
+        },
+        {
+          "names": [
+            "DJ Gordon"
+          ]
+        },
+        {
+          "names": [
+            "Roc77"
+          ]
+        },
+        {
+          "names": [
+            "Yumenonaka"
+          ]
+        },
+        {
+          "names": [
+            "o0"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/existing-3.jpg",
+          "thumbnail": "assets/posters/existing-3.thumb.jpg",
+          "alt": "无序重力 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "¥108"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "RA 购票",
+            "url": "https://ra.co/events/2516081"
+          }
+        ],
+        "details": [],
+        "notes": [
+          "18+。"
+        ]
+      }
+    },
+    {
+      "id": "event-43",
+      "date": "2026-10-04",
+      "city": "澳门",
+      "venues": [
+        "澳门伦敦人 · 伦敦人综艺馆"
+      ],
+      "genres": [
+        "Hard Techno"
+      ],
+      "starts": [
+        1380
+      ],
+      "unknown": false,
+      "name": "Sara Landry: Chapter I",
+      "time": [
+        "10/4",
+        "23:00 开门入场"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "Sara Landry"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Hard Techno"
+      ],
+      "genre_notes": [],
+      "location": [
+        "澳门 · 澳门伦敦人 · 伦敦人综艺馆"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/sara.jpg",
+          "thumbnail": "assets/posters/sara.thumb.jpg",
+          "alt": "Sara Landry: Chapter I · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "纯入场 MOP/HKD 980",
+          "含饮品券 MOP/HKD 1,080"
+        ],
+        "booking": [
+          {
+            "type": "link",
+            "label": "金光票务 · 购票",
+            "url": "https://www.cotaiticketing.com/shows/saralandry2026.html"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "场馆公告",
+            "url": "https://www.londonermacao.com/macau-events-shows/sara-landry-2026.html"
+          }
+        ],
+        "notes": [
+          "18+；21:00 预热酒廊，23:00 入场。"
+        ]
+      }
+    },
+    {
+      "id": "event-44",
+      "date": "2026-10-04",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Future Bass",
+        "Multi-Genre",
+        "Latin"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · 国庆派对",
+      "time": [
+        "10/4 ",
+        "时间尚不明确"
+      ],
+      "notes": [
+        "XLAB：Latino All Night"
+      ],
+      "artists": [
+        {
+          "names": [
+            "K?D"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Future Bass",
+            "Multi-Genre"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "GINA"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "阵容尚不明确"
+          ],
+          "stage": "XLAB"
+        }
+      ],
+      "genre_lines": [
+        "主厅：Future Bass · Multi-Genre",
+        "XLAB：Latin"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "主厅：K?D 风格参考",
+            "url": "https://www.image-line.com/artists/kid"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-45",
+      "date": "2026-10-04",
+      "city": "珠海",
+      "venues": [
+        "金湾区红旗1970艺术区"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "红旗1970 · 草地音悦汇 免费 DJ 场",
+      "time": [
+        "10/4",
+        "DJ 时段尚不明确"
+      ],
+      "notes": [
+        "园区总排期海报"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DJ / MC 组合"
+          ]
+        },
+        {
+          "names": [
+            "影子乐队"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "珠海 · 金湾区红旗1970艺术区",
+        "原红旗糖厂 · 户外草坪舞台"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/zhuhai.jpg",
+          "thumbnail": "assets/posters/zhuhai.thumb.jpg",
+          "alt": "红旗1970 · 草地音悦汇 免费 DJ 场 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "免费入场"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动公告与票务说明",
+            "url": "https://pub-zhtb.hizh.cn/a/202609/21/AP6ab0edaae4b0858d4777a2aa.html"
+          }
+        ],
+        "notes": [
+          "园区活动 10:00–21:30，DJ 演出时段尚不明确。"
+        ]
+      }
+    },
+    {
+      "id": "event-46",
+      "date": "2026-10-05",
+      "city": "广州",
+      "venues": [
+        "中旅·阿那亚·九龙湖"
+      ],
+      "genres": [
+        "Breaks"
+      ],
+      "starts": [
+        930
+      ],
+      "unknown": false,
+      "name": "C+「爬踢」DJ 演出",
+      "time": [
+        "10/5",
+        "15:30–18:30"
+      ],
+      "notes": [
+        "C+Radio × Jaba 爪巴"
+      ],
+      "artists": [
+        {
+          "time": "15:30–17:00",
+          "names": [
+            "JASCER"
+          ]
+        },
+        {
+          "time": "17:00–18:30",
+          "names": [
+            "C MAN"
+          ],
+          "genres": [
+            "Breaks"
+          ],
+          "genre_note": "艺人风格参考"
+        }
+      ],
+      "genre_lines": [
+        "Breaks"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "C MAN 风格参考"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · 中旅·阿那亚·九龙湖",
+        "旧礼堂前草坪"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/jaba-oct5.jpg",
+          "thumbnail": "assets/posters/jaba-oct5.thumb.jpg",
+          "alt": "C+「爬踢」DJ 演出 10/5 · 演出时间表",
+          "label": "时间表 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODgzNDkwNw==&mid=2247485506&idx=1&sn=9318872204ded071be4776aa196b4473"
+          },
+          {
+            "type": "link",
+            "label": "游玩指南",
+            "url": "https://www.guandian.cn/m/show/606199"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-47",
+      "date": "2026-10-05",
+      "city": "广州",
+      "venues": [
+        "中旅·阿那亚·九龙湖"
+      ],
+      "genres": [
+        "Indie Rock",
+        "Shoegaze",
+        "R&B",
+        "Soul",
+        "Funk",
+        "Emo"
+      ],
+      "starts": [
+        990
+      ],
+      "unknown": false,
+      "name": "「爬261005」音乐日",
+      "time": [
+        "10/5",
+        "16:30–22:00"
+      ],
+      "notes": [
+        "户外音乐活动"
+      ],
+      "artists": [
+        {
+          "names": [
+            "ETERNALNOW 此间游巡"
+          ],
+          "time": "16:30–16:50",
+          "note": "PART 1 · 灯塔自然乐园"
+        },
+        {
+          "names": [
+            "PIECES FAIL!"
+          ],
+          "time": "17:00–17:40"
+        },
+        {
+          "names": [
+            "FANNTA"
+          ],
+          "time": "18:00–18:40"
+        },
+        {
+          "names": [
+            "HAPPYVODKA1922"
+          ],
+          "time": "19:00–19:40"
+        },
+        {
+          "names": [
+            "青芥辣 KINKY LOVE"
+          ],
+          "time": "20:00–20:40"
+        },
+        {
+          "names": [
+            "小犬作"
+          ],
+          "time": "21:00–21:40"
+        }
+      ],
+      "genre_lines": [
+        "Indie Rock · Shoegaze · R&B · Soul · Funk · Emo"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "text",
+            "text": "乐队现场 / 即兴巡游"
+          }
+        ]
+      ],
+      "location": [
+        "广州 · 中旅·阿那亚·九龙湖",
+        "灯塔自然乐园"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/jaba-oct5.jpg",
+          "thumbnail": "assets/posters/jaba-oct5.thumb.jpg",
+          "alt": "「爬261005」音乐日 · 演出时间表",
+          "label": "时间表 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信扫描活动详情内的购票二维码。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情与购票二维码",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzE5ODgzNDkwNw==&mid=2247485506&idx=1&sn=9318872204ded071be4776aa196b4473"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-48",
+      "date": "2026-10-05",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Afrobeats",
+        "Amapiano",
+        "Gqom",
+        "Afro House",
+        "Hip-Hop"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "AFROPULZ × MSF 双厅 AFRO 嘉年华",
+      "time": [
+        "10/5",
+        "20:00–Late"
+      ],
+      "notes": [
+        "Afro 派对 + 非洲鼓 Live"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DJ SCOLINA"
+          ]
+        },
+        {
+          "names": [
+            "DJ SUGAR"
+          ]
+        },
+        {
+          "names": [
+            "DJ TRAXTARR"
+          ]
+        },
+        {
+          "names": [
+            "DJ RYAN"
+          ]
+        },
+        {
+          "names": [
+            "DJ KAI"
+          ]
+        },
+        {
+          "format": "Live",
+          "names": [
+            "MAKAMA"
+          ]
+        },
+        {
+          "names": [
+            "MC 4TUNE"
+          ]
+        },
+        {
+          "names": [
+            "DJ NYXBEILI",
+            "MC ATMOSV"
+          ],
+          "format": "DJ + MC · MSF CREW"
+        }
+      ],
+      "genre_lines": [
+        "Mainroom：Afrobeats · Amapiano · Gqom · Afro House",
+        "ROOMTOO：Hip-Hop · Afrobeats"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/afropulz.jpg",
+          "thumbnail": "assets/posters/afropulz.thumb.jpg",
+          "alt": "AFROPULZ × MSF 双厅 AFRO 嘉年华 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "活动详情",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzUyNDQwODQ3Ng==&mid=2247814641&idx=1&sn=c2b4e3329f3d7f14dff401f903fb3f67"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-49",
+      "date": "2026-10-05",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "Progressive House",
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "PLAY X · 国庆派对",
+      "time": [
+        "10/5 ",
+        "时间尚不明确"
+      ],
+      "notes": [
+        "XLAB：TLP3.5"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DubVision"
+          ],
+          "stage": "主厅",
+          "genres": [
+            "Progressive House"
+          ],
+          "genre_note": "艺人风格参考"
+        },
+        {
+          "names": [
+            "JAYDEN"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "阵容尚不明确"
+          ],
+          "stage": "XLAB"
+        }
+      ],
+      "genre_lines": [
+        "主厅：Progressive House",
+        "XLAB：未知"
+      ],
+      "genre_notes": [
+        [
+          {
+            "type": "link",
+            "label": "主厅：DubVision 风格参考",
+            "url": "https://www.youtube.com/watch?v=1MkOSXOo78w"
+          }
+        ]
+      ],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-50",
+      "date": "2026-10-05",
+      "city": "珠海",
+      "venues": [
+        "金湾区红旗1970艺术区"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [],
+      "unknown": true,
+      "name": "红旗1970 · 草地音悦汇 免费 DJ 场",
+      "time": [
+        "10/5",
+        "DJ 时段尚不明确"
+      ],
+      "notes": [
+        "园区总排期海报"
+      ],
+      "artists": [
+        {
+          "names": [
+            "DJ / MC 组合"
+          ]
+        },
+        {
+          "names": [
+            "影子乐队"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "珠海 · 金湾区红旗1970艺术区",
+        "原红旗糖厂 · 户外草坪舞台"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/zhuhai.jpg",
+          "thumbnail": "assets/posters/zhuhai.thumb.jpg",
+          "alt": "红旗1970 · 草地音悦汇 免费 DJ 场 · 活动海报",
+          "label": "海报 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [
+          "免费入场"
+        ],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动公告与票务说明",
+            "url": "https://pub-zhtb.hizh.cn/a/202609/21/AP6ab0edaae4b0858d4777a2aa.html"
+          }
+        ],
+        "notes": [
+          "园区活动 10:00–21:30，DJ 演出时段尚不明确。"
+        ]
+      }
+    },
+    {
+      "id": "event-51",
+      "date": "2026-10-06",
+      "city": "广州",
+      "venues": [
+        "广州塔剧场"
+      ],
+      "genres": [
+        "TBA"
+      ],
+      "starts": [
+        960
+      ],
+      "unknown": false,
+      "name": "TEA RAVE 茶馆锐舞",
+      "time": [
+        "10/6",
+        "16:00（票务时间）"
+      ],
+      "notes": [
+        "中国茶文化 × 电子音乐"
+      ],
+      "artists": [
+        {
+          "names": [
+            "Hovy Lee"
+          ]
+        },
+        {
+          "names": [
+            "兔 MEGURU"
+          ]
+        },
+        {
+          "names": [
+            "钱润玉 Runyu"
+          ]
+        },
+        {
+          "names": [
+            "D.JerryC"
+          ]
+        },
+        {
+          "names": [
+            "DJ Yida"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "未知"
+      ],
+      "genre_notes": [],
+      "location": [
+        "广州 · 广州塔剧场"
+      ],
+      "posters": [],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "广州日报活动报道",
+            "url": "https://news.dayoo.com/guangzhou/202609/21/139995_55006255.htm"
+          },
+          {
+            "type": "link",
+            "label": "开票推文",
+            "url": "https://mp.weixin.qq.com/s?__biz=MzcwNjQxMjk2Mg==&mid=2247484340&idx=1&sn=b3aa7e7ce40d481f65dc7d938e5b8b52"
+          }
+        ],
+        "notes": [
+          "具体入场安排尚不明确。"
+        ]
+      }
+    },
+    {
+      "id": "event-52",
+      "date": "2026-10-06",
+      "city": "深圳",
+      "venues": [
+        "OIL"
+      ],
+      "genres": [
+        "Open Format"
+      ],
+      "starts": [
+        1200
+      ],
+      "unknown": false,
+      "name": "好摇不挑曲：精神小伙乱斗四国 DJ × Couch Co-Op",
+      "time": [
+        "10/6 20:00"
+      ],
+      "notes": [],
+      "artists": [
+        {
+          "names": [
+            "xx lun"
+          ]
+        },
+        {
+          "names": [
+            "rice&benas"
+          ]
+        },
+        {
+          "names": [
+            "not obey"
+          ]
+        }
+      ],
+      "genre_lines": [
+        "Open Format"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · OIL",
+        "福田区泰然八路泰然大厦首层 11A"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/article-2247814412-1.jpg",
+          "thumbnail": "assets/posters/article-2247814412-1.thumb.jpg",
+          "alt": "好摇不挑曲：精神小伙乱斗四国 DJ × Couch Co-Op · 黄金周活动封面",
+          "label": "黄金周封面 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [],
+        "details": [
+          {
+            "type": "link",
+            "label": "主办活动页",
+            "url": "https://ra.co/events/2516085"
+          }
+        ],
+        "notes": []
+      }
+    },
+    {
+      "id": "event-53",
+      "date": "2026-10-06",
+      "city": "深圳",
+      "venues": [
+        "PLAY X"
+      ],
+      "genres": [
+        "TBA",
+        "Dubstep"
+      ],
+      "starts": [
+        1320
+      ],
+      "unknown": true,
+      "name": "PLAY X · 国庆派对",
+      "time": [
+        "10/6",
+        "XLAB 22:00–Late",
+        "主厅时间尚不明确"
+      ],
+      "notes": [
+        "XLAB：Sounds of Wonderland"
+      ],
+      "artists": [
+        {
+          "names": [
+            "嘉宾尚不明确"
+          ],
+          "stage": "主厅"
+        },
+        {
+          "names": [
+            "DJ PIN"
+          ],
+          "stage": "Le Baron"
+        },
+        {
+          "names": [
+            "ALLYSON"
+          ],
+          "stage": "XLAB"
+        },
+        {
+          "names": [
+            "BEER FLOWER"
+          ],
+          "stage": "XLAB"
+        },
+        {
+          "names": [
+            "EXTERMINATE"
+          ],
+          "stage": "XLAB"
+        },
+        {
+          "names": [
+            "REGINA"
+          ],
+          "stage": "XLAB"
+        },
+        {
+          "names": [
+            "ZEBRA"
+          ],
+          "stage": "XLAB"
+        }
+      ],
+      "genre_lines": [
+        "主厅：未知",
+        "XLAB：Dubstep"
+      ],
+      "genre_notes": [],
+      "location": [
+        "深圳 · PLAY X / Le Baron / XLAB",
+        "福田区领展中心城 G 层西广场"
+      ],
+      "posters": [
+        {
+          "image": "assets/posters/sow-xlab.jpg",
+          "thumbnail": "assets/posters/sow-xlab.thumb.jpg",
+          "alt": "XLAB · Sounds of Wonderland · 活动海报",
+          "label": "海报 ↗"
+        },
+        {
+          "image": "assets/posters/playx-golden-week.jpg",
+          "thumbnail": "assets/posters/playx-golden-week.thumb.jpg",
+          "alt": "PLAY X · 9/30–10/6 全厅国庆排期海报",
+          "label": "全周排期 ↗"
+        }
+      ],
+      "more_info": {
+        "prices": [],
+        "booking": [
+          {
+            "type": "text",
+            "text": "微信「芋圆YuYuan」搜索「PLAY X 9.30 - 10.6 畅玩通票」购票。"
+          },
+          {
+            "type": "mini-program",
+            "label": "XLAB 微信购票口令",
+            "code": "#小程序://芋圆YuYuan/y1oY77Zd5NLKc4A",
+            "note": "复制至微信聊天中打开。"
+          }
+        ],
+        "details": [
+          {
+            "type": "link",
+            "label": "排期",
+            "url": "https://events.nowshenzhen.com/event/event-schedule-play-x"
+          },
+          {
+            "type": "link",
+            "label": "XLAB 专场",
+            "url": "https://mp.weixin.qq.com/s/LsajE_cfrSjSvtihfhQCQQ"
+          }
+        ],
+        "notes": []
+      }
+    }
+  ]
+}
