@@ -15,10 +15,7 @@ export function initHero(root, makeScene = createScene) {
   const stage = root.querySelector('.hero-stage');
   const posters = [...root.querySelectorAll('.hero-poster')];
   const details = [...root.querySelectorAll('.hero-detail')];
-  const controls = root.querySelector('.hero-controls');
-  const counter = root.querySelector('.hero-counter');
   const status = root.querySelector('.hero-status');
-  const autoplayButton = root.querySelector('.hero-autoplay');
   const page = root.ownerDocument;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const pointer = matchMedia('(hover: hover) and (pointer: fine)');
@@ -28,12 +25,15 @@ export function initHero(root, makeScene = createScene) {
   let hovered = false;
   let focused = false;
   let timer;
+  let gesture;
+  let suppressClick = false;
+  let wheelDistance = 0;
+  let wheelSelected = false;
+  let wheelTimer;
 
   function updatePlayback() {
     clearTimeout(timer);
-    const playing = autoplay && !hovered && !focused && !page.hidden;
-    autoplayButton.dataset.playing = String(autoplay);
-    autoplayButton.setAttribute('aria-label', autoplay ? '暂停自动轮播' : '继续自动轮播');
+    const playing = autoplay && !hovered && !focused && !gesture && !page.hidden;
     status.setAttribute('aria-live', playing ? 'off' : 'polite');
     if (playing) timer = setTimeout(() => select(active + 1, false), 3000);
   }
@@ -46,7 +46,6 @@ export function initHero(root, makeScene = createScene) {
       poster.tabIndex = i === active ? 0 : -1;
       details[i].hidden = i !== active;
     });
-    counter.textContent = `${String(active + 1).padStart(2, '0')} / ${String(posters.length).padStart(2, '0')}`;
     if (announce) status.textContent = `${active + 1} / ${posters.length} · ${details[active].querySelector('h3').textContent}`;
     updatePlayback();
   }
@@ -62,21 +61,26 @@ export function initHero(root, makeScene = createScene) {
       if (poster.matches(':focus-visible')) select(index);
     });
   });
-  controls.addEventListener('click', event => {
-    const button = event.target.closest('button[data-step]');
+  root.addEventListener('click', event => {
+    const button = event.target.closest('.hero-arrow');
     if (button) select(active + Number(button.dataset.step));
   });
   root.addEventListener('keydown', event => {
+    if (!event.target.closest('.hero-stage')) return;
+    if (event.key === ' ') {
+      if (event.target.closest('.hero-arrow')) return;
+      event.preventDefault();
+      if (event.repeat) return;
+      autoplay = !autoplay;
+      if (autoplay) hovered = focused = false;
+      updatePlayback();
+      status.textContent = autoplay ? '自动轮播已继续' : '自动轮播已暂停';
+      return;
+    }
     if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-    if (!event.target.closest('.hero-poster, .hero-controls')) return;
     event.preventDefault();
     select(active + (event.key === 'ArrowRight' ? 1 : -1));
     if (event.target.closest('.hero-poster')) posters[active].focus({ preventScroll: true });
-  });
-  autoplayButton.addEventListener('click', () => {
-    autoplay = !autoplay;
-    if (autoplay) hovered = focused = false;
-    updatePlayback();
   });
   root.addEventListener('pointerenter', event => {
     if (event.pointerType !== 'mouse') return;
@@ -87,8 +91,7 @@ export function initHero(root, makeScene = createScene) {
     hovered = false;
     updatePlayback();
   });
-  root.addEventListener('focusin', event => {
-    if (event.target === autoplayButton) return;
+  root.addEventListener('focusin', () => {
     focused = true;
     updatePlayback();
   });
@@ -98,8 +101,68 @@ export function initHero(root, makeScene = createScene) {
     updatePlayback();
   });
   page.addEventListener('visibilitychange', updatePlayback);
-  controls.hidden = false;
   select(active, false);
+
+  stage.addEventListener('pointerdown', event => {
+    if (!event.isPrimary || event.button !== 0) return;
+    suppressClick = false;
+    if (event.target.closest('.hero-arrow')) return;
+    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, horizontal: false };
+    updatePlayback();
+  });
+  stage.addEventListener('pointermove', event => {
+    if (!gesture || event.pointerId !== gesture.id) return;
+    const dx = event.clientX - gesture.x, dy = event.clientY - gesture.y;
+    if (!gesture.horizontal) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return;
+      if (Math.abs(dy) >= Math.abs(dx)) {
+        finishGesture(event, true);
+        return;
+      }
+      gesture.horizontal = true;
+      stage.setPointerCapture(event.pointerId);
+      stage.classList.add('is-dragging');
+      tilt(0, 0);
+    }
+    stage.style.setProperty('--drag-x', `${Math.max(-120, Math.min(120, dx * 0.5))}px`);
+  });
+  function finishGesture(event, cancelled = false) {
+    if (!gesture || event.pointerId !== gesture.id) return;
+    const { id, x, horizontal } = gesture;
+    gesture = undefined;
+    suppressClick = horizontal;
+    stage.classList.remove('is-dragging');
+    stage.style.removeProperty('--drag-x');
+    if (stage.hasPointerCapture(id)) stage.releasePointerCapture(id);
+    const dx = event.clientX - x;
+    if (!cancelled && horizontal && Math.abs(dx) >= Math.min(64, stage.clientWidth * 0.15)) {
+      select(active + (dx < 0 ? 1 : -1));
+    } else {
+      updatePlayback();
+    }
+  }
+  stage.addEventListener('pointerup', event => finishGesture(event));
+  stage.addEventListener('pointercancel', event => finishGesture(event, true));
+  stage.addEventListener('lostpointercapture', event => finishGesture(event, true));
+  stage.addEventListener('click', event => {
+    if (!suppressClick || event.detail === 0) return;
+    suppressClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+  stage.addEventListener('dragstart', event => event.preventDefault());
+  stage.addEventListener('wheel', event => {
+    if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) || event.ctrlKey) return;
+    event.preventDefault();
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => { wheelDistance = 0; wheelSelected = false; }, 180);
+    if (wheelSelected) return;
+    wheelDistance += event.deltaX * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? stage.clientWidth : 1);
+    if (Math.abs(wheelDistance) >= 50) {
+      wheelSelected = true;
+      select(active + (wheelDistance > 0 ? 1 : -1));
+    }
+  }, { passive: false });
 
   function tilt(x, y) {
     stage.style.setProperty('--view-x', `${x * 3}deg`);
@@ -107,7 +170,7 @@ export function initHero(root, makeScene = createScene) {
     scene?.move(x, y);
   }
   stage.addEventListener('pointermove', event => {
-    if (reducedMotion.matches || !pointer.matches || event.pointerType !== 'mouse') return;
+    if (gesture || reducedMotion.matches || !pointer.matches || event.pointerType !== 'mouse') return;
     const box = stage.getBoundingClientRect();
     tilt((event.clientX - box.left) / box.width * 2 - 1, (event.clientY - box.top) / box.height * 2 - 1);
   });

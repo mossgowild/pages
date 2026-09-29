@@ -18,7 +18,7 @@ assert.equal(filter({ from: '2026-09-30', to: '2026-09-30' }).length, 8);
 assert.equal(filter({ city: '香港', from: '2026-10-02', to: '2026-10-02', genre: 'genre:Hard Techno' }).length, 1);
 assert.equal(filter({ city: '澳门', venue: '深圳|PLAY X' }).length, 0);
 assert.equal(filter({ venue: '深圳|PLAY X' }).length, 7);
-assert.deepEqual(filter({ from: '2026-10-07' }).map(event => event.id), ['event-62']);
+assert.deepEqual(filter({ from: '2026-10-07' }).map(event => event.id), []);
 assert.equal(context.validRange({ from: '2026-10-04', to: '2026-10-01' }), false);
 assert.equal(filter({ from: '2026-10-04', to: '2026-10-01' }).length, 0);
 const verknipt = filter({ city: '香港', from: '2026-10-02', to: '2026-10-02', genre: 'genre:Hard Techno' })[0];

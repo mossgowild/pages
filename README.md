@@ -8,11 +8,12 @@
 - `templates/index.html`：页面结构模板。
 - `assets/site.css`：视觉与响应式布局；活动清单采用瀑布流，桌面三列、平板两列、手机单列。
 - `assets/hero.css`：统一的首屏海报展台、精选活动信息与紧凑日期／统计栏。
-- `scripts/hero.mjs`：海报切换、键盘交互与 Three.js 金属轨道；`assets/hero.js` 为随站点发布的独立脚本。
+- `scripts/hero.mjs`：海报滑动／拖动、触控板与键盘切换、自动轮播及 Three.js 金属轨道；`assets/hero.js` 为随站点发布的独立脚本。
 - `scripts/build_page.py`：使用 Python 标准库生成静态首页。
 - `index.html`：生成后的发布入口，不直接编辑。
 - `assets/filters.js`：城市、场地、日期、曲风与开场时段的组合筛选，以及卡片高度变化后的瀑布流排布；关闭 JavaScript 后仍以常规网格展示完整清单。
 - `assets/posters/`：随站点发布的海报与活动封面；来源记录见 `sources.json`。
+- `assets/poster-preview.js`：卡片海报的原生遮罩预览、原位缩放过渡与放大查看。
 - `assets/brand/`：供图 Logo 的单色矢量与 favicon；`youyang-ravers-mono.svg` 为 1024×1024 透明画布，使用 `currentColor`，无位图或字体依赖。
 - `assets/fonts/`：标题专用的 Noto Sans SC 500/800 字重子集及 OFL 许可，随站点加载。
 - 购票与活动详情跳转主办或票务平台；微信小程序入口需在微信中打开。
@@ -31,14 +32,21 @@ GitHub 仓库按已确认设置保持公开。提交并推送生产分支后，�
 ## 更新
 
 活动按日期分组、开场时间排序，桌面与手机共享同一份卡片内容。
-卡片保留名称、艺人、风格、地点、更多信息与海报；图片在卡片顶部按原比例完整显示。
+卡片保留名称、艺人、风格、地点、更多信息与海报；原图、独立渐变遮罩与文字内容分三层叠放，标题和时间叠在海报底部。
+海报区统一固定高度并按比例裁切，点击打开完整原图；附加图片位于右上角，遮罩不拦截点击。
+原图预览不显示工具栏，支持双指／滚轮缩放、拖动、双击切换缩放和单击退出。
+键盘加减号缩放、方向键移动、0 恢复全图、Esc／Enter 退出；关闭恢复焦点，横竖屏切换恢复全图。
 `assets/posters/sources.json` 的 `width`、`height` 记录原图像素尺寸，用于加载前预留空间。
 修改 `data/events.json` 后执行生成脚本；字段中的文本均为内容，不能写入 HTML。
-`title` 的 `region`、`topic`、`guide` 组成完整标题；`publisher` 的 `name`、`latin` 组成右上角文字署名。
+`title` 的 `region`、`topic`、`guide` 组成完整标题；地区和 `publisher` 的文字署名位于主标题下方。
 这些标题字体只覆盖当前标题字符；更换标题时需重新生成字体子集。标题与署名组合放在顶部导航栏左侧，首屏内容区不重复；Logo 用于站点图标。
+页眉采用紧凑高度与较小标题字号；右侧依次显示“资讯更新时间”和具体时间，两行居右，左右视觉宽度相近，时间使用低调的小字号。不显示重复导航或英文期刊标记；海报展台底部不重复展示时间和全部活动入口。
+清单顶部使用横向滚动日期刻度轴，窄屏仅在轴内滚动，不使用抽屉。
+选择日期直接筛选下方结果；“全部日期”保留其他筛选，支持触屏、触控板和键盘左右键、Home／End。
 `starts` 为从午夜起算的分钟数，多时段可有多个开场时间；部分时段未知时设置 `unknown: true`。
 `genres` 用于筛选，`genre_lines` 与 `genre_notes` 保留分厅归属及风格参考说明。
 `genre_families` 显式维护大类与具体风格的对应关系，构建时生成每张卡片的分类；不使用名称包含关系猜测归属。
+`genre_order` 是筛选下拉的大类与具体风格固定编辑顺序；头部参考 [IMS 2025/26 报告](https://www.internationalmusicsummit.com/news/ims-electronic-music-business-report-2025-26)的 Beatport 趋势，其余按本站选场语境排列，不表示全部风格的客观热度名次。新增风格须同步加入排序。下拉均使用系统原生控件，分组标题颜色取决于系统菜单支持情况。
 筛选器只展示有活动的大类，Psytrance、Hard Dance / Hardcore、Drum & Bass / Jungle、UK Garage / Bassline 等分别归类。
 Afro 与 Afro House、Afrobeats 不自动互换；含义未确定的原文标签保留在具体风格中。Live 等演出形式记入艺人资料。
 `artists` 按演出单元记录：`names` 中每位艺人单独一行，B2B 或 DJ + MC 同组并保留 `format`；
@@ -68,6 +76,7 @@ python3 scripts/build_page.py
 python3 scripts/build_page.py --check
 python3 scripts/check_page.py
 node scripts/check_filters.js
+node scripts/check_preview.js
 git diff --check
 ```
 

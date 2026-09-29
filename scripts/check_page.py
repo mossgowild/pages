@@ -60,6 +60,9 @@ class Page(HTMLParser):
             self.anchors.append(attrs['href'])
             if self.field is not None:
                 self.field['links'].append(attrs['href'])
+                if self.field is self.card['fields'].get('posters'):
+                    assert attrs.get('aria-haspopup') == 'dialog', 'Posters must open the image preview'
+                    assert 'target' not in attrs, 'Do not open posters in a new tab'
         if tag == 'img':
             assert 'alt' in attrs
             assert attrs['alt'] or any(hidden for _, hidden, _ in self.stack), 'Meaningful image needs alt text'
@@ -154,6 +157,7 @@ def check():
         assert poster['images'] == [item['image'] for item in event['posters']], 'Use the full-size posters'
         if poster['images']:
             illustrated_cards += 1
+            assert not poster['text'].strip(), 'Remove the poster link label strip'
             assert poster['links'] == poster['images'], 'Poster links must open their original images'
             assert all((ROOT / link).is_file() for link in poster['links']), 'Missing full-size poster'
         else:

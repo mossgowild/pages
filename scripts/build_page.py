@@ -120,10 +120,11 @@ def event_card(event, images, genre_families):
         image = images[poster['image']]
         assert image['width'] > 0 and image['height'] > 0
         posters.append(
-            f'<a href="{poster_path(poster["image"])}" target="_blank" rel="noopener noreferrer">'
+            f'<a href="{poster_path(poster["image"])}" aria-haspopup="dialog" aria-label="预览：{escape(poster["alt"], quote=True)}">'
             f'<img width="{image["width"]}" height="{image["height"]}" src="{poster_path(poster["image"])}"'
-            f' loading="lazy" alt="{escape(poster["alt"], quote=True)}">'
-            f'<span>{escape(poster["label"])}</span></a>')
+            f' loading="lazy" alt="{escape(poster["alt"], quote=True)}"></a>')
+    poster_content = (posters[0] + ('<div class="poster-thumbnails">' + ''.join(posters[1:]) + '</div>' if len(posters) > 1 else '')
+                      if posters else '<div class="poster-empty">暂无图片</div>')
     title_id = escape(event['id'] + '-title', quote=True)
     heading = (f'<header class="event-heading" data-field="name"><h4 id="{title_id}">'
                + escape(event['name']) + '</h4><span class="event-time">' + lines(event['time'])
@@ -140,7 +141,7 @@ def event_card(event, images, genre_families):
                       for key, label, cls, value in fields)
     return (f'<article class="event-card" {attrs} aria-labelledby="{title_id}">'
             '<div class="event-posters" data-field="posters">'
-            + (''.join(posters) or '<div class="poster-empty">暂无图片</div>') + '</div>'
+            + poster_content + '</div>'
             + '<div class="event-body">' + heading + content + '</div></article>')
 
 
@@ -175,8 +176,8 @@ def render():
     for day in days:
         daily = [event for event in events if event['date'] == day.isoformat()]
         title = f'{day.month} 月 {day.day} 日'
-        heading = (f'<h3 class="day-heading" id="{day_id(day)}"><span class="day-number">{day:%m.%d}</span>'
-                   f'{title}<small>{day:%a} / <span class="day-count">{len(daily)}</span> 场</small></h3>')
+        heading = (f'<h3 class="day-heading" id="{day_id(day)}"><span class="day-number" aria-hidden="true">{day:%m.%d}</span>'
+                   f'<span class="sr-only">{title} </span><small>{day:%a} / <span class="day-count">{len(daily)}</span> 场</small></h3>')
         if daily:
             content = ('<div class="event-grid">\n'
                        + '\n'.join(event_card(event, images, genre_families) for event in daily) + '\n</div>')
@@ -184,7 +185,12 @@ def render():
             content = '<p class="empty-day">当日暂无活动信息。</p>'
         groups.append(f'<section class="day-group" data-date="{day.isoformat()}">{heading}\n{content}</section>')
     cities = sorted({event['city'] for event in events})
-    genres = sorted({genre for event in events for genre in event['genres']})
+    genres = {genre for event in events for genre in event['genres']}
+    genre_order = data['genre_order']
+    active_families = {name for name, members in genre_families.items() if set(members).intersection(genres)}
+    for key, available in (('families', active_families), ('genres', genres - {'TBA'})):
+        ordered = genre_order[key]
+        assert len(ordered) == len(set(ordered)) and set(ordered) == available, f'Update genre_order.{key}'
     featured = [next(event for event in events if event['id'] == ident) for ident in data['featured']]
     assert len(featured) >= 3 and len(set(data['featured'])) == len(featured), 'Choose distinct featured events'
     cards, captions = [], []
@@ -194,18 +200,18 @@ def render():
         position = ('left', 'center', 'right')[index] if index < 3 else 'offstage'
         hidden = ' hidden' if position == 'offstage' else ''
         loading = 'lazy' if hidden else 'eager'
-        cards.append(f'<a class="hero-poster" href="#{escape(event["id"])}" data-position="{position}"'
+        cards.append(f'<a class="hero-poster" href="#{escape(event["id"])}" data-position="{position}" draggable="false"'
                      f' tabindex="{0 if index == 1 else -1}"{hidden}'
                      f' style="--poster-ratio:{image["width"] / image["height"]:.5f}"'
                      f' aria-label="{escape(event["name"], quote=True)} · 阵容与购票">'
                      f'<img src="{poster_path(poster["image"])}" width="{image["width"]}" height="{image["height"]}"'
-                     f' loading="{loading}" decoding="async" alt="{escape(poster["alt"], quote=True)}"></a>')
+                     f' loading="{loading}" decoding="async" draggable="false" alt="{escape(poster["alt"], quote=True)}"></a>')
         hidden = '' if index == 1 else ' hidden'
         captions.append(f'<div class="hero-detail"{hidden}>'
                         f'<p class="hero-event-meta">{event["date"][5:].replace("-", ".")} <span>·</span> {escape(event["city"])}</p>'
+                        f'<a class="hero-event-link spotlight-card" href="#{escape(event["id"])}">阵容与购票 <span aria-hidden="true">↗</span></a>'
                         f'<h3>{escape(event["name"])}</h3>'
-                        f'<p class="hero-genres">{escape(" · ".join(g for g in event["genres"] if g != "TBA"))}</p>'
-                        f'<a class="hero-event-link spotlight-card" href="#{escape(event["id"])}">阵容与购票 <span aria-hidden="true">↗</span></a></div>')
+                        f'<p class="hero-genres">{escape(" · ".join(g for g in event["genres"] if g != "TBA"))}</p></div>')
     title, publisher = data['title'], data['publisher']
     values = {
         'title': escape(''.join(title[key] for key in ('region', 'topic', 'guide'))),
@@ -214,19 +220,19 @@ def render():
         'byline': escape('By ' + publisher['name'] + publisher['latin']),
         'edition_year': str(start.year), 'date_range': f'{start:%m.%d} — {end:%m.%d}',
         'schedule': '\n'.join(groups), 'event_count': str(len(events)), 'city_count': f'{len(cities):02}',
-        'day_count': f'{len(days):02}', 'updated_at': datetime.fromisoformat(data['updated_at']).strftime('%Y.%m.%d %H:%M'),
+        'day_count': f'{len(days):02}', 'updated_iso': data['updated_at'],
+        'updated_date': datetime.fromisoformat(data['updated_at']).strftime('%Y.%m.%d'),
+        'updated_time': datetime.fromisoformat(data['updated_at']).strftime('%H:%M'),
         'start_date': start.isoformat(), 'end_date': end.isoformat(),
         'city_options': option('', '全部城市') + ''.join(option(city, city) for city in cities),
         'genre_options': option('', '全部风格') + '<optgroup label="风格大类 · 含子风格">'
-        + ''.join(option('family:' + name, name) for name, members in genre_families.items()
-                  if set(members).intersection(genres))
+        + ''.join(option('family:' + name, name) for name in genre_order['families'])
         + '</optgroup><optgroup label="具体风格">'
-        + ''.join(option('genre:' + genre, genre) for genre in genres if genre != 'TBA')
+        + ''.join(option('genre:' + genre, genre) for genre in genre_order['genres'])
         + '</optgroup>' + option('genre:TBA', '风格未知'),
-        'date_nav': '<button type="button" id="all-dates" hidden aria-pressed="true">全部日期</button>'
-        + ''.join(f'<a href="#{day_id(day)}" data-date="{day.isoformat()}">{day:%m.%d}</a>' for day in days),
+        'date_nav': '<button type="button" id="all-dates" hidden aria-pressed="true"><span>全部日期</span></button>'
+        + ''.join(f'<a href="#{day_id(day)}" data-date="{day.isoformat()}"><span>{day:%m.%d}</span><small>{day:%a}</small></a>' for day in days),
         'hero_posters': ''.join(cards), 'hero_details': ''.join(captions),
-        'featured_count': f'{len(featured):02}',
     }
     output = (ROOT / 'templates/index.html').read_text()
     for key, value in values.items():
