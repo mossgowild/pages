@@ -134,6 +134,13 @@ for (let i = 0; i < total; i++) {
 }
 assert.equal(visited.size, total, 'Every poster must be reachable');
 const beforeDrag = active();
+pointerEvent('pointerdown', 200, 150, { target: posters[beforeDrag] });
+pointerEvent('pointermove', 80, 150, { target: posters[beforeDrag] });
+pointerEvent('lostpointercapture', 80, 150, { target: posters[beforeDrag] });
+pointerEvent('pointerup', 80);
+assert.equal(active(), (beforeDrag + 1) % total, 'Losing implicit poster capture must not cancel a touch swipe');
+assert.equal(click(posters[beforeDrag]), true, 'Touch swipe must not open its original poster link');
+step(-1);
 pointerEvent('pointerdown', 200);
 advance(6000); assert.equal(active(), beforeDrag, 'Holding a gesture pauses autoplay');
 pointerEvent('pointermove', 80);

@@ -143,7 +143,9 @@ export function initHero(root, makeScene = createScene) {
   }
   stage.addEventListener('pointerup', event => finishGesture(event));
   stage.addEventListener('pointercancel', event => finishGesture(event, true));
-  stage.addEventListener('lostpointercapture', event => finishGesture(event, true));
+  stage.addEventListener('lostpointercapture', event => {
+    if (event.target === stage) finishGesture(event, true);
+  });
   stage.addEventListener('click', event => {
     if (!suppressClick || event.detail === 0) return;
     suppressClick = false;
