@@ -20,7 +20,7 @@
 
 ## 部署
 
-当前使用 Vercel 项目 `events`，生产分支为 `main`，域名为 https://events.moss.com.im/。
+当前使用 Vercel 项目 `events`，生产分支为 `main`，域名为 https://events.cardioravers.com/。
 GitHub 仓库按已确认设置保持公开。提交并推送生产分支后，由 Vercel 的 Git 集成部署。
 
 `vercel.json` 跳过依赖安装，将已生成的 `index.html` 与 `assets/` 复制到 `public/` 并发布。
