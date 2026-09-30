@@ -46,50 +46,77 @@ if (typeof document !== 'undefined') {
   const dateLinks = [...document.querySelectorAll('#date-nav a')];
   const allDates = document.getElementById('all-dates');
   const dateNav = document.getElementById('date-nav');
-  const dateIndicator = dateNav.querySelector('.date-indicator');
-  const dateRuler = dateNav.querySelector('.date-ruler');
   const dateItems = [allDates, ...dateLinks];
-  const tickCount = 108;
-  const rulerTicks = Array.from({ length: tickCount + 1 }, (_, index) => {
-    const tick = document.createElement('span');
-    tick.className = 'date-tick';
-    tick.style.left = `${index / tickCount * 100}%`;
-    return tick;
-  });
-  dateRuler.replaceChildren(...rulerTicks);
-  dateRuler.classList.add('has-ticks');
   const error = document.getElementById('filter-error');
   const empty = document.getElementById('empty-state');
   const count = document.getElementById('result-count');
 
-  let waveFrame;
-  let targetCenter;
-  function trackRulerWave() {
-    const rulerBox = dateRuler.getBoundingClientRect();
-    const center = dateIndicator.getBoundingClientRect().left - rulerBox.left + dateIndicator.offsetWidth / 2;
-    const visible = dateNav.classList.contains('has-indicator');
-    for (const [index, tick] of rulerTicks.entries()) {
-      const distance = (index * rulerBox.width / tickCount - center) / 16;
-      const strength = visible ? Math.exp(-.5 * distance ** 2) : 0;
-      tick.style.transform = `translateX(-50%) scaleY(${(3 + 12 * strength) / 15})`;
-      tick.style.opacity = .18 + .76 * strength;
+  // React Bits Line Sidebar turned sideways: dates within 100px of the mouse light up (smooth falloff),
+  // the selected date stays fully active, and every value eases per frame into --effect (100ms).
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const smoothFalloff = distance => {
+    const p = Math.max(0, 1 - Math.abs(distance) / 100);
+    return p * p * (3 - 2 * p);
+  };
+  const effects = new Map();
+  let axisFrame;
+  let axisTime;
+  let pointerX = null;
+  function ease(element, target, k) {
+    const current = effects.get(element) ?? 0;
+    const next = Math.abs(target - current) < .0015 ? target : current + (target - current) * k;
+    effects.set(element, next);
+    element.style.setProperty('--effect', next.toFixed(4));
+    return next !== target;
+  }
+  function animateAxis(now) {
+    const k = reducedMotion.matches ? 1 : 1 - Math.exp(-Math.min((now - axisTime) / 1000, .05) / .1);
+    axisTime = now;
+    let moving = false;
+    for (const item of dateItems) {
+      if (item.hidden) continue;
+      const box = item.getBoundingClientRect();
+      const near = pointerX === null ? 0 : smoothFalloff(box.left + box.width / 2 - pointerX);
+      const active = item.matches('[aria-current="date"], [aria-pressed="true"]') ? 1 : 0;
+      moving = ease(item, Math.max(near, active), k) || moving;
     }
-    if (visible && Math.abs(center - targetCenter) > .1) waveFrame = requestAnimationFrame(trackRulerWave);
+    axisFrame = moving ? requestAnimationFrame(animateAxis) : 0;
+  }
+  function requestAxisFrame() {
+    if (axisFrame) return;
+    axisTime = performance.now();
+    axisFrame = requestAnimationFrame(animateAxis);
+  }
+
+  // Dates keep Line Sidebar's 20px gap on narrow axes and spread up to 40px as it widens; auto edge margins centre a row that fits.
+  function spaceDates() {
+    const items = dateItems.filter(item => !item.hidden);
+    const style = getComputedStyle(dateNav);
+    const free = dateNav.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight)
+      - items.reduce((sum, item) => sum + item.getBoundingClientRect().width, 0);
+    dateNav.style.setProperty('--date-gap', `${Math.min(40, Math.max(20, free / (items.length - 1)))}px`);
   }
 
   function centerSelectedDate() {
     const selected = dateNav.querySelector('[aria-current="date"], [aria-pressed="true"]');
-    dateNav.classList.toggle('has-indicator', !!selected);
-    if (selected) {
-      targetCenter = selected.offsetLeft + selected.offsetWidth / 2;
-      dateIndicator.style.transform = `translateX(${targetCenter - dateIndicator.offsetWidth / 2}px)`;
-      dateNav.scrollLeft = targetCenter - dateNav.clientWidth / 2;
-    }
-    cancelAnimationFrame(waveFrame);
-    waveFrame = requestAnimationFrame(trackRulerWave);
+    if (selected) dateNav.scrollLeft = selected.offsetLeft + selected.offsetWidth / 2 - dateNav.clientWidth / 2;
+    requestAxisFrame();
   }
 
-  window.addEventListener('resize', centerSelectedDate);
+  window.addEventListener('resize', () => {
+    spaceDates();
+    centerSelectedDate();
+  });
+  dateNav.addEventListener('pointermove', event => {
+    if (event.pointerType !== 'mouse') return;
+    pointerX = event.clientX;
+    requestAxisFrame();
+  });
+  dateNav.addEventListener('pointerleave', () => {
+    pointerX = null;
+    requestAxisFrame();
+  });
+  dateNav.addEventListener('scroll', () => { if (pointerX !== null) requestAxisFrame(); }, { passive: true });
 
   let dragStart;
   let suppressClick = false;
@@ -236,6 +263,7 @@ if (typeof document !== 'undefined') {
   window.addEventListener('hashchange', revealTarget);
   updateVenues();
   allDates.hidden = false;
+  spaceDates();
   apply();
   form.hidden = false;
   requestAnimationFrame(() => dateNav.classList.add('is-ready'));

@@ -5,11 +5,11 @@
     "": {
       "name": "gba-events-guide",
       "devDependencies": {
-        "three": "0.186.1",
+        "ogl": "1.0.11",
       },
     },
   },
   "packages": {
-    "three": ["three@0.186.1", "", {}, "sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA=="],
+    "ogl": ["ogl@1.0.11", "", {}, "sha512-kUpC154AFfxi16pmZUK4jk3J+8zxwTWGPo03EoYA8QPbzikHoaC82n6pNTbd+oEaJonaE8aPWBlX7ad9zrqLsA=="],
   }
 }

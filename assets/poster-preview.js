@@ -46,8 +46,10 @@
     const width = Number(thumbnail.getAttribute('width')), height = Number(thumbnail.getAttribute('height'));
     const cover = Math.max(box.width / width, box.height / height);
     const from = { left: box.left + (box.width - width * cover) / 2, top: box.top, width: width * cover, height: height * cover };
-    const sideClip = (from.width - box.width) / from.width * 50;
-    const clipPath = `inset(0 ${sideClip}% ${(from.height - box.height) / from.height * 100}% ${sideClip}%)`;
+    // Clip to the link's visible frame: card covers may be enlarged and shifted for parallax.
+    const visible = source.getBoundingClientRect();
+    const clipPath = `inset(${(visible.top - from.top) / from.height * 100}% ${(from.left + from.width - visible.right) / from.width * 100}% `
+      + `${(from.top + from.height - visible.bottom) / from.height * 100}% ${(visible.left - from.left) / from.width * 100}%)`;
     const origin = center(base);
     const frame = rect => ({ transform: `translate(${center(rect).x - origin.x}px, ${center(rect).y - origin.y}px) scale(${rect.width / base.width}, ${rect.height / base.height})` });
     const thumbnailFrame = { ...frame(from), clipPath };

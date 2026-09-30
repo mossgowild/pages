@@ -22,6 +22,34 @@ function checkLayout() {
     'Header update time overlaps the title or leaves the viewport');
   assert(!document.querySelector('.hero-bottom, .top-links, .top-meta, .date-panel, .date-trigger'),
     'Remove the repeated hero footer, header navigation and date drawer');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const [selector, pseudo, edge] of [['.topbar', '::after', 'borderBottomColor'], ['.schedule', '::before', 'borderTopColor'],
+    ['.site-footer', '::before', 'borderTopColor'], ['.day-heading', '::after'], ['.site-updated > span', '::before']]) {
+    const host = document.querySelector(selector);
+    const line = getComputedStyle(host, pseudo);
+    assert(line.height === '1px', `${selector}: divider must be a 1px line`);
+    assert(!edge || getComputedStyle(host)[edge] === 'rgba(0, 0, 0, 0)', `${selector}: divider replaces the border`);
+    assert(reducedMotion ? !line.backgroundImage.includes('radial-gradient') : line.animationName === 'divider-star',
+      `${selector}: divider stars must flow unless motion is reduced`);
+  }
+  for (const panel of [document.getElementById('filters'), document.getElementById('empty-state')]) {
+    if (!panel.getClientRects().length) continue;
+    const style = getComputedStyle(panel);
+    assert(style.borderTopLeftRadius === '24px' && style.backdropFilter.includes('blur'), `${panel.id}: panel must be frosted glass`);
+  }
+  for (const pill of document.querySelectorAll('.filter-field select, .filter-field input, .filter-footer button, .reset-empty')) {
+    if (pill.getClientRects().length) assert(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2, `${pill.id || pill.className}: control must be a pill`);
+  }
+  for (const pill of document.querySelectorAll('.filter-field, .filter-footer button, .reset-empty, .info-actions a, .mini-program summary')) {
+    assert(getComputedStyle(pill, '::after').backgroundImage.includes('conic-gradient'), 'Pills must carry the specular rim');
+  }
+  if (!/Firefox/.test(navigator.userAgent) && !(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))) {
+    for (const glass of document.querySelectorAll('.filters, .empty-state, .filter-field select, .filter-field input, .filter-footer button, .reset-empty')) {
+      assert(getComputedStyle(glass).backdropFilter.includes('url('), 'Chromium glass must add the refraction filter');
+    }
+  }
+  const emptyTitle = document.querySelector('.empty-state h3');
+  assert(getComputedStyle(emptyTitle).animationName === (reducedMotion ? 'none' : 'shiny-text'), 'Empty state title must shine unless motion is reduced');
   const dateNav = document.getElementById('date-nav');
   const from = document.getElementById('from'), to = document.getElementById('to');
   const currentDate = dateNav.querySelector('[aria-current="date"]');
@@ -33,58 +61,33 @@ function checkLayout() {
   const boxes = items.map(item => item.getBoundingClientRect());
   assert(items.length === 9 && boxes.every(box => box.height >= 44 && box.width >= 44),
     'Keep all eight dates, all-dates action and accessible touch targets');
-  assert(Math.max(...boxes.map(box => box.width)) - Math.min(...boxes.map(box => box.width)) < 1,
-    'Date axis nodes must have even spacing');
-  const ruler = dateNav.querySelector('.date-ruler');
-  const rulerBox = ruler.getBoundingClientRect();
-  assert(Math.abs(rulerBox.width - dateNav.scrollWidth) < 1, 'Date ruler must span the entire scrollable axis');
+  assert(!dateNav.querySelector('.date-ruler, .date-indicator, .date-tick'), 'The date axis has no ruler or moving indicator');
   for (const [index, item] of items.entries()) {
     const label = item.querySelector('span').getBoundingClientRect();
     const box = boxes[index];
     assert(Math.abs((label.left + label.right - box.left - box.right) / 2) < 1,
       `Date axis label ${index} must align with its node`);
-    assert(Math.abs((box.left + box.right) / 2 - (rulerBox.left + rulerBox.width * (index + .5) / items.length)) < 1,
-      `Date axis tick ${index} must align with the common ruler`);
+  }
+  const gaps = boxes.slice(1).map((box, index) => box.left - boxes[index].right);
+  assert(gaps.every(gap => gap > 19.5 && gap < 40.5 && Math.abs(gap - gaps[0]) < 1), 'Date axis gaps must be equal and within 20–40px');
+  const axisStyle = getComputedStyle(dateNav);
+  const inner = [dateNav.getBoundingClientRect().left + parseFloat(axisStyle.paddingLeft),
+    dateNav.getBoundingClientRect().right - parseFloat(axisStyle.paddingRight)];
+  if (dateNav.scrollWidth > dateNav.clientWidth) assert(gaps[0] < 20.5, 'An overflowing date axis must keep the 20px gap and scroll');
+  else assert(Math.abs((boxes[0].left - inner[0]) - (inner[1] - boxes.at(-1).right)) < 1.5 && (gaps[0] > 39.5 || boxes[0].left - inner[0] < 1.5),
+    'A fitting date axis must fill its width or centre at the 40px gap');
+  for (const [index, item] of items.slice(0, -1).entries()) {
+    const tick = getComputedStyle(item, '::after');
+    assert(Math.abs(parseFloat(tick.left) - boxes[index].width - gaps[index] / 2) < 1, `Date axis tick ${index} must sit mid-gap`);
   }
   assert(items.every(item => item.offsetTop === items[0].offsetTop), 'Date axis must stay on one horizontal row');
   assert(getComputedStyle(dateNav).overflowX === 'auto', 'Date axis must scroll horizontally within its own region');
   assert(dateNav.scrollHeight <= dateNav.clientHeight, 'Date axis must not scroll vertically');
   const axis = dateNav.getBoundingClientRect();
   assert(axis.left >= 0 && axis.right <= viewport, 'Date axis leaves the viewport');
-  assert(items.filter(item => item.matches('[aria-current="date"], [aria-pressed="true"]')).length <= 1,
-    'Date axis has conflicting selections');
-  const selectedTick = dateNav.querySelector('[aria-current="date"], [aria-pressed="true"]');
-  const indicator = dateNav.querySelector('.date-indicator');
-  assert(!!indicator && dateNav.classList.contains('has-indicator') === !!selectedTick,
-    'Date indicator visibility must match the selected date');
-  if (selectedTick) {
-    const dot = getComputedStyle(selectedTick, '::before');
-    const line = getComputedStyle(indicator);
-    const dotCenter = parseFloat(dot.left) + parseFloat(dot.width) / 2 + new DOMMatrix(dot.transform).m41;
-    const targetCenter = new DOMMatrix(indicator.style.transform).m41 + indicator.offsetWidth / 2;
-    assert(Math.abs(dotCenter - selectedTick.offsetWidth / 2) < .1
-      && getComputedStyle(indicator, '::before').content === 'none'
-      && line.backgroundColor === 'rgb(207, 41, 59)',
-      'Date dot must stay on its node while the line moves');
-    assert(Math.abs(targetCenter - selectedTick.offsetLeft - selectedTick.offsetWidth / 2) < .1,
-      'Moving date indicator must target the selected node');
-    const selectedLabel = selectedTick.querySelector('span');
-    assert(getComputedStyle(selectedLabel).backgroundColor === 'rgba(0, 0, 0, 0)'
-      && getComputedStyle(selectedLabel).boxShadow === 'none'
-      && indicator.getBoundingClientRect().top > selectedLabel.getBoundingClientRect().bottom,
-      'Date label must not mask or overlap the pointer');
-    const ticks = [...ruler.querySelectorAll('.date-tick')];
-    const center = indicator.getBoundingClientRect().left - rulerBox.left + indicator.offsetWidth / 2;
-    const near = ticks[Math.round(center / rulerBox.width * (ticks.length - 1))];
-    const far = center < rulerBox.width / 2 ? ticks.at(-1) : ticks[0];
-    assert(ticks.length === 109 && ruler.classList.contains('has-ticks')
-      && getComputedStyle(ruler, '::after').content === 'none'
-      && near.getBoundingClientRect().height > far.getBoundingClientRect().height + 8
-      && Number(near.style.opacity) > Number(far.style.opacity) + .5,
-    'Individual date ticks must rise and brighten around the moving indicator');
-    assert(Number(getComputedStyle(selectedTick.querySelector('span')).zIndex) > Number(line.zIndex),
-      'Selected date label must remain readable over the marker');
-  }
+  const selectedDates = items.filter(item => item.matches('[aria-current="date"], [aria-pressed="true"]'));
+  assert(selectedDates.length <= 1, 'Date axis has conflicting selections');
+  assert(selectedDates.every(item => Number(item.style.getPropertyValue('--effect')) > .99), 'The selected date must stay fully active');
   const controls = [...document.querySelectorAll('.filter-field input, .filter-field select')]
     .filter(control => control.getClientRects().length);
   for (const control of controls) {
@@ -98,16 +101,11 @@ function checkLayout() {
   const hero = document.querySelector('.hero-stage');
   if (hero) {
     const box = hero.getBoundingClientRect();
-    if (viewport <= 700) assert(Math.abs(box.left) < 1 && Math.abs(box.right - viewport) < 1,
-      'Mobile poster stage must extend to both viewport edges');
-    const posters = [...hero.querySelectorAll('.hero-poster')].filter(poster => !poster.hidden);
-    assert(posters.length === 3, 'Show only the active poster and its two neighbors');
-    assert(posters.filter(poster => poster.tabIndex === 0).length === 1, 'Keep one poster in the Tab order');
-    assert(!document.querySelector('.hero-controls'), 'Do not show the removed carousel control group');
-    const arrows = [...hero.querySelectorAll('.hero-arrow')];
-    const showArrows = matchMedia('(min-width:701px) and (hover:hover) and (pointer:fine)').matches;
-    assert(arrows.length === 2 && arrows.every(button => !!button.getClientRects().length === showArrows),
-      'Show side arrows only in the desktop pointer layout');
+    assert(Math.abs(box.left) < 1 && Math.abs(box.right - viewport) < 1, 'Poster stage must extend to both viewport edges');
+    assert(hero.classList.contains('is-webgl') ? !!hero.querySelector('.hero-canvas') && hero.tabIndex === 0
+      : hero.querySelectorAll('.hero-poster').length > 0, 'Show the WebGL reel or the poster list');
+    assert(!document.querySelector('.hero-controls, .hero-arrow'), 'The reel has no arrow or page-number controls');
+    assert(getComputedStyle(hero).overscrollBehaviorY === 'auto', 'Vertical scrolling over the reel must reach the page');
     const detail = document.querySelector('.hero-detail:not([hidden])');
     const date = detail.querySelector('.hero-event-meta').getBoundingClientRect();
     const booking = detail.querySelector('.hero-event-link').getBoundingClientRect();
@@ -135,11 +133,15 @@ function checkLayout() {
         `${card.id}: inconsistent poster area height`);
       const poster = card.querySelector('.event-posters').getBoundingClientRect();
       const heading = card.querySelector('.event-heading').getBoundingClientRect();
-      const overlay = getComputedStyle(card, '::before');
       assert(heading.top > poster.top && heading.top < poster.bottom,
         `${card.id}: heading must overlap the poster transition`);
-      assert(overlay.pointerEvents === 'none' && Number(overlay.zIndex) < Number(getComputedStyle(card.querySelector('.event-body')).zIndex),
-        `${card.id}: overlay must stay behind content and allow poster clicks`);
+      const cardStyle = getComputedStyle(card);
+      assert(cardStyle.borderTopLeftRadius === '24px' && cardStyle.backdropFilter.includes('blur'), `${card.id}: card must be frosted glass`);
+      assert(getComputedStyle(card.querySelector('.event-posters')).maskImage.includes('linear-gradient'),
+        `${card.id}: the poster must fade out by transparency`);
+      for (const link of card.querySelectorAll('.info-actions a, .mini-program summary, .ticket-prices li')) {
+        assert(parseFloat(getComputedStyle(link).borderTopLeftRadius) >= link.offsetHeight / 2, `${card.id}: info links, ticket prices and mini-program toggle must be pills`);
+      }
       for (const thumbnail of card.querySelectorAll('.poster-thumbnails a')) {
         assert(thumbnail.getBoundingClientRect().bottom <= heading.top,
           `${card.id}: supplementary poster overlaps heading`);
@@ -153,11 +155,13 @@ function checkLayout() {
       const previous = boxes.slice(0, i).findLast(other => Math.abs(other.left - box.left) < 1);
       if (previous) assert(Math.abs(box.top - previous.bottom - gap) < 2, `${card.id}: masonry gap`);
       for (const image of card.querySelectorAll('.event-posters img')) {
-        assert(getComputedStyle(image).maskImage === 'none', `${card.id}: apply the fade to a separate overlay`);
+        assert(getComputedStyle(image).maskImage === 'none', `${card.id}: fade the fixed poster frame, not the parallax image`);
         const size = image.getBoundingClientRect();
         const frame = image.parentElement.getBoundingClientRect();
-        assert(getComputedStyle(image).objectFit === 'cover' && Math.abs(size.width - frame.width) <= 2 && Math.abs(size.height - frame.height) <= 2,
-          `${card.id}: poster must fill its frame without stretching`);
+        // Parallax may enlarge the cover up to 10%; it must still cover the whole frame.
+        assert(getComputedStyle(image).objectFit === 'cover' && size.left <= frame.left + 2 && size.right >= frame.right - 2
+          && size.top <= frame.top + 2 && size.bottom >= frame.bottom - 2 && size.width <= frame.width * 1.1 + 2,
+          `${card.id}: poster must cover its frame without stretching`);
         if (image.complete) assert(image.naturalWidth > 0, `${card.id}: broken poster`);
       }
     }

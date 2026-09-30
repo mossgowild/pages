@@ -2,9 +2,10 @@
   "name": "gba-events-guide",
   "private": true,
   "scripts": {
-    "build:hero": "bun build scripts/hero.mjs --target browser --format iife --minify --outfile assets/hero.js"
+    "build:hero": "bun build scripts/hero.mjs --target browser --format iife --minify --outfile assets/hero.js",
+    "build:topography": "bun build scripts/topography.mjs --target browser --format iife --minify --outfile assets/topography.js"
   },
   "devDependencies": {
-    "three": "0.186.1"
+    "ogl": "1.0.11"
   }
 }

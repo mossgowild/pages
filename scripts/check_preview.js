@@ -33,9 +33,9 @@ class Element {
   setPointerCapture(id) { this.capture = id; }
   getBoundingClientRect() {
     const [x, y, scale] = this.transform();
-    return { left: this.rect.left + x + this.rect.width * (1 - scale) / 2,
-      top: this.rect.top + y + this.rect.height * (1 - scale) / 2,
-      width: this.rect.width * scale, height: this.rect.height * scale };
+    const left = this.rect.left + x + this.rect.width * (1 - scale) / 2, top = this.rect.top + y + this.rect.height * (1 - scale) / 2;
+    const width = this.rect.width * scale, height = this.rect.height * scale;
+    return { left, top, width, height, right: left + width, bottom: top + height };
   }
   transform() {
     const match = /translate\(([-\d.e]+)px, ([-\d.e]+)px\) scale\(([\d.e]+)\)/.exec(this.style.transform);
@@ -59,6 +59,7 @@ class Element {
   const source = new Element(), original = new Element();
   original.attrs = { src: 'assets/posters/playx-golden-week.jpg', alt: 'PLAY X', loading: 'lazy', width: '600', height: '900' };
   original.rect = { left: 20, top: 100, width: 200, height: 120 };
+  source.rect = original.rect; // Without parallax the link frame and the cover share one box.
   view.clientWidth = 1000; view.clientHeight = 800;
   source.querySelector = () => original;
   const target = { closest: selector => selector === '.event-posters a' ? source : null };
@@ -98,7 +99,7 @@ class Element {
   assert(!('loading' in view.image.attrs));
   assert.equal(view.image.draggable, false);
   assert.equal(view.image.animation.frames[0].transform, 'translate(-380px, -150px) scale(0.5, 0.5)');
-  assert.equal(view.image.animation.frames[0].clipPath, 'inset(0 0% 60% 0%)');
+  assert.equal(view.image.animation.frames[0].clipPath, 'inset(0% 0% 60% 0%)');
 
   // A pinch follows its midpoint; lifting one finger continues panning without a jump.
   pointer('pointerdown', 1, 450, 400);
@@ -156,9 +157,19 @@ class Element {
   assert.equal(source.focusOptions.preventScroll, true);
   original.attrs.height = '300'; original.rect.height = 300;
   open();
-  assert.equal(view.image.animation.frames[0].clipPath, 'inset(0 33.33333333333333% 0% 33.33333333333333%)', 'Landscape hero transition preserves the original crop');
+  assert.equal(view.image.animation.frames[0].clipPath, 'inset(0% 33.33333333333333% 0% 33.33333333333333%)', 'Landscape hero transition preserves the original crop');
   key('Enter'); await Promise.resolve();
   assert(!dialog.open);
+
+  // Parallax enlarges the cover 10% from its top edge and shifts it up 24px inside the fixed frame
+  // (the stub scales about the centre, so -18px here lands on the same box).
+  original.attrs.height = '900'; original.rect.height = 120;
+  original.style.transform = 'translate(0px, -18px) scale(1.1)';
+  open();
+  const inset = view.image.animation.frames[0].clipPath.match(/[\d.]+(?=%)/g).map(Number);
+  [7.2727, 4.5455, 56.3636, 4.5455].forEach((expected, index) => assert(Math.abs(inset[index] - expected) < 1e-3, 'Parallax transition clips to the visible frame'));
+  key('Enter'); await Promise.resolve();
+  original.style.transform = '';
 
   reduced.matches = true;
   open();

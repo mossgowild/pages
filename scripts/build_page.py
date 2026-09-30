@@ -197,15 +197,12 @@ def render():
     for index, event in enumerate(featured):
         poster = event['posters'][0]
         image = images[poster['image']]
-        position = ('left', 'center', 'right')[index] if index < 3 else 'offstage'
-        hidden = ' hidden' if position == 'offstage' else ''
-        loading = 'lazy' if hidden else 'eager'
-        cards.append(f'<a class="hero-poster" href="#{escape(event["id"])}" data-position="{position}" draggable="false"'
-                     f' tabindex="{0 if index == 1 else -1}"{hidden}'
-                     f' style="--poster-ratio:{image["width"] / image["height"]:.5f}"'
+        loading = 'eager' if index < 4 else 'lazy'
+        cards.append(f'<li><a class="hero-poster" href="#{escape(event["id"])}" draggable="false"'
                      f' aria-label="{escape(event["name"], quote=True)} · 阵容与购票">'
                      f'<img src="{poster_path(poster["image"])}" width="{image["width"]}" height="{image["height"]}"'
-                     f' loading="{loading}" decoding="async" draggable="false" alt="{escape(poster["alt"], quote=True)}"></a>')
+                     f' loading="{loading}" decoding="async" draggable="false"'
+                     f' alt="{escape(poster["alt"], quote=True)}"></a></li>')
         hidden = '' if index == 1 else ' hidden'
         captions.append(f'<div class="hero-detail"{hidden}>'
                         f'<p class="hero-event-meta">{event["date"][5:].replace("-", ".")} <span>·</span> {escape(event["city"])}</p>'
