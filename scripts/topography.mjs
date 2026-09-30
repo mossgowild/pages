@@ -233,5 +233,10 @@ export function initTopography(canvas, reel, axis) {
 }
 
 if (typeof document !== 'undefined') {
-  initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'), document.getElementById('date-nav'));
+  const start = () => initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'), document.getElementById('date-nav'));
+  // The brand colour tokens and the canvas size come from site.css, and iOS Safari can run this deferred script
+  // before that stylesheet has loaded (its `sheet` is still null), so wait for it.
+  const styles = document.querySelector('link[rel="stylesheet"][href$="site.css"]');
+  if (styles.sheet) start();
+  else styles.addEventListener('load', start, { once: true });
 }
