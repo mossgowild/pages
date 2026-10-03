@@ -4,27 +4,33 @@ function checkLayout() {
   const viewport = document.documentElement.clientWidth;
   assert(document.documentElement.scrollWidth <= viewport, 'Page overflows horizontally');
   const wordmark = document.querySelector('.title-wordmark').getBoundingClientRect();
-  const byline = document.querySelector('.title-brandline').getBoundingClientRect();
+  const region = document.querySelector('.title-region').getBoundingClientRect();
+  const logo = document.querySelector('.title-logo').getBoundingClientRect();
   const updated = document.querySelector('.site-updated').getBoundingClientRect();
   const brand = document.querySelector('.title-lockup').getBoundingClientRect();
   assert(Math.abs((updated.top + updated.bottom) - (brand.top + brand.bottom)) < 2,
     'Header title and update block must be vertically centered');
   assert(document.querySelector('.topbar').getBoundingClientRect().height <= 76, 'Keep the header compact');
-  assert(brand.height - updated.height <= 10, 'Keep the title block close to the update block height');
+  assert(Math.abs(brand.height - updated.height) <= 2, 'The title block and the update block must be the same height (question 272)');
   const updateLabel = document.querySelector('.site-updated > span');
   const updateTime = document.querySelector('.site-updated time');
-  assert(updateLabel.textContent === '资讯更新时间' && updateTime.getBoundingClientRect().top >= updateLabel.getBoundingClientRect().bottom,
+  assert(updateLabel.textContent === '资讯更新' && updateTime.getBoundingClientRect().top >= updateLabel.getBoundingClientRect().bottom,
     'Show the update label above the timestamp');
-  assert(Math.abs(updateLabel.getBoundingClientRect().right - updateTime.getBoundingClientRect().right) < 1,
+  // The label's trailing letter-spacing hangs past the edge, so its last glyph lines up with the time.
+  assert(Math.abs(updateLabel.getBoundingClientRect().right - parseFloat(getComputedStyle(updateLabel).letterSpacing) - updateTime.getBoundingClientRect().right) < 1,
     'Right-align both update lines');
-  assert(byline.bottom <= wordmark.top, 'Region and byline must sit above the main title');
-  assert(updated.left >= Math.max(wordmark.right, byline.right) && updated.right <= viewport,
+  assert(wordmark.bottom <= region.top && region.right < logo.left, 'The title leads; the byline “region  by logo” sits below it (question 260)');
+  // Both rows skew 12° from their bottom-left corner, so the title's box overhangs on the right by its height × tan 12°.
+  const overhang = wordmark.height * Math.tan(12 * Math.PI / 180);
+  assert(Math.abs(wordmark.left - region.left) < 1 && Math.abs(wordmark.right - overhang - logo.right) < 1,
+    'Title and byline rows must share their left and right edges');
+  assert(updated.left >= Math.max(wordmark.right, region.right) && updated.right <= viewport,
     'Header update time overlaps the title or leaves the viewport');
   assert(!document.querySelector('.hero-bottom, .top-links, .top-meta, .date-panel, .date-trigger'),
     'Remove the repeated hero footer, header navigation and date drawer');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   for (const [selector, pseudo, edge] of [['.topbar', '::after', 'borderBottomColor'], ['.schedule', '::before', 'borderTopColor'],
-    ['.site-footer', '::before', 'borderTopColor'], ['.day-heading', '::after'], ['.site-updated > span', '::before']]) {
+    ['.site-footer', '::before', 'borderTopColor'], ['.day-heading', '::after']]) {
     const host = document.querySelector(selector);
     const line = getComputedStyle(host, pseudo);
     assert(line.height === '1px', `${selector}: divider must be a 1px line`);
@@ -54,7 +60,8 @@ function checkLayout() {
     assert(parseFloat(getComputedStyle(nav).paddingBottom) >= 24, 'The last card clears the bottom edge');
     assert(nav.classList.contains('has-more') === (nav.scrollHeight - nav.clientHeight - nav.scrollTop > 1), 'The bottom fade shows exactly while more cards lie below');
   }
-  assert(Math.abs(bar.getBoundingClientRect().height - 48) < 1, 'The filter bar is 48px tall');
+  const control = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--control'));
+  assert(control === 40 && Math.abs(bar.getBoundingClientRect().height - (control + 16)) < 1, 'The filter bar is one control plus 8px on each side (56px)');
   assert(getComputedStyle(bar).boxShadow.split(/,(?![^(]*\))/).every(shadow => shadow.includes('inset')), 'The filter bar casts no shadow');
   assert(getComputedStyle(dock, '::before').content === 'none', 'No backdrop band behind the stuck bar');
   if (Number(getComputedStyle(dock).getPropertyValue('--dock')) === 1) {
@@ -74,7 +81,7 @@ function checkLayout() {
   assert(edge.classList.contains('has-before') === strip.scrollLeft > 1
     && edge.classList.contains('has-after') === strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 1, 'The tag strip fades exactly where tags lie beyond it');
   // Layout height, so a tag mid-unfold (scaled from 0.8) still counts; leaving tags are on their way out.
-  for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) assert(Math.abs(tag.offsetHeight - 32) < 1, 'Selected tags are 32px pills, as tall as the filter button');
+  for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) assert(Math.abs(tag.offsetHeight - control) < 1, 'Selected tags are control-height pills, as tall as the filter button');
   const barBox = bar.getBoundingClientRect();
   for (const part of bar.children) {
     if (!part.getClientRects().length) continue;
@@ -85,9 +92,20 @@ function checkLayout() {
   for (const panel of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card') : []), document.getElementById('empty-state')]) {
     if (!panel.getClientRects().length) continue;
     const style = getComputedStyle(panel);
-    // The bar is a full pill (24px on its 48px height) and squares its corners as it docks (× (1 − --dock); question 216).
-    const radius = panel === bar ? 24 * (1 - Number(getComputedStyle(dock).getPropertyValue('--dock'))) : 24;
+    // The bar is a full pill (28px on its 56px height, concentric with its 40px buttons) and squares its corners as it docks (× (1 − --dock); question 216).
+    const radius = panel === bar ? (control / 2 + 8) * (1 - Number(getComputedStyle(dock).getPropertyValue('--dock'))) : 24;
     assert(Math.abs(parseFloat(style.borderTopLeftRadius) - radius) < 0.5 && style.backdropFilter.includes('blur'), `${panel.className}: panel must be frosted glass`);
+  }
+  for (const value of document.querySelectorAll('.picker-value')) {
+    if (value.getClientRects().length) assert(value.scrollHeight <= value.clientHeight, `${value.textContent}: the picker text must not be cropped`);
+  }
+  // One control height for every clickable pill and round button (question 4).
+  for (const el of document.querySelectorAll('.filter-toggle, .filter-tag, .filter-clear, .filter-chip span, .family-chip, .family-more, .picker-trigger, .ms-search, .ms-option, .picker-clear, .picker-done, button.dr-day, .reset-empty')) {
+    if (el.getClientRects().length) assert(Math.abs(el.getBoundingClientRect().height - control) < 1, `${el.className}: controls are ${control}px tall`);
+  }
+  for (const circle of document.querySelectorAll('.filter-tag span, .family-more')) {
+    const box = circle.matches('.family-more') ? parseFloat(getComputedStyle(circle, '::before').height) : circle.getBoundingClientRect().height;
+    if (circle.getClientRects().length) assert(Math.abs(box - (control - 16)) < 1, `${circle.className || 'tag ×'}: inset circles sit 8px inside the pill`);
   }
   for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip span, .family-chip, .filter-select input, .picker-trigger, .ms-search, .filter-tag, .reset-empty')) {
     if (pill.getClientRects().length) assert(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2, `${pill.className || pill.id}: control must be a pill`);
@@ -129,7 +147,7 @@ function checkLayout() {
     if (panelOpen) {
       for (const part of [chip.querySelector('.family-all'), more]) {
         const box = part.getBoundingClientRect();
-        assert(box.height >= 44 && box.width >= 44, `${all.value}: split chip parts need 44px touch targets`);
+        assert(Math.abs(box.height - control) < 1 && box.width >= control, `${all.value}: split chip parts are control-height targets`);
       }
     }
   }
@@ -195,7 +213,7 @@ function checkLayout() {
       const expanded = more.getAttribute('aria-expanded') === 'true';
       assert(row.querySelector('.event-details').hidden === !expanded, `${row.id}: details visibility out of sync with the details line`);
       if (!open) assert(!expanded, `${row.id}: collapsed row must hide its details`);
-      if (open) assert(more.getBoundingClientRect().height >= 44, `${row.id}: the details line needs a 44px target`);
+      if (open) assert(Math.abs(more.querySelector('i').getBoundingClientRect().height - control) < 1 && more.getBoundingClientRect().height >= control, `${row.id}: the details line's round button is control height`);
       if (expanded) for (const target of row.querySelectorAll('.info-actions a, .copy-target')) assert(target.getBoundingClientRect().height >= 44, `${row.id}: detail links need a 44px target`);
       if (expanded) for (const section of row.querySelectorAll('.event-field')) {
         const box = section.getBoundingClientRect();

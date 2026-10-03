@@ -85,7 +85,8 @@ if (typeof document !== 'undefined') {
     tagEdge.classList.toggle('has-after', tags.scrollWidth - tags.clientWidth - tags.scrollLeft > 1);
   };
   tags.addEventListener('scroll', markTagEdges, { passive: true });
-  addEventListener('resize', markTagEdges);
+  // The strip's own width moves too (the result count changes after the tags, the bar docks), not only the window's.
+  new ResizeObserver(markTagEdges).observe(tags);
   const shortDate = value => value.slice(5).replace('-', '/').replace(/^0/, '').replace('/0', '/');
   let tagsShown = false;
   function tagFor(key, label) {

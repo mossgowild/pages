@@ -1,9 +1,10 @@
-@font-face{font-family:"Guide Title";font-style:normal;font-weight:500;font-display:swap;src:url("fonts/noto-sans-sc-title-500.ttf") format("truetype")}
-@font-face{font-family:"Guide Title";font-style:normal;font-weight:800;font-display:swap;src:url("fonts/noto-sans-sc-title-800.ttf") format("truetype")}
+@font-face{font-family:"Guide Title";font-style:normal;font-weight:900;font-display:swap;src:url("fonts/noto-sans-sc-title-900.woff2") format("woff2")}
 @font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/syne-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/syne-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:24px;--font-display:Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px;overflow-anchor:none}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select,summary{touch-action:manipulation}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:5px}a,button{transition:color .18s,background-color .18s,border-color .18s}button:active{filter:brightness(.85)}[hidden]{display:none!important}.wrap{width:min(1480px,100% - 96px);margin-inline:auto}.topography{position:fixed;top:0;left:0;z-index:-1;width:100%;height:100lvh;pointer-events:none}.skip-link{position:fixed;top:8px;left:16px;transform:translateY(-200%);z-index:100;background:var(--gold);color:var(--bg);padding:12px}.skip-link:focus{transform:none}.topbar{position:relative;min-height:72px;padding-block:10px;border-bottom:1px solid transparent;display:grid;grid-template-columns:auto auto;align-content:center;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.06em;font-weight:600;white-space:nowrap}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;font-weight:650;color:var(--gold)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-heading h2{font-size:30px;line-height:1.3;font-weight:600;margin:9px 0 0;letter-spacing:-.04em}.section-heading p{font-family:var(--font-display);font-size:12px;color:var(--muted);margin:0}.schedule{position:relative;padding:44px 0 64px;border-top:1px solid transparent}.filter-bar,.filter-card,.empty-state{border:1px solid var(--glass-edge);border-radius:var(--radius);background:var(--glass-tint);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}.reset-empty{border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);color:var(--gold);min-height:44px;padding:10px 20px}.filter-error{color:var(--pink);margin:12px 0 0;font-size:13px}
+/* Every clickable pill and round button is one --control tall (question 3: 40px) with labels --control-pad from the edge; inset
+   circles and icons sit in a --control-inner box 8px from the edge, so they stay concentric. Text links keep their 44px rows. */
+:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:24px;--control:40px;--control-pad:20px;--control-inner:calc(var(--control) - 16px);--font-display:Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px;overflow-anchor:none}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select,summary{touch-action:manipulation}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:5px}a,button{transition:color .18s,background-color .18s,border-color .18s}button:active{filter:brightness(.85)}[hidden]{display:none!important}.wrap{width:min(1480px,100% - 96px);margin-inline:auto}.topography{position:fixed;top:0;left:0;z-index:-1;width:100%;height:100lvh;pointer-events:none}.skip-link{position:fixed;top:8px;left:16px;transform:translateY(-200%);z-index:100;background:var(--gold);color:var(--bg);padding:12px}.skip-link:focus{transform:none}.topbar{position:relative;min-height:72px;padding-block:10px;border-bottom:1px solid transparent;display:grid;grid-template-columns:auto auto;align-content:center;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.06em;font-weight:600;white-space:nowrap}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;font-weight:650;color:var(--gold)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-heading h2{font-size:30px;line-height:1.3;font-weight:600;margin:9px 0 0;letter-spacing:-.04em}.section-heading p{font-family:var(--font-display);font-size:12px;color:var(--muted);margin:0}.schedule{position:relative;padding:44px 0 64px;border-top:1px solid transparent}.filter-bar,.filter-card,.empty-state{border:1px solid var(--glass-edge);border-radius:var(--radius);background:var(--glass-tint);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}.reset-empty{border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);color:var(--gold);min-height:var(--control);padding:0 var(--control-pad);font:600 13px/1 var(--font-display)}.filter-error{color:var(--pink);margin:12px 0 0;font-size:13px}
 /* React Bits Card Nav as the filter bar: a sticky 60px glass bar whose four tinted glass cards open as Card Nav's own
    overlay (filters.js animates it): they float over the list under a page scrim, never change the page height, and
    scroll inside when taller than the screen. Only the bar sticks; the list scrolls under its own glass (no shadow).
@@ -17,12 +18,12 @@
 .filter-dock.is-stuck{--dock:1}
 .filter-scrim{position:fixed;inset:0;z-index:19;background:rgb(5 5 11/.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
-.filter-bar{display:flex;align-items:center;gap:8px;height:48px;background:linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);margin-inline:calc(-1*var(--bleed));padding:0 calc(7px*(1 - var(--dock)) + var(--bleed));border-color:rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);border-radius:calc(24px*(1 - var(--dock)));box-shadow:inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04)}
-.filter-toggle{display:inline-flex;flex:none;align-items:center;gap:8px;min-height:32px;padding:0 12px 0 10px;border:0;border-radius:999px;background:none;color:var(--ink);font:700 13px/1 var(--font-display);cursor:pointer}
-.filter-burger{display:flex;flex-direction:column;gap:4px;width:16px}
+.filter-bar{display:flex;align-items:center;gap:8px;height:calc(var(--control) + 16px);background:linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);margin-inline:calc(-1*var(--bleed));padding:0 calc(7px*(1 - var(--dock)) + var(--bleed));border-color:rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);border-radius:calc((var(--control)/2 + 8px)*(1 - var(--dock)));box-shadow:inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04)}
+.filter-toggle{display:inline-flex;flex:none;align-items:center;gap:10px;min-height:var(--control);padding:0 var(--control-pad) 0 13px;border:0;border-radius:999px;background:none;color:var(--ink);font:700 13px/1 var(--font-display);cursor:pointer}
+.filter-burger{display:flex;flex-direction:column;gap:3.5px;width:14px}
 .filter-burger i{height:1.5px;border-radius:1px;background:currentColor;transition:transform .3s cubic-bezier(.215,.61,.355,1)}
-.filter-bar.is-open .filter-burger i:first-child{transform:translateY(2.75px) rotate(45deg)}
-.filter-bar.is-open .filter-burger i:last-child{transform:translateY(-2.75px) rotate(-45deg)}
+.filter-bar.is-open .filter-burger i:first-child{transform:translateY(2.5px) rotate(45deg)}
+.filter-bar.is-open .filter-burger i:last-child{transform:translateY(-2.5px) rotate(-45deg)}
 /* Selected conditions (question 189): brand-pink outlined pills with a small round ×. The strip fades at either edge only
    where more tags lie beyond it (--fade-start / --fade-end from assets/filters.js), so nothing is cut off hard. */
 /* The edge fades sit on a wrapper that does not scroll: a mask on the scrolling strip itself stops covering tags while
@@ -32,10 +33,10 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .filter-tags{position:relative;display:flex;flex:1;align-items:center;gap:6px;min-width:0;margin:0;padding:0;list-style:none;overflow-x:auto;scrollbar-width:none}
 .filter-tags::-webkit-scrollbar{display:none}
 /* One tag tall even when every tag is leaving (lifted out of flow), so they are not clipped while they go. */
-.filter-tags{min-height:32px}.filter-tags li{flex:none}
-.filter-tag{display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:0 6px 0 14px;border:0;border-radius:999px;background:color-mix(in srgb,var(--brand-pink) 16%,transparent);--spec-base:color-mix(in srgb,var(--brand-pink) 70%,transparent);color:#fff;font:600 13px/1 var(--font-display);white-space:nowrap;cursor:pointer}
-.filter-tag span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand-pink);font-size:12px;line-height:1}
-.filter-clear{flex:none;min-height:32px;padding:0 8px;border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer}
+.filter-tags{min-height:var(--control)}.filter-tags li{flex:none}
+.filter-tag{display:inline-flex;align-items:center;gap:8px;min-height:var(--control);padding:0 8px 0 var(--control-pad);border:0;border-radius:999px;background:color-mix(in srgb,var(--brand-pink) 16%,transparent);--spec-base:color-mix(in srgb,var(--brand-pink) 70%,transparent);color:#fff;font:600 13px/1 var(--font-display);white-space:nowrap;cursor:pointer}
+.filter-tag span{display:grid;place-items:center;width:var(--control-inner);height:var(--control-inner);border-radius:50%;background:var(--brand-pink);font-size:12px;line-height:1}
+.filter-clear{flex:none;min-height:var(--control);padding:0 8px;border:0;background:none;color:var(--muted);font-size:13px;cursor:pointer}
 .filter-count{display:flex;flex:none;align-items:center;gap:4px;height:28px;margin:0;padding:0 0 0 10px;border-left:1px solid rgb(255 255 255/.14)}
 .filter-count strong{font:700 17px/1 var(--font-display);color:var(--brand-pink)}
 .filter-count>span[aria-hidden]{font-size:11px;color:var(--muted)}
@@ -52,20 +53,19 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .filter-chips{display:flex;flex-wrap:wrap;gap:6px;clear:both}
 .filter-chip{display:inline-flex;border-radius:999px;touch-action:manipulation}
 .filter-chip input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.filter-chip span{display:inline-flex;align-items:center;min-height:32px;padding:6px 12px;border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:#eee;font:600 12px/1.2 var(--font-display);white-space:nowrap}
+.filter-chip span{display:inline-flex;align-items:center;min-height:var(--control);padding:0 var(--control-pad);border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:#eee;font:600 13px/1.2 var(--font-display);white-space:nowrap}
 .filter-chip input:checked+span{border-color:#fff;background:#fff;color:#120f17}
 .filter-chip input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
-/* Genre chips are 44px tall. A split family chip (assets/pickers.js) is one pill: the name selects 全部 X (white when
+/* Genre chips share the --control height like every other control. A split family chip (assets/pickers.js) is one pill: the name selects 全部 X (white when
    chosen, like the other chips) and a small round button inside its right end opens the family's sub-genres, its touch
    area still 44px; with only some of them chosen the rim turns brand pink and the button shows their number. */
-.genre-chips .filter-chip span{min-height:44px;padding:0 16px}
-.family-chip{display:inline-flex;align-items:stretch;min-height:44px;border-radius:999px;background:var(--glass-pill);box-shadow:inset 0 0 0 1px rgb(255 255 255/.22);color:#eee;touch-action:manipulation}
+.family-chip{display:inline-flex;align-items:stretch;min-height:var(--control);border-radius:999px;background:var(--glass-pill);box-shadow:inset 0 0 0 1px rgb(255 255 255/.22);color:#eee;touch-action:manipulation}
 .family-all{position:relative;display:flex}
 .family-all input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
-.family-all span{display:flex;align-items:center;padding:0 4px 0 16px;font:600 12px/1.2 var(--font-display);white-space:nowrap}
+.family-all span{display:flex;align-items:center;padding:0 4px 0 var(--control-pad);font:600 13px/1.2 var(--font-display);white-space:nowrap}
 .family-all input:focus-visible+span{outline:2px solid var(--focus);outline-offset:-2px;border-radius:999px 0 0 999px}
-.family-more{display:grid;place-items:center;width:44px;padding:0;border:0;border-radius:0 999px 999px 0;background:none;color:inherit;cursor:pointer}
-.family-more::before{content:"";grid-area:1/1;width:28px;height:28px;border-radius:50%;background:rgb(255 255 255/.12);transition:background-color .18s}
+.family-more{display:grid;place-items:center;width:var(--control);padding:0;border:0;border-radius:0 999px 999px 0;background:none;color:inherit;cursor:pointer}
+.family-more::before{content:"";grid-area:1/1;width:var(--control-inner);height:var(--control-inner);border-radius:50%;background:rgb(255 255 255/.12);transition:background-color .18s}
 .family-more>*{grid-area:1/1;position:relative}
 .family-more svg{width:13px;height:13px;transition:transform .2s}
 .family-more[aria-expanded="true"] svg{transform:rotate(180deg)}
@@ -83,8 +83,9 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .picker-trigger{display:block;width:100%;min-width:0;border:1px solid rgb(255 255 255/.22);background:var(--glass-pill);color:var(--ink);font-size:13px}
 /* Custom pickers (assets/pickers.js): a pill trigger and a top-layer popover, a dropdown on wide screens and a bottom sheet below 769px,
    holding a searchable multi-select list (.ms-*) or the date-range calendar (.dr-*). */
-.picker-trigger{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 16px;border-radius:999px;font:500 13px/1 var(--font-display);text-align:left;cursor:pointer}
-.picker-value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.picker-trigger{display:flex;align-items:center;gap:8px;height:var(--control);padding:0 12px 0 var(--control-pad);border-radius:999px;font:500 13px/1 var(--font-display);text-align:left;cursor:pointer}
+/* Its own line box holds the whole glyph: overflow stays hidden for the ellipsis, and a 1.0 line box would crop the tops. */
+.picker-value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.4;color:var(--muted)}
 .picker-trigger.has-value .picker-value{color:var(--ink)}
 .picker-count{flex:none;min-width:20px;padding:3px 7px;border-radius:999px;background:var(--brand-pink);color:#fff;font-size:11px;text-align:center}
 .picker-trigger svg{flex:none;transition:transform .2s}
@@ -99,7 +100,7 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .picker-head strong{display:block;overflow:hidden}
 .picker-handle,.picker-head,.picker-done{display:none}
 /* The search box is the select box's twin (question 201): same height, padding, type, glass pill, edge and light. */
-.ms-search{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 16px;border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:var(--muted)}
+.ms-search{display:flex;align-items:center;gap:8px;height:var(--control);padding:0 var(--control-pad) 0 12px;border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:var(--muted)}
 .ms-search input{flex:1;min-width:0;height:100%;padding:0;border:0;background:none;color:var(--ink);font:500 13px/1 var(--font-display);outline:none}
 .ms-search input::placeholder{color:var(--muted);opacity:1}
 .ms-search:focus-within{border-color:rgb(255 255 255/.5)}
@@ -107,7 +108,7 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .ms-list,.ms-list ul{display:flex;flex-direction:column;gap:6px}
 .ms-list ul{margin:0;padding:0;list-style:none}
 .ms-group{display:block;margin:10px 12px 4px;font-size:11px;letter-spacing:.06em;color:var(--brand-cyan)}
-.ms-option{overflow:hidden;transition:background-color .18s;display:flex;flex:none;align-items:center;min-height:44px;padding:0 14px;border:1px solid transparent;border-radius:999px;font:500 14px/1.2 var(--font-display);cursor:pointer}
+.ms-option{overflow:hidden;transition:background-color .18s;display:flex;flex:none;align-items:center;min-height:var(--control);padding:0 var(--control-pad);border:1px solid transparent;border-radius:999px;font:500 13px/1.2 var(--font-display);cursor:pointer}
 .ms-option:focus-visible{background:rgb(255 255 255/.06);outline:none}
 @media(hover:hover){.ms-option:hover{background:rgb(255 255 255/.06)}}
 .ms-option[aria-selected="true"]{border-color:color-mix(in srgb,var(--brand-pink) 60%,transparent);background:color-mix(in srgb,var(--brand-pink) 22%,transparent)}
@@ -117,7 +118,7 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .dr-caption{margin:2px 6px 10px;font:600 12px/1.4 var(--font-display);color:var(--muted)}
 .dr-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:6px;text-align:center}
 .dr-weekday{padding-bottom:4px;font-size:11px;color:var(--muted)}
-.dr-day{position:relative;z-index:0;display:grid;place-items:center;height:44px;padding:0;border:0;background:none;color:rgb(255 255 255/.22);font:500 15px/1 var(--font-display)}
+.dr-day{position:relative;z-index:0;display:grid;place-items:center;height:var(--control);padding:0;border:0;background:none;color:rgb(255 255 255/.22);font:500 15px/1 var(--font-display)}
 button.dr-day{color:var(--ink);cursor:pointer}
 button.dr-day::before{content:"";position:absolute;z-index:-1;inset:2px 4px;border-radius:999px}
 @media(hover:hover){button.dr-day:hover::before{background:rgb(255 255 255/.08)}}
@@ -134,9 +135,9 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
   .picker-pop::backdrop{background:rgb(5 5 11/.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:var(--veil)}
   .picker-handle{display:block;width:36px;height:4px;margin:0 auto 12px;border-radius:2px;background:rgb(255 255 255/.3);touch-action:none}
   .picker-head{display:flex;align-items:center;justify-content:space-between;margin:0 4px 10px;font:700 18px/1.2 var(--font-display);touch-action:none}
-  .picker-clear{min-height:44px;padding:0 4px;border:0;background:none;color:var(--brand-pink);font:600 14px var(--font-display);cursor:pointer}
+  .picker-clear{min-height:var(--control);padding:0 4px;border:0;background:none;color:var(--brand-pink);font:600 13px var(--font-display);cursor:pointer}
   .ms-list{max-height:52vh}
-  .picker-done{display:block;width:100%;height:48px;margin-top:8px;border:0;border-radius:999px;background:#fff;color:#120f17;font:700 15px var(--font-display);cursor:pointer}
+  .picker-done{display:block;width:100%;height:var(--control);margin-top:8px;border:0;border-radius:999px;background:#fff;color:#120f17;font:700 13px var(--font-display);cursor:pointer}
 }
 .filter-note{margin:12px 0 0;font-size:11px;line-height:1.6;color:var(--muted)}
 @media screen and (max-width:768px){.filter-panel{grid-template-columns:minmax(0,1fr)}}
@@ -179,10 +180,10 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
    opens the lineup table, tickets and venue together (assets/accordion.js). Without the script the line is hidden and
    the details stay open. */
 .event-more{display:none}
-.accordion-ready .event-more{grid-column:2;justify-self:start;display:flex;align-items:center;gap:14px;min-height:44px;margin-top:10px;padding:0;border:0;background:none;color:#f1ecf7;font:600 12px/1 var(--font-display);letter-spacing:.16em;white-space:nowrap;text-shadow:none;cursor:pointer}
+.accordion-ready .event-more{grid-column:2;justify-self:start;display:flex;align-items:center;gap:14px;min-height:var(--control);margin-top:10px;padding:0;border:0;background:none;color:#f1ecf7;font:600 12px/1 var(--font-display);letter-spacing:.16em;white-space:nowrap;text-shadow:none;cursor:pointer}
 .event-more::before{content:"";flex:0 0 28px;height:1px;background:var(--brand-pink);box-shadow:0 0 8px color-mix(in srgb,var(--brand-pink) 70%,transparent);transition:flex-basis .4s var(--accordion-ease)}
-.event-more i{--spec-base:rgb(255 255 255/.3);position:relative;flex:none;width:32px;height:32px;border-radius:999px;transition:background-color .3s}
-.event-more i span::before,.event-more i span::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;margin:-.75px 0 0 -6px;border-radius:1px;background:currentColor;transition:rotate .4s var(--accordion-ease)}
+.event-more i{--spec-base:rgb(255 255 255/.3);position:relative;flex:none;width:var(--control);height:var(--control);border-radius:999px;transition:background-color .3s}
+.event-more i span::before,.event-more i span::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:1.5px;margin:-.75px 0 0 -7.5px;border-radius:1px;background:currentColor;transition:rotate .4s var(--accordion-ease)}
 .event-more i span::after{rotate:90deg}
 .event-more[aria-expanded="true"]::before{flex-basis:44px}
 .event-more[aria-expanded="true"] i{--spec-base:var(--brand-pink);background:color-mix(in srgb,var(--brand-pink) 18%,transparent)}
@@ -280,21 +281,21 @@ html:has(.poster-preview[open]){overflow:hidden}
 }
 
 
-.title-lockup{display:block;flex:none;width:156px;letter-spacing:0;font-weight:500;color:var(--brand-ink);font-family:"Guide Title","PingFang SC","Microsoft YaHei",sans-serif}
-.title-brandline{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px}
-.title-region{font-size:10px;font-weight:500;letter-spacing:.2em;line-height:1.4;white-space:nowrap;color:var(--muted)}
-.title-credit{display:flex;align-items:baseline;gap:5px;margin:0;line-height:1.4;white-space:nowrap}
-.title-by{font:italic 400 10px/1.4 Georgia,serif;color:var(--muted)}
-.title-publisher{position:relative;display:inline-block;font-size:11px;font-weight:800;line-height:1.2;letter-spacing:-.04em;transform:skewX(-7deg);transform-origin:left bottom}
-.title-publisher::after{content:"";position:absolute;right:0;bottom:-4px;width:28px;height:1px;background:linear-gradient(90deg,var(--brand-pink) 50%,var(--brand-cyan) 50%);transform:skewX(-24deg)}
-.title-latin{font:800 11px/1 var(--font-display);letter-spacing:-.055em}
-.title-wordmark{display:flex;align-items:baseline;gap:2px;margin:0;font-size:22px;font-weight:800;line-height:1.1;letter-spacing:-.045em;white-space:nowrap}
-.title-word{display:block;transform:skewX(-7deg);transform-origin:left bottom}
-.title-guide{display:block;font-weight:500;letter-spacing:-.03em}
-.site-updated{display:flex;flex-direction:column;align-items:flex-end;gap:6px;width:156px;text-align:right;font-size:11px;line-height:1.5;font-variant-numeric:tabular-nums;color:var(--muted)}
-.site-updated>span{display:flex;align-items:center;gap:9px;width:100%;justify-content:flex-end;letter-spacing:.04em;white-space:nowrap}
-.site-updated>span::before{content:"";flex:1;height:1px}
-.site-updated time{display:flex;justify-content:flex-end;gap:10px;letter-spacing:.08em;font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;white-space:nowrap}
+/* Title first, then the byline “大湾区  by [logo]” (question 260, Y2); Noto Sans SC Black slanted 12° to match the logo (question 263), “by” in Syne 400 slanted alike (question 278).
+   Both rows span the same width and both skew from their bottom-left corner, so their left and right edges line up. */
+.title-lockup{display:flex;flex:none;flex-direction:column;align-items:stretch;gap:6px;letter-spacing:0;color:var(--brand-ink)}
+.title-wordmark{margin:0;font:900 22px/1.1 "Guide Title","PingFang SC","Microsoft YaHei",sans-serif;white-space:nowrap;text-align:justify;text-align-last:justify;transform:skewX(-12deg);transform-origin:0 100%}
+.title-byline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.title-region{display:inline-block;font:900 13px/1 "Guide Title","PingFang SC",sans-serif;letter-spacing:.3em;white-space:nowrap;color:rgb(255 255 255/.6);transform:skewX(-12deg);transform-origin:0 100%}
+.title-credit{display:inline-flex;align-items:flex-start;gap:1px}
+/* “by” is a corner mark at the logo's top left (question 283): its glyph tops sit 2px above the logo's top edge. */
+.title-by{display:inline-block;font:400 7px/1 var(--font-display);letter-spacing:.04em;transform:skewX(-12deg);transform-origin:0 100%;translate:0 -2.6px}
+.title-logo{display:block;flex:none;width:auto;height:12px}
+.site-updated{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.site-updated>span{margin-right:-.42em;font-size:11px;line-height:1.4;letter-spacing:.42em;white-space:nowrap}
+.site-updated time{display:flex;align-items:center;gap:8px;font:600 22px/1 var(--font-display);letter-spacing:.06em;white-space:nowrap;color:var(--ink)}
+.site-updated time span:last-child{color:var(--muted)}
+.site-updated time span:first-child::after{content:"";display:inline-block;width:1px;height:12px;margin-left:8px;background:rgb(255 255 255/.3);vertical-align:-1px}
 
 
 @media(max-width:700px){.topbar{gap:16px}}
@@ -305,11 +306,11 @@ html:has(.poster-preview[open]){overflow:hidden}
 .topbar::after,.schedule::before,.site-footer::before{content:"";position:absolute;left:0;right:0;height:1px;pointer-events:none}
 .topbar::after{bottom:-1px}
 .schedule::before,.site-footer::before{top:-1px}
-.topbar::after,.schedule::before,.site-footer::before,.day-heading:after,.site-updated>span::before{--divider-base:linear-gradient(90deg,transparent,rgb(255 255 255/.26) 8%,rgb(255 255 255/.26) 92%,transparent);--divider-star:color-mix(in srgb,var(--brand-pink) calc((1 - var(--star))*70%),transparent);background:radial-gradient(circle,var(--divider-star),transparent 10%) calc(125% - var(--star)*150%) 0/300% 100% no-repeat,radial-gradient(circle,var(--divider-star),transparent 10%) calc(25% + var(--star)*150%) 0/300% 100% no-repeat,var(--divider-base);animation:divider-star 6s linear infinite alternate}
-@media(prefers-reduced-motion:reduce){.topbar::after,.schedule::before,.site-footer::before,.day-heading:after,.site-updated>span::before{background:var(--divider-base)}}
-@media print{.topbar::after{display:none}.schedule::before,.site-footer::before,.day-heading:after,.site-updated>span::before{background:#aaa;animation:none}}
-@media(max-width:380px){.site-updated{font-size:10px}.site-updated time{gap:6px}.title-lockup{width:148px}.title-wordmark{font-size:21px}.topbar{gap:12px}}
-@media(max-width:360px){.site-updated{width:120px}}
+.topbar::after,.schedule::before,.site-footer::before,.day-heading:after{--divider-base:linear-gradient(90deg,transparent,rgb(255 255 255/.26) 8%,rgb(255 255 255/.26) 92%,transparent);--divider-star:color-mix(in srgb,var(--brand-pink) calc((1 - var(--star))*70%),transparent);background:radial-gradient(circle,var(--divider-star),transparent 10%) calc(125% - var(--star)*150%) 0/300% 100% no-repeat,radial-gradient(circle,var(--divider-star),transparent 10%) calc(25% + var(--star)*150%) 0/300% 100% no-repeat,var(--divider-base);animation:divider-star 6s linear infinite alternate}
+@media(prefers-reduced-motion:reduce){.topbar::after,.schedule::before,.site-footer::before,.day-heading:after{background:var(--divider-base)}}
+@media print{.topbar::after{display:none}.schedule::before,.site-footer::before,.day-heading:after{background:#aaa;animation:none}}
+@media(max-width:700px){.title-wordmark{font-size:20px}.site-updated{gap:5px}.site-updated time{gap:6px;font-size:20px;letter-spacing:.02em}.site-updated time span:first-child::after{margin-left:6px}}
+@media(max-width:360px){.topbar{gap:12px}}
 @media(max-width:380px){.brand{font-size:13px}}
 
 

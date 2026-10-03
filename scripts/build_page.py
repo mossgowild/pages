@@ -293,6 +293,12 @@ def family_chip(index, name, members):
             f'<span class="family-count" hidden></span>{CHEVRON}</button></div>')
 
 
+def brand_logo():
+    """The horizontal logo inline in the header byline; it fills with currentColor so site.css sets its colour."""
+    svg = (ROOT / 'assets/brand/youyang-ravers-horizontal.svg').read_text().strip()
+    return svg.replace('<svg ', '<svg class="title-logo" aria-hidden="true" focusable="false" ', 1)
+
+
 def render():
     data = json.loads((ROOT / 'data/events.json').read_text())
     images = {image['path']: image for image in json.loads((ROOT / 'assets/posters/sources.json').read_text())['images']}
@@ -367,12 +373,11 @@ def render():
     values = {
         'title': escape(''.join(title[key] for key in ('region', 'topic', 'guide'))),
         'title_region': escape(title['region']), 'title_topic': escape(title['topic']), 'title_guide': escape(title['guide']),
-        'publisher_name': escape(publisher['name']), 'publisher_latin': escape(publisher['latin']),
-        'byline': escape('By ' + publisher['name'] + publisher['latin']),
+        'byline': escape('By ' + publisher['name'] + publisher['latin']), 'brand_logo': brand_logo(),
         'edition_year': str(start.year), 'date_range': f'{start:%m.%d} — {end:%m.%d}',
         'schedule': '\n'.join(groups), 'event_count': str(len(events)), 'city_count': f'{len(cities):02}',
         'day_count': f'{len(days):02}', 'updated_iso': data['updated_at'],
-        'updated_date': datetime.fromisoformat(data['updated_at']).strftime('%Y.%m.%d'),
+        'updated_date': datetime.fromisoformat(data['updated_at']).strftime('%m.%d'),
         'updated_time': datetime.fromisoformat(data['updated_at']).strftime('%H:%M'),
         'start_date': start.isoformat(), 'end_date': end.isoformat(),
         'city_chips': ''.join(chip('city', city, city) for city in cities),
