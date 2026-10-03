@@ -14,6 +14,7 @@ uniform float iTime;
 uniform vec3 uColors[4];
 uniform vec2 uMouse;
 uniform float uMouseActive;
+uniform float uScroll;
 uniform vec4 uCtrlA;
 uniform vec4 uCtrlB;
 uniform vec4 uCtrlC;
@@ -51,7 +52,9 @@ vec3 palette(float e) {
 
 void main() {
   vec2 uv = gl_FragCoord.xy / iResolution;
-  float fv = field((uv - 0.5) / SCALE + 0.5);
+  // The contours drift up with the page at a fraction of the scroll (layered depth); the field repeats, so any offset works.
+  vec2 terrain = (gl_FragCoord.xy - vec2(0.0, uScroll)) / iResolution;
+  float fv = field((terrain - 0.5) / SCALE + 0.5);
 
   vec2 d = uv - uMouse;
   d.x *= iResolution.x / max(iResolution.y, 1.0);
@@ -110,15 +113,16 @@ void main() {
 const CTRL_INDICES = [[1, -2, 3, -4], [9, -8, 7, -6], [5, 2, 5, -5], [-1, -3, 8, 9]];
 const SPEED = 0.35, MORPH_AMOUNT = 3, MORPH_SPEED = 0.05;
 const REEL_GAP = (1 - 0.7) / 2; // Blank share above and below the posters (CARD_HEIGHT 0.7 in scripts/hero.mjs).
-const GLASS_TAIL = 224; // 14rem fade below the date axis.
+const GLASS_TAIL = 224; // 14rem fade below the filter bar's resting place.
 const GLASS_SIGMA = 6; // CSS px, like blur(6px).
+const SCROLL_DEPTH = 0.15; // The contours move at 0.15× the page scroll.
 
 function hexToRgb(hex) {
   const [r, g, b] = hex.trim().match(/[\da-f]{2}/gi).map(value => parseInt(value, 16) / 255);
   return [r, g, b];
 }
 
-export function initTopography(canvas, reel, axis) {
+export function initTopography(canvas, reel, sentinel, dock) {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const unavailable = reason => {
     canvas.hidden = true;
@@ -141,6 +145,7 @@ export function initTopography(canvas, reel, axis) {
       uColors: { value: ['--brand-pink', '--brand-yellow', '--brand-cyan', '--brand-violet'].map(name => hexToRgb(tokens.getPropertyValue(name))) },
       uMouse: { value: mouse },
       uMouseActive: { value: 0 },
+      uScroll: { value: 0 },
       uCtrlA: { value: [0, 0, 0, 0] },
       uCtrlB: { value: [0, 0, 0, 0] },
       uCtrlC: { value: [0, 0, 0, 0] },
@@ -180,12 +185,14 @@ export function initTopography(canvas, reel, axis) {
     mouse[0] += 0.05 * (mouseTarget[0] - mouse[0]);
     mouse[1] += 0.05 * (mouseTarget[1] - mouse[1]);
     u.uMouseActive.value = reducedMotion.matches ? 0 : u.uMouseActive.value + 0.05 * (mouseActiveTarget - u.uMouseActive.value);
+    u.uScroll.value = reducedMotion.matches ? 0 : scrollY * SCROLL_DEPTH * renderer.dpr; // GL y points up: features rise.
     // Glass edges in page px, shifted by the scroll and scaled to the canvas: each reel fade spans the blank margin
     // plus the same length into the text beside it.
     const reelTop = reel.getBoundingClientRect().top, gap = reel.offsetHeight * REEL_GAP;
-    const reelBottom = reelTop + reel.offsetHeight, axisBottom = axis.getBoundingClientRect().bottom;
+    // The blur ends where the filter bar rests before it sticks: the sentinel plus the dock's height in the flow.
+    const reelBottom = reelTop + reel.offsetHeight, barBottom = sentinel.getBoundingClientRect().bottom + dock.offsetHeight;
     g.uGlassReel.value = [reelTop - gap, reelTop + gap, reelBottom - gap, reelBottom + gap].map(value => value * renderer.dpr);
-    g.uGlassEnd.value = [axisBottom, axisBottom + GLASS_TAIL].map(value => value * renderer.dpr);
+    g.uGlassEnd.value = [barBottom, barBottom + GLASS_TAIL].map(value => value * renderer.dpr);
     g.uSigma.value = GLASS_SIGMA * renderer.dpr;
     renderer.render({ scene: mesh, target: drawn });
     g.tMap.value = drawn.texture;
@@ -233,7 +240,8 @@ export function initTopography(canvas, reel, axis) {
 }
 
 if (typeof document !== 'undefined') {
-  const start = () => initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'), document.getElementById('date-nav'));
+  const start = () => initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'),
+    document.querySelector('.filter-sentinel'), document.querySelector('.filter-dock'));
   // The brand colour tokens and the canvas size come from site.css. On a first visit iOS Safari can run this deferred
   // script while those tokens still resolve empty, even with the stylesheet object present, so wait for `load`.
   if (getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim()) start();

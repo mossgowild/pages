@@ -1,23 +1,242 @@
 @font-face{font-family:"Guide Title";font-style:normal;font-weight:500;font-display:swap;src:url("fonts/noto-sans-sc-title-500.ttf") format("truetype")}
 @font-face{font-family:"Guide Title";font-style:normal;font-weight:800;font-display:swap;src:url("fonts/noto-sans-sc-title-800.ttf") format("truetype")}
-:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:16px;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
-*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select,summary{touch-action:manipulation}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:5px}a,button{transition:color .18s,background-color .18s,border-color .18s}button:active{filter:brightness(.85)}[hidden]{display:none!important}.wrap{width:min(1480px,100% - 96px);margin-inline:auto}.topography{position:fixed;top:0;left:0;z-index:-1;width:100%;height:100lvh;pointer-events:none}.skip-link{position:fixed;top:8px;left:16px;transform:translateY(-200%);z-index:100;background:var(--gold);color:var(--bg);padding:12px}.skip-link:focus{transform:none}.topbar{position:relative;min-height:72px;padding-block:10px;border-bottom:1px solid transparent;display:grid;grid-template-columns:auto auto;align-content:center;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.06em;font-weight:600;white-space:nowrap}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;font-weight:650;color:var(--gold)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-heading h2{font-size:30px;line-height:1.3;font-weight:600;margin:9px 0 0;letter-spacing:-.04em}.section-heading p{font-size:12px;color:var(--muted);margin:0}.schedule{position:relative;padding:44px 0 64px;border-top:1px solid transparent}.filters,.empty-state{border:1px solid var(--glass-edge);border-radius:24px;background:var(--glass-tint);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}.filters{--control-inset:18px;padding:24px}.filter-grid{display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1.3fr 1fr;gap:14px}.filter-field{min-width:0}.filter-field label{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-bottom:9px;padding-left:var(--control-inset);letter-spacing:.04em}.filter-field select,.filter-field input{width:100%;min-width:0;height:48px;border:0;border-radius:999px;background:var(--glass-sheen),var(--glass-pill);box-shadow:var(--glass-pill-shadow),0 6px 18px rgb(0 0 0/.25);padding:9px var(--control-inset);font-size:13px;color:var(--ink)}.filter-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;margin-top:18px;font-size:12px}.filter-footer p{flex:1 1 260px;color:var(--muted);margin:0}.filter-footer button{flex:none;white-space:nowrap;margin-left:auto}.filter-footer button,.reset-empty{border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);color:var(--gold);min-height:44px;padding:10px 20px}.filter-error{color:var(--pink);margin:12px 0 0;font-size:13px}.results-head{display:flex;justify-content:space-between;gap:16px;align-items:center;margin:4px 0 12px}.results-head p{margin:0;color:var(--muted);font-size:12px}.results-head strong{font-size:15px;color:var(--ink);font-weight:500}.day-group{margin-top:38px}.day-heading{display:flex;gap:14px;align-items:center;scroll-margin-top:28px;margin:0 0 20px;font-size:23px;font-weight:550;letter-spacing:-.025em}.day-heading:after{content:"";height:1px;flex:1}.day-heading .day-number{font-family:Georgia,serif;font-size:31px;color:var(--gold);font-weight:400}.day-heading small{font-size:11px;letter-spacing:.15em;color:var(--muted);font-weight:400}
-.event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:start}
-.event-grid.masonry{grid-auto-rows:1px;row-gap:0}
-.event-card{--poster-height:480px;--content-inset:24px;--card-glass:rgb(19 19 27/.40);display:grid;grid-template-columns:minmax(0,1fr);isolation:isolate;min-width:0;border:1px solid var(--glass-edge);border-radius:24px;background:var(--card-glass);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);scroll-margin-top:24px;overflow-wrap:anywhere}
-.event-card:target{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
-/* The poster itself fades out along the original curve into the glass card. The fade sits on the fixed frame, not the image,
-   so the parallax-shifted cover does not carry the gradient with it. */
-.event-posters{--poster-fade:linear-gradient(#000 15%,rgb(0 0 0/.98) 25%,rgb(0 0 0/.90) 35%,rgb(0 0 0/.76) 45%,rgb(0 0 0/.60) 55%,rgb(0 0 0/.43) 65%,rgb(0 0 0/.26) 75%,rgb(0 0 0/.13) 85%,rgb(0 0 0/.025) 95%,transparent);grid-area:1/1;align-self:start;position:relative;height:var(--poster-height);border-radius:23px 23px 0 0;overflow:hidden;-webkit-mask-image:var(--poster-fade);mask-image:var(--poster-fade)}
-.event-posters a{position:relative;display:block;text-decoration:none;cursor:zoom-in}
-.event-posters > a{height:100%;z-index:0}
+@font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/syne-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/syne-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:24px;--font-display:Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select,summary{touch-action:manipulation}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:5px}a,button{transition:color .18s,background-color .18s,border-color .18s}button:active{filter:brightness(.85)}[hidden]{display:none!important}.wrap{width:min(1480px,100% - 96px);margin-inline:auto}.topography{position:fixed;top:0;left:0;z-index:-1;width:100%;height:100lvh;pointer-events:none}.skip-link{position:fixed;top:8px;left:16px;transform:translateY(-200%);z-index:100;background:var(--gold);color:var(--bg);padding:12px}.skip-link:focus{transform:none}.topbar{position:relative;min-height:72px;padding-block:10px;border-bottom:1px solid transparent;display:grid;grid-template-columns:auto auto;align-content:center;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.06em;font-weight:600;white-space:nowrap}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;font-weight:650;color:var(--gold)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-heading h2{font-size:30px;line-height:1.3;font-weight:600;margin:9px 0 0;letter-spacing:-.04em}.section-heading p{font-family:var(--font-display);font-size:12px;color:var(--muted);margin:0}.schedule{position:relative;padding:44px 0 64px;border-top:1px solid transparent}.filter-bar,.filter-card,.empty-state{border:1px solid var(--glass-edge);border-radius:var(--radius);background:var(--glass-tint);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}.reset-empty{border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);color:var(--gold);min-height:44px;padding:10px 20px}.filter-error{color:var(--pink);margin:12px 0 0;font-size:13px}
+/* React Bits Card Nav as the filter bar: a sticky 60px glass bar whose four tinted glass cards open as Card Nav's own
+   overlay (filters.js animates it): they float over the list under a page scrim, never change the page height, and
+   scroll inside when taller than the screen. Only the bar sticks; the list scrolls under its own glass (no shadow).
+   When the bar pins to the top, filters.js sets .is-stuck and --dock eases 0→1 over 0.4s (power3.out): the floating
+   capsule becomes a flush full-width bar — the 12px gap closes by translation (the page flow never moves), the bar
+   bleeds to both viewport edges by --bleed (--edge × --dock) while its content stays on the content column, the
+   corners square off and only the bottom edge keeps its line. */
+@property --dock{syntax:"<number>";inherits:true;initial-value:0}
+.filter-sentinel{display:block;height:1px;margin-top:11px}
+.filter-dock{--bleed:calc(var(--edge,0px)*var(--dock));position:sticky;top:0;z-index:20;padding-top:12px;translate:0 calc(-12px*var(--dock));transition:--dock .4s cubic-bezier(.215,.61,.355,1)}
+.filter-dock.is-stuck{--dock:1}
+.filter-scrim{position:fixed;inset:0;z-index:19;background:rgb(5 5 11/.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
+.filter-bar{display:flex;align-items:center;gap:8px;height:60px;background:linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);margin-inline:calc(-1*var(--bleed));padding:0 calc(4px + var(--bleed)) 0 calc(6px + var(--bleed));border-color:rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);border-radius:calc(var(--radius)*(1 - var(--dock)));box-shadow:inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04)}
+.filter-toggle{display:inline-flex;flex:none;align-items:center;gap:10px;min-height:44px;padding:0 14px 0 12px;border:0;border-radius:999px;background:none;color:var(--ink);font:700 15px/1 var(--font-display);cursor:pointer}
+.filter-burger{display:flex;flex-direction:column;gap:6px;width:22px}
+.filter-burger i{height:2px;border-radius:1px;background:currentColor;transition:transform .3s cubic-bezier(.215,.61,.355,1)}
+.filter-bar.is-open .filter-burger i:first-child{transform:translateY(4px) rotate(45deg)}
+.filter-bar.is-open .filter-burger i:last-child{transform:translateY(-4px) rotate(-45deg)}
+/* Selected conditions (question 189): brand-pink outlined pills with a small round ×. The strip fades at either edge only
+   where more tags lie beyond it (--fade-start / --fade-end from assets/filters.js), so nothing is cut off hard. */
+/* The edge fades sit on a wrapper that does not scroll: a mask on the scrolling strip itself stops covering tags while
+   their animations run on the compositor, and the fade would turn into a hard cut. */
+.filter-tags-edge{--fade-start:0px;--fade-end:0px;display:flex;flex:1;min-width:0;mask-image:linear-gradient(90deg,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent)}
+.filter-tags-edge.has-before{--fade-start:24px}.filter-tags-edge.has-after{--fade-end:24px}
+.filter-tags{position:relative;display:flex;flex:1;align-items:center;gap:6px;min-width:0;margin:0;padding:0;list-style:none;overflow-x:auto;scrollbar-width:none}
+.filter-tags::-webkit-scrollbar{display:none}
+/* One tag tall even when every tag is leaving (lifted out of flow), so they are not clipped while they go. */
+.filter-tags{min-height:32px}.filter-tags li{flex:none}
+.filter-tag{display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:0 6px 0 12px;border:0;border-radius:999px;background:color-mix(in srgb,var(--brand-pink) 16%,transparent);--spec-base:color-mix(in srgb,var(--brand-pink) 70%,transparent);color:#fff;font:600 12px/1 var(--font-display);white-space:nowrap;cursor:pointer}
+.filter-tag span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand-pink);font-size:12px;line-height:1}
+.filter-clear{flex:none;min-height:44px;padding:0 8px;border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer}
+.filter-count{display:flex;flex:none;align-items:center;gap:4px;height:28px;margin:0;padding:0 12px 0 10px;border-left:1px solid rgb(255 255 255/.14)}
+.filter-count strong{font:700 17px/1 var(--font-display);color:var(--brand-pink)}
+.filter-count>span[aria-hidden]{font-size:11px;color:var(--muted)}
+/* The panel reaches 16px past the column on each side and runs to the bottom of the screen, so card shadows are not
+   clipped and only the screen edge cuts the cards; the bottom space lets the last card clear the edge. While more cards
+   lie below, a 48px fade (a sticky layer, not a mask, which would cut the cards off from their backdrop) says so; it sticks
+   within the panel's padding, hence the negative offset that takes it down to the screen edge. */
+.filter-panel{position:absolute;top:100%;left:-16px;right:-16px;display:grid;grid-template-columns:1fr 2fr 1.2fr 1fr;align-items:start;gap:8px;margin:0;padding:8px 16px calc(24px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+.filter-panel::-webkit-scrollbar{display:none}
+.filter-panel::after{content:"";position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom));grid-column:1/-1;height:48px;margin:-48px -16px 0;background:linear-gradient(rgb(5 5 11/0),rgb(5 5 11/.9));opacity:0;pointer-events:none;transition:opacity .2s}
+.filter-panel.has-more::after{opacity:1}
+.filter-card{min-width:0;margin:0;padding:12px 16px 16px;background:linear-gradient(160deg,color-mix(in srgb,var(--card-color) 22%,transparent),color-mix(in srgb,var(--card-color) 6%,transparent));border-color:color-mix(in srgb,var(--card-color) 45%,transparent)}
+.filter-card legend{float:left;width:100%;margin:0 0 10px;padding:0;font:700 20px/1.2 var(--font-display);color:var(--ink)}
+.filter-chips{display:flex;flex-wrap:wrap;gap:6px;clear:both}
+.filter-chip{display:inline-flex;border-radius:999px;touch-action:manipulation}
+.filter-chip input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.filter-chip span{display:inline-flex;align-items:center;min-height:32px;padding:6px 12px;border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:#eee;font:600 12px/1.2 var(--font-display);white-space:nowrap}
+.filter-chip input:checked+span{border-color:#fff;background:#fff;color:#120f17}
+.filter-chip input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+/* Genre chips are 44px tall. A split family chip (assets/pickers.js) is one pill: the name selects 全部 X (white when
+   chosen, like the other chips) and a small round button inside its right end opens the family's sub-genres, its touch
+   area still 44px; with only some of them chosen the rim turns brand pink and the button shows their number. */
+.genre-chips .filter-chip span{min-height:44px;padding:0 16px}
+.family-chip{display:inline-flex;align-items:stretch;min-height:44px;border-radius:999px;background:var(--glass-pill);box-shadow:inset 0 0 0 1px rgb(255 255 255/.22);color:#eee;touch-action:manipulation}
+.family-all{position:relative;display:flex}
+.family-all input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.family-all span{display:flex;align-items:center;padding:0 4px 0 16px;font:600 12px/1.2 var(--font-display);white-space:nowrap}
+.family-all input:focus-visible+span{outline:2px solid var(--focus);outline-offset:-2px;border-radius:999px 0 0 999px}
+.family-more{display:grid;place-items:center;width:44px;padding:0;border:0;border-radius:0 999px 999px 0;background:none;color:inherit;cursor:pointer}
+.family-more::before{content:"";grid-area:1/1;width:28px;height:28px;border-radius:50%;background:rgb(255 255 255/.12);transition:background-color .18s}
+.family-more>*{grid-area:1/1;position:relative}
+.family-more svg{width:13px;height:13px;transition:transform .2s}
+.family-more[aria-expanded="true"] svg{transform:rotate(180deg)}
+@media(hover:hover){.family-more:hover::before{background:rgb(255 255 255/.2)}}
+.family-more:focus-visible{outline:none}
+.family-more:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
+.family-chip:has(input:checked){background:#fff;box-shadow:inset 0 0 0 1px #fff;color:#120f17}
+.family-chip:has(input:checked) .family-more::before{background:rgb(18 15 23/.08)}
+.family-chip.is-partial{--spec-base:var(--brand-pink);box-shadow:inset 0 0 0 1px var(--brand-pink)}
+.family-chip.is-partial .family-more::before{background:var(--brand-pink)}
+.family-chip.is-partial .family-more svg{display:none}
+.family-count{color:#fff;font:700 12px/1 var(--font-display)}
+.filter-select{display:block;clear:both;margin-top:12px}
+.filter-select>span{display:block;margin:0 0 6px 14px;font-size:11px;color:var(--muted)}
+.picker-trigger{display:block;width:100%;min-width:0;border:1px solid rgb(255 255 255/.22);background:var(--glass-pill);color:var(--ink);font-size:13px}
+/* Custom pickers (assets/pickers.js): a pill trigger and a top-layer popover, a dropdown on wide screens and a bottom sheet below 769px,
+   holding a searchable multi-select list (.ms-*) or the date-range calendar (.dr-*). */
+.picker-trigger{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 16px;border-radius:999px;font:500 13px/1 var(--font-display);text-align:left;cursor:pointer}
+.picker-value{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+.picker-trigger.has-value .picker-value{color:var(--ink)}
+.picker-count{flex:none;min-width:20px;padding:3px 7px;border-radius:999px;background:var(--brand-pink);color:#fff;font-size:11px;text-align:center}
+.picker-trigger svg{flex:none;transition:transform .2s}
+.picker-trigger[aria-haspopup="listbox"][aria-expanded="true"] svg{transform:rotate(180deg)}
+/* The popover holds the glass sheet; assets/pickers.js animates the sheet, the veil and the parts inside. */
+@property --veil{syntax:"<number>";inherits:true;initial-value:1}
+.picker-pop{position:fixed;inset:auto;margin:0;padding:0;border:0;background:none;color:var(--ink);overflow:visible;touch-action:manipulation}
+.picker-pop:popover-open{display:grid}
+.picker-sheet{grid-area:1/1;min-width:0;border-radius:var(--radius)}
+.picker-sheet{display:flex;flex-direction:column;padding:10px;border:1px solid var(--glass-edge);background:rgb(16 15 24/.95);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}
+.picker-body{min-width:0;overflow:hidden}
+.picker-head strong{display:block;overflow:hidden}
+.picker-handle,.picker-head,.picker-done{display:none}
+/* The search box is the select box's twin (question 201): same height, padding, type, glass pill, edge and light. */
+.ms-search{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px 0 16px;border:1px solid rgb(255 255 255/.22);border-radius:999px;background:var(--glass-pill);color:var(--muted)}
+.ms-search input{flex:1;min-width:0;height:100%;padding:0;border:0;background:none;color:var(--ink);font:500 13px/1 var(--font-display);outline:none}
+.ms-search input::placeholder{color:var(--muted);opacity:1}
+.ms-search:focus-within{border-color:rgb(255 255 255/.5)}
+.ms-list{max-height:min(320px,var(--picker-room,320px));overflow-y:auto;overscroll-behavior:contain;margin:8px 0 0;padding:0 2px 12px;list-style:none;mask-image:linear-gradient(#000 calc(100% - 20px),transparent);-webkit-mask-image:linear-gradient(#000 calc(100% - 20px),transparent)}
+.ms-list,.ms-list ul{display:flex;flex-direction:column;gap:6px}
+.ms-list ul{margin:0;padding:0;list-style:none}
+.ms-group{display:block;margin:10px 12px 4px;font-size:11px;letter-spacing:.06em;color:var(--brand-cyan)}
+.ms-option{overflow:hidden;transition:background-color .18s;display:flex;flex:none;align-items:center;min-height:44px;padding:0 14px;border:1px solid transparent;border-radius:999px;font:500 14px/1.2 var(--font-display);cursor:pointer}
+.ms-option:focus-visible{background:rgb(255 255 255/.06);outline:none}
+@media(hover:hover){.ms-option:hover{background:rgb(255 255 255/.06)}}
+.ms-option[aria-selected="true"]{border-color:color-mix(in srgb,var(--brand-pink) 60%,transparent);background:color-mix(in srgb,var(--brand-pink) 22%,transparent)}
+.ms-option[aria-selected="true"]::after{content:"✓";margin-left:auto;color:var(--brand-pink);font-weight:700}
+.ms-option:focus-visible{box-shadow:0 0 0 2px var(--focus)}
+.ms-empty{margin:12px 14px;font-size:12px;color:var(--muted)}
+.dr-caption{margin:2px 6px 10px;font:600 12px/1.4 var(--font-display);color:var(--muted)}
+.dr-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));row-gap:6px;text-align:center}
+.dr-weekday{padding-bottom:4px;font-size:11px;color:var(--muted)}
+.dr-day{position:relative;z-index:0;display:grid;place-items:center;height:44px;padding:0;border:0;background:none;color:rgb(255 255 255/.22);font:500 15px/1 var(--font-display)}
+button.dr-day{color:var(--ink);cursor:pointer}
+button.dr-day::before{content:"";position:absolute;z-index:-1;inset:2px 4px;border-radius:999px}
+@media(hover:hover){button.dr-day:hover::before{background:rgb(255 255 255/.08)}}
+button.dr-day.is-between,button.dr-day.is-start,button.dr-day.is-end{background:color-mix(in srgb,var(--brand-pink) 22%,transparent)}
+button.dr-day.is-start{border-radius:999px 0 0 999px}
+button.dr-day.is-end{border-radius:0 999px 999px 0}
+button.dr-day[aria-pressed="true"]{color:#120f17;font-weight:700}
+button.dr-day[aria-pressed="true"]::before{background:#fff}
+button.dr-day:focus-visible{outline:none}
+button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
+@media screen and (max-width:768px){
+  .picker-pop{inset:auto 0 0;width:auto;max-width:none}
+  .picker-sheet{padding:10px 16px calc(16px + env(safe-area-inset-bottom));border-bottom:0;border-radius:var(--radius) var(--radius) 0 0;background:rgb(16 15 24/.96)}
+  .picker-pop::backdrop{background:rgb(5 5 11/.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:var(--veil)}
+  .picker-handle{display:block;width:36px;height:4px;margin:0 auto 12px;border-radius:2px;background:rgb(255 255 255/.3);touch-action:none}
+  .picker-head{display:flex;align-items:center;justify-content:space-between;margin:0 4px 10px;font:700 18px/1.2 var(--font-display);touch-action:none}
+  .picker-clear{min-height:44px;padding:0 4px;border:0;background:none;color:var(--brand-pink);font:600 14px var(--font-display);cursor:pointer}
+  .ms-list{max-height:52vh}
+  .picker-done{display:block;width:100%;height:48px;margin-top:8px;border:0;border-radius:999px;background:#fff;color:#120f17;font:700 15px var(--font-display);cursor:pointer}
+}
+.filter-note{margin:12px 0 0;font-size:11px;line-height:1.6;color:var(--muted)}
+@media screen and (max-width:768px){.filter-panel{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.filter-burger i{transition:none}}.day-group{margin-top:38px}
+/* Layered depth (assets/scroll-motion.js): the day heading drifts at about 0.9× the scroll; static under reduced motion. */
+.scroll-motion .day-heading{translate:0 var(--heading-y,0px)}.day-heading{display:flex;gap:14px;align-items:center;scroll-margin-top:28px;margin:0 0 20px;font-size:23px;font-weight:550;letter-spacing:-.025em}.day-heading:after{content:"";height:1px;flex:1}.day-heading .day-number{font-family:var(--font-display);font-size:31px;color:var(--gold);font-weight:400}.day-heading small{font-size:11px;letter-spacing:.15em;color:var(--muted);font-weight:400}
+/* React Bits Accordion Gallery, vertical (assets/accordion.js): one open row per day, the others collapsed to an 84px strip
+   with a greyed, dimmed poster. Collapsed rows still list every artist and genre. Original timing 0.6s power3.out, 8° tilt
+   on wide screens, parallax 0.5 drift. Without the script (no .accordion-ready) every row stays open with its details. */
+.event-accordion{display:flex;flex-direction:column;gap:10px}
+/* Rows are the 24px frosted glass of the original cards. The poster fades out by an alpha mask straight into the glass
+   (no dark overlay): downward on the open row (fully clear by 70% of the stage, where its text sits), toward the text side on collapsed rows. --open (registered, so it
+   interpolates) blends the two masks over the accordion's 0.6s. */
+@property --open{syntax:"<number>";inherits:true;initial-value:1}
+.event-row{--accordion-ease:cubic-bezier(.215,.61,.355,1);--open:1;position:relative;min-width:0;border:1px solid var(--glass-edge);border-radius:var(--radius);background:rgb(19 19 27/.40);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);scroll-margin-top:96px;overflow:hidden;overflow-wrap:anywhere;transform:perspective(1400px) rotateX(var(--tilt,0deg));transition:transform .6s var(--accordion-ease),--open .6s var(--accordion-ease)}
+.event-row:target{border-color:var(--gold)}
+.event-stage{position:relative;display:flex;align-items:flex-end;min-height:560px;overflow:hidden}
+.event-posters{--fade:calc(1 - var(--open));position:absolute;inset:0;z-index:0;-webkit-mask-image:linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));-webkit-mask-composite:source-in;mask-image:linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));mask-composite:intersect}
+.event-posters > a{display:block;height:100%;text-decoration:none;cursor:zoom-in}
 .event-posters a:focus-visible{outline-offset:-5px}
-.event-posters img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
-.card-motion .event-posters>a>img{transform-origin:top;scale:1.1;translate:0 var(--parallax,-48px)}
-@media(hover:hover) and (pointer:fine){@supports(mask-composite:exclude){.event-card{position:relative}.event-card::after{content:"";position:absolute;inset:0;z-index:4;padding:1px;border-radius:23px;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(240px circle at var(--glow-x,50%) var(--glow-y,50%),var(--brand-pink),var(--brand-yellow) 25%,var(--brand-cyan) 50%,var(--brand-violet) 75%,transparent);mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:content-box,border-box;mask-composite:exclude}.event-card:hover::after{opacity:1}}}
-.poster-thumbnails{position:absolute;right:16px;top:16px;z-index:3;display:flex;gap:8px}
-.poster-thumbnails a{width:54px;height:72px;border:1px solid #ddd7ed88;border-radius:4px;overflow:hidden;box-shadow:0 4px 16px #0008}
-.poster-empty{position:relative;z-index:2;display:grid;place-items:center;height:100%;color:var(--muted);font-size:13px}
+.event-posters img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:grayscale(var(--gray,0));transition:filter .6s var(--accordion-ease),translate .6s var(--accordion-ease)}
+.scroll-motion .event-posters>a>img{transform-origin:top;scale:1.25;translate:0 clamp(-25%,calc(var(--parallax,-20%) + var(--drift,0px)),0%)}
+.poster-empty{display:grid;place-items:center;height:100%;padding-bottom:180px;color:var(--muted);font-size:13px}
+.event-summary{position:relative;z-index:2;display:grid;grid-template-columns:110px minmax(0,1fr);align-items:start;gap:10px 24px;width:100%;padding:26px;text-shadow:0 1px 12px rgb(0 0 0/.55)}
+.event-heading{display:contents}
+.event-start{grid-row:1/span 2;margin:0;font:600 26px/1 var(--font-display);letter-spacing:-.01em;color:var(--brand-yellow)}
+.event-start small{display:block;margin-top:8px;font:500 11px/1.4 var(--font-display);letter-spacing:.06em;color:#bbb}
+.event-heading h4{grid-column:2;margin:0;font:600 24px/1.25 var(--font-display);letter-spacing:-.01em;text-wrap:pretty}
+.accordion-ready .event-row.is-active .event-heading h4::before{content:"";display:inline-block;width:3px;height:.9em;margin-right:12px;border-radius:3px;background:var(--brand-pink);box-shadow:0 0 12px color-mix(in srgb,var(--brand-pink) 60%,transparent);vertical-align:-.08em}
+.event-toggle{display:inline;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;text-shadow:inherit;cursor:pointer}
+.event-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:4px}
+.event-meta{grid-column:2;margin:0;font-size:12px;line-height:1.6;color:#d8cce3}
+.event-time{font-family:var(--font-display);font-variant-numeric:tabular-nums;color:var(--gold)}
+.event-note{grid-column:2;display:block;color:var(--muted);font-size:11px;line-height:1.7}
+.row-artists{grid-column:2;display:flex;flex-wrap:wrap;gap:2px 16px;margin:4px 0 0;padding:0;list-style:none;font:600 13px/1.7 var(--font-display);letter-spacing:.03em;text-transform:uppercase;color:#eee}
+.row-genres{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.row-genres span{padding:3px 10px;border:1px solid rgb(255 255 255/.18);border-radius:999px;background:var(--glass-pill);font:500 11px/1.4 var(--font-display);color:#ddd;text-shadow:none}
+.event-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));padding:0 0 6px;overflow:clip}
+/* Details disclosure: a short brand-pink rule, the section names and a round ± that turns to − when open. One tap
+   opens the lineup table, tickets and venue together (assets/accordion.js). Without the script the line is hidden and
+   the details stay open. */
+.event-more{display:none}
+.accordion-ready .event-more{grid-column:2;justify-self:start;display:flex;align-items:center;gap:14px;min-height:44px;margin-top:10px;padding:0;border:0;background:none;color:#f1ecf7;font:600 12px/1 var(--font-display);letter-spacing:.16em;white-space:nowrap;text-shadow:none;cursor:pointer}
+.event-more::before{content:"";flex:0 0 28px;height:1px;background:var(--brand-pink);box-shadow:0 0 8px color-mix(in srgb,var(--brand-pink) 70%,transparent);transition:flex-basis .4s var(--accordion-ease)}
+.event-more i{--spec-base:rgb(255 255 255/.3);position:relative;flex:none;width:32px;height:32px;border-radius:999px;transition:background-color .3s}
+.event-more i span::before,.event-more i span::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:1.5px;margin:-.75px 0 0 -6px;border-radius:1px;background:currentColor;transition:rotate .4s var(--accordion-ease)}
+.event-more i span::after{rotate:90deg}
+.event-more[aria-expanded="true"]::before{flex-basis:44px}
+.event-more[aria-expanded="true"] i{--spec-base:var(--brand-pink);background:color-mix(in srgb,var(--brand-pink) 18%,transparent)}
+.event-more[aria-expanded="true"] i span::after{rotate:0deg}
+@media(hover:hover){.event-more:hover i{--spec-base:#fff}}
+.event-more:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:999px}
+.accordion-ready .event-details{overflow:hidden}
+/* Strictly partitioned details (scripts/build_page.py): the lineup on its own row, then one section per kind of 更多信息
+   plus the venue, side by side. Sections are told apart by their large titles and whitespace, not by rules. */
+.event-info{display:contents}
+.event-details .event-field{padding:28px 26px 26px}
+.event-details .event-lineup{grid-column:1/-1;padding-top:8px}
+/* Wide screens: with a lineup, the details split into two columns — the lineup on the left (about 60%), the other
+   sections stacked at the top of the right (--columns of them, set by scripts/build_page.py; a last 1fr row takes a
+   long lineup's spare height) — so short lineups leave no void. */
+@media screen and (min-width:1101px){
+  .event-details:has(.event-lineup){grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:repeat(var(--columns),auto) 1fr}
+  .event-details:has(.event-lineup) .event-lineup{grid-column:1;grid-row:1/-1;padding-top:28px;padding-right:40px}
+  .event-details:has(.event-lineup) .event-field:not(.event-lineup){grid-column:2;padding-top:28px;padding-bottom:4px}
+}
+.event-field h5{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 0 18px;font:600 13px/1.3 var(--font-display);letter-spacing:.06em;color:#cfc4dc}
+.event-field h5 span{font:700 20px/1 var(--font-display);letter-spacing:.04em;color:#fff}
+.lineup-caption{margin-left:6px;font:400 12px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;letter-spacing:0;color:var(--muted)}
+.lineup-caption + .lineup-caption::before{content:"·";margin-right:8px}
+.accordion-ready .event-row:not(.is-active) .event-stage{min-height:84px;cursor:pointer}
+.accordion-ready .event-row:not(.is-active) .event-posters img{--gray:.3}
+.accordion-ready .event-row:not(.is-active){--open:0}
+.accordion-ready .event-row:not(.is-active) :is(.event-more,.poster-empty){display:none}
+.accordion-ready .event-row:not(.is-active) .event-summary{padding:18px 26px}
+.accordion-ready .event-row:not(.is-active) .event-heading h4{font-size:19px}
+@media screen and (min-width:901px){
+  .accordion-ready .event-row:not(.is-active) .event-summary{grid-template-columns:110px minmax(0,1.1fr) minmax(0,1.3fr) minmax(0,.9fr)}
+  .accordion-ready .event-row:not(.is-active) .row-artists{grid-column:3;grid-row:1/span 3;margin:0}
+  .accordion-ready .event-row:not(.is-active) .row-genres{grid-column:4;grid-row:1/span 3}
+}
+@media screen and (max-width:1100px){.event-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media screen and (max-width:700px){
+  .event-stage{min-height:520px}
+  .event-summary,.accordion-ready .event-row:not(.is-active) .event-summary{grid-template-columns:64px minmax(0,1fr);gap:6px 14px;padding:16px}
+  .event-start{font-size:19px}
+  .event-heading h4,.accordion-ready .event-row:not(.is-active) .event-heading h4{font-size:17px}
+  .event-details{grid-template-columns:minmax(0,1fr)}
+  .event-details .event-field{padding:26px 16px 22px}
+  .lineup-caption{flex-basis:100%;margin-left:0}
+  .lineup-caption + .lineup-caption::before{content:none}
+  .event-details .event-lineup{padding-top:4px}
+  .accordion-ready .event-more{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){.event-row,.event-posters img,.event-more::before,.event-more i,.event-more i span::before,.event-more i span::after{transition:none}}
+/* Event rows take the pills' light (assets/glass.js) in the logo colours: the same two symmetric 100deg streaks facing
+   --spec-angle and brightened by --spec (questions 193–195). Each streak keeps the former hover glow's stops, opaque pink at
+   the centre, then yellow, cyan and violet a quarter of the half-width apart, fading only over the last quarter. The streak
+   window masks the 1px ring. */
+@supports(mask-composite:exclude){.event-row::after{content:"";position:absolute;inset:0;z-index:4;padding:1px;border-radius:calc(var(--radius) - 1px);pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),var(--brand-violet) 12.5deg,var(--brand-cyan) 25deg,var(--brand-yellow) 37.5deg,var(--brand-pink) 50deg,var(--brand-yellow) 62.5deg,var(--brand-cyan) 75deg,var(--brand-violet) 87.5deg 192.5deg,var(--brand-cyan) 205deg,var(--brand-yellow) 217.5deg,var(--brand-pink) 230deg,var(--brand-yellow) 242.5deg,var(--brand-cyan) 255deg,var(--brand-violet) 267.5deg);mask-image:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,rgb(0 0 0/var(--spec,0)) 12.5deg 87.5deg,transparent 100deg 180deg,rgb(0 0 0/var(--spec,0)) 192.5deg 267.5deg,transparent 280deg),linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:border-box,content-box,border-box;mask-composite:intersect,exclude,add}}
 html:has(.poster-preview[open]){overflow:hidden}
 .poster-preview-origin{visibility:hidden}
 .poster-preview{position:fixed;inset:0;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--ink)}
@@ -32,46 +251,32 @@ html:has(.poster-preview[open]){overflow:hidden}
 .poster-preview-view.is-dragging img{cursor:grabbing}
 @keyframes preview-backdrop{from{background:#05050b00;backdrop-filter:blur(0)}}
 @media print{.poster-preview[open]{display:none}.poster-preview-origin{visibility:visible}}
-.event-body{grid-area:1/1;position:relative;z-index:2;padding:calc(var(--poster-height) - 96px) var(--content-inset) var(--content-inset);pointer-events:none}
-.event-body > *{pointer-events:auto}
-.event-heading h4{font-size:21px;line-height:1.45;letter-spacing:-.02em;margin:0;font-weight:600;text-wrap:pretty}
-.event-field{margin-top:22px;font-size:13px;line-height:1.8}
+.event-field{font-size:13px;line-height:1.8}
 .event-field h5{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.08em;margin:0 0 10px}
 .event-location{color:#d8cce3}
-.event-info{border-top:1px solid var(--line);padding-top:20px}
-.event-time{display:block;margin-top:12px;font-size:12px;line-height:1.7;font-variant-numeric:tabular-nums;color:var(--gold)}.event-note{display:block;color:var(--muted);font-size:11px;line-height:1.7;margin-top:10px}.genre-cell{font-size:12px;color:var(--violet)}.genre-cell small{display:block;color:var(--muted);font-size:10px;margin-top:10px;line-height:1.8}.genre-cell small a{color:inherit}.event-info{font-size:11px;color:var(--muted)}.event-info a{display:inline-block;color:var(--gold);padding:7px 0;font-size:12px;text-decoration:none}.event-info a:hover{text-decoration:underline}.mini-program{margin-top:12px}.mini-program summary{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:7px 16px;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);list-style:none;cursor:pointer;color:var(--gold);line-height:1.5;font-size:11px}.mini-program summary::-webkit-details-marker{display:none}.mini-program summary::before{content:"▸"/""}.mini-program[open] summary::before{content:"▾"/""}.mini-program code{display:block;margin-top:10px;padding:12px 16px 4px;border-radius:16px 16px 0 0;background:var(--glass-pill);box-shadow:inset 0 1px 0 rgb(255 255 255/.16);font-size:11px;overflow-wrap:anywhere}.mini-program small{display:block;padding:4px 16px 12px;border-radius:0 0 16px 16px;background:var(--glass-pill)}.empty-state{text-align:center;padding:64px 20px;margin-top:26px}.empty-state h3{font-size:24px;font-weight:500;margin:8px 0}.empty-state p,.empty-day{font-size:13px;color:var(--muted)}.site-footer{position:relative;border-top:1px solid transparent;padding:32px 0 40px}.footer-top{display:flex;justify-content:space-between;align-items:center;gap:20px}.footer-top > span{font-size:11px;letter-spacing:.12em;color:var(--muted)}.site-footer p{font-size:11px;color:var(--muted);max-width:900px;margin:24px 0 0}.noscript{color:var(--muted);font-size:13px;border:1px solid var(--glass-edge);border-radius:16px;background:var(--glass-tint);box-shadow:var(--glass-shadow);padding:16px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.event-info{font-size:11px;color:var(--muted)}.event-info a{display:inline-block;color:var(--gold);padding:7px 0;font-size:12px;text-decoration:none}.event-info a:hover{text-decoration:underline}.empty-state{text-align:center;padding:64px 20px;margin-top:26px}.empty-state h3{font-size:24px;font-weight:500;margin:8px 0}.empty-state p,.empty-day{font-size:13px;color:var(--muted)}.empty-day,.day-heading,.site-footer,.section-heading{text-shadow:0 1px 10px rgb(6 4 12/.9),0 0 2px rgb(6 4 12/.8)}.site-footer{position:relative;border-top:1px solid transparent;padding:32px 0 40px}.footer-top{display:flex;justify-content:space-between;align-items:center;gap:20px}.footer-top > span{font-size:11px;letter-spacing:.12em;color:var(--muted)}.site-footer p{font-size:11px;color:var(--muted);max-width:900px;margin:24px 0 0}.noscript{color:var(--muted);font-size:13px;border:1px solid var(--glass-edge);border-radius:var(--radius);background:var(--glass-tint);box-shadow:var(--glass-shadow);padding:16px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-@media screen and (max-width:1280px){.filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media screen and (max-width:1280px){}
 @media(max-width:1100px){.wrap{width:calc(100% - 48px)}}
-@media(max-width:700px){.wrap{width:calc(100% - 36px)}.topbar{min-height:68px;padding-block:10px}.brand{font-size:15px;gap:8px}.section-heading h2{font-size:26px}.section-heading{align-items:start}.section-heading p{max-width:120px;text-align:right;font-size:11px}.schedule{padding:32px 0 38px}.filters{--control-inset:14px;padding:16px}.filter-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}.filter-field input,.filter-field select{font-size:16px}.filter-field label{font-size:11px}.filter-footer{align-items:start;font-size:11px}.results-head{align-items:start}.results-head p{font-size:11px;max-width:155px;text-align:right}.day-heading{font-size:20px}.day-heading .day-number{font-size:29px}.day-heading small{font-size:10px}.day-group{margin-top:29px}.footer-top{align-items:start;flex-direction:column}.site-footer{padding-bottom:max(30px,env(safe-area-inset-bottom))}}
+@media(max-width:700px){.wrap{width:calc(100% - 36px)}.topbar{min-height:68px;padding-block:10px}.brand{font-size:15px;gap:8px}.section-heading h2{font-size:26px}.section-heading{align-items:start}.section-heading p{max-width:120px;text-align:right;font-size:11px}.schedule{padding:32px 0 38px}.ms-search input{font-size:16px}.day-heading{font-size:20px}.day-heading .day-number{font-size:29px}.day-heading small{font-size:10px}.day-group{margin-top:29px}.footer-top{align-items:start;flex-direction:column}.site-footer{padding-bottom:max(30px,env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
-.event-note,.genre-cell small,.event-info,.mini-program summary,.mini-program code,.mini-program small{font-size:12px}.event-info a{min-height:44px}@media(max-width:380px){.topbar{gap:12px}}
+.event-note,.event-info{font-size:12px}@media(max-width:380px){.topbar{gap:12px}}
 /* iOS native date styling can override border-box and expand into adjacent fields. */
-.filter-field input[type="date"]{appearance:none;-webkit-appearance:none}
-.filter-field input[type="date"]::-webkit-date-and-time-value{text-align:left}
-.filter-field input[type="date"]::-webkit-calendar-picker-indicator{margin-right:5px}
-.filter-field optgroup{color:var(--gold)}
-.filter-field option{color:var(--ink)}
-.filter-field select{appearance:none;-webkit-appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m2 5 5 5 5-5' fill='none' stroke='%23f7f3ed' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 16px center/14px 14px no-repeat,var(--glass-sheen),var(--glass-pill);padding-right:42px}
+
 /* React Bits Specular Button rim, CSS edition: a 1px masked ring carries the 45% #525252 base stroke and two symmetric
    white streaks (10deg window, 40deg fade) facing --spec-angle, brightened by --spec from assets/glass.js. */
-.filter-field,.filter-footer button,.reset-empty,.info-actions a,.mini-program summary{position:relative}
-@supports(mask-composite:exclude){.filter-field::after,.filter-footer button::after,.reset-empty::after,.info-actions a::after,.mini-program summary::after{--spec-light:rgb(255 255 255/calc(var(--spec,0)*.68));--spec-half:rgb(255 255 255/calc(var(--spec,0)*.4));content:"";position:absolute;inset:0;padding:1px;border-radius:999px;pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,var(--spec-half) 25deg,var(--spec-light) 50deg,var(--spec-half) 75deg,transparent 100deg 180deg,var(--spec-half) 205deg,var(--spec-light) 230deg,var(--spec-half) 255deg,transparent 280deg),rgb(82 82 82/.45);mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:content-box,border-box;mask-composite:exclude}.filter-field::after{top:auto;height:48px}}
-@media print{.filter-footer button::after,.reset-empty::after,.info-actions a::after,.mini-program summary::after{display:none}}
+.filter-toggle,.filter-chip,.family-chip,.picker-trigger,.ms-search,.reset-empty,.filter-tag,.event-more i{position:relative}
+@supports(mask-composite:exclude){.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-more i::after{--spec-light:rgb(255 255 255/calc(var(--spec,0)*.68));--spec-half:rgb(255 255 255/calc(var(--spec,0)*.4));content:"";position:absolute;inset:0;padding:1px;border-radius:999px;pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,var(--spec-half) 25deg,var(--spec-light) 50deg,var(--spec-half) 75deg,transparent 100deg 180deg,var(--spec-half) 205deg,var(--spec-light) 230deg,var(--spec-half) 255deg,transparent 280deg),var(--spec-base,rgb(82 82 82/.45));mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:content-box,border-box;mask-composite:exclude}}
+@media print{.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-more i::after{display:none}}
 /* React Bits Shiny Text, default settings: #b5b5b5 text, white shine, 120deg spread, 2s linear sweep from 150% to -50%. */
 @keyframes shiny-text{from{background-position:150% center}to{background-position:-50% center}}
 .empty-state h3{background:linear-gradient(120deg,#b5b5b5 0%,#b5b5b5 35%,#fff 50%,#b5b5b5 65%,#b5b5b5 100%) 150% center/200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shiny-text 2s linear infinite}
 @media print{.empty-state{border-color:#aaa;background:#fff;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}.empty-state h3{background:none;color:#111}}
 @media screen and (max-width:1280px){.brand{letter-spacing:.06em}}
-@media screen and (max-width:1100px){.event-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px}.event-card{--content-inset:20px}}
 @media screen and (max-width:700px){
-  .event-grid,.event-grid.masonry{grid-template-columns:minmax(0,1fr);grid-auto-rows:auto;gap:20px}
-  .event-card{grid-row-end:auto!important}
   .day-heading{flex-wrap:wrap;gap:8px 12px}
-  .filter-field input{max-width:100%}
 }
 
-@media screen and (max-width:420px){.filter-grid{grid-template-columns:minmax(0,1fr)}}
 
 .title-lockup{display:block;flex:none;width:156px;letter-spacing:0;font-weight:500;color:var(--brand-ink);font-family:"Guide Title","PingFang SC","Microsoft YaHei",sans-serif}
 .title-brandline{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px}
@@ -80,7 +285,7 @@ html:has(.poster-preview[open]){overflow:hidden}
 .title-by{font:italic 400 10px/1.4 Georgia,serif;color:var(--muted)}
 .title-publisher{position:relative;display:inline-block;font-size:11px;font-weight:800;line-height:1.2;letter-spacing:-.04em;transform:skewX(-7deg);transform-origin:left bottom}
 .title-publisher::after{content:"";position:absolute;right:0;bottom:-4px;width:28px;height:1px;background:linear-gradient(90deg,var(--brand-pink) 50%,var(--brand-cyan) 50%);transform:skewX(-24deg)}
-.title-latin{font:800 11px/1 Arial,sans-serif;letter-spacing:-.055em}
+.title-latin{font:800 11px/1 var(--font-display);letter-spacing:-.055em}
 .title-wordmark{display:flex;align-items:baseline;gap:2px;margin:0;font-size:22px;font-weight:800;line-height:1.1;letter-spacing:-.045em;white-space:nowrap}
 .title-word{display:block;transform:skewX(-7deg);transform-origin:left bottom}
 .title-guide{display:block;font-weight:500;letter-spacing:-.03em}
@@ -88,29 +293,9 @@ html:has(.poster-preview[open]){overflow:hidden}
 .site-updated>span{display:flex;align-items:center;gap:9px;width:100%;justify-content:flex-end;letter-spacing:.04em;white-space:nowrap}
 .site-updated>span::before{content:"";flex:1;height:1px}
 .site-updated time{display:flex;justify-content:flex-end;gap:10px;letter-spacing:.08em;font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;white-space:nowrap}
-.results-head{margin-top:28px;gap:16px}
-.results-head p{margin:0;font-size:11px}
-.date-nav{position:relative;display:flex;gap:var(--date-gap,20px);max-width:100%;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;margin-top:8px;padding-inline:28px;user-select:none;mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 28px,#000 calc(100% - 28px),transparent)}
-.date-nav.is-ready{scroll-behavior:smooth}
-.date-nav.is-dragging{scroll-behavior:auto;scroll-snap-type:none}
-.date-nav.is-dragging>*{cursor:grabbing}
-.date-nav::-webkit-scrollbar{display:none}
-.date-nav:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
-/* React Bits Line Sidebar turned sideways, default settings: 1.1rem text, 30px shift, 60px marker, half-length ticks.
-   --effect (0..1) comes from filters.js, so text, marker and tick move together without CSS transitions.
-   The 20px gap grows to 40px on wide axes (--date-gap from filters.js); a row that fits is centred by the auto edge margins. */
-.date-nav>:first-child,.date-nav>[hidden]+*{margin-left:auto}
-.date-nav>:last-child{margin-right:auto}
-.date-nav>a,.date-nav>button{position:relative;display:flex;flex:none;justify-content:center;min-width:44px;margin:0;padding:30px 0 60px;border:0;background:none;text-decoration:none;font:inherit;font-size:1.1rem;line-height:1.2;white-space:nowrap;color:#c4c4c4;scroll-snap-align:center;cursor:pointer}
-.date-nav>a>span,.date-nav>button>span{position:relative;color:color-mix(in srgb,var(--brand-pink) calc(var(--effect,0)*100%),#c4c4c4);translate:0 calc(var(--effect,0)*-30px)}
-.date-nav>a::before,.date-nav>button::before{content:"";position:absolute;left:50%;bottom:0;width:1px;height:60px;background:color-mix(in srgb,var(--brand-pink) calc(var(--effect,0)*100%),#6c6c6c);transform:translateX(-50%) scaleY(calc(.7 + var(--effect,0)*.5));transform-origin:bottom;pointer-events:none}
-.date-nav>a::after,.date-nav>button::after{content:"";position:absolute;left:calc(100% + var(--date-gap,20px)/2);bottom:0;width:1px;height:30px;background:#6c6c6c;opacity:.5;transform:translateX(-50%) scaleY(calc(.7 + var(--effect,0)*.6));transform-origin:bottom;pointer-events:none}
-.date-nav>a:last-child::after{content:none}
-.date-nav>a:focus-visible,.date-nav>button:focus-visible{outline:none}
-.date-nav>a:focus-visible>span,.date-nav>button:focus-visible>span{outline:2px solid var(--focus);outline-offset:5px;border-radius:1px}
-.date-nav small{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
-@media(max-width:700px){.topbar{gap:16px}.results-head{align-items:center}}
-@media(prefers-reduced-motion:reduce){.date-nav.is-ready{scroll-behavior:auto}}
+
+
+@media(max-width:700px){.topbar{gap:16px}}
 /* React Bits Star Border on 1px dividers: its top and bottom edge stars share one line, crossing in opposite directions over a faint base.
    --star runs 0→1 with the original 6s linear alternate timing, driving each star's 300%-wide offset (translate 100%) and 1→0 fade. */
 @property --star{syntax:"<number>";inherits:false;initial-value:0}
@@ -126,37 +311,74 @@ html:has(.poster-preview[open]){overflow:hidden}
 @media(max-width:380px){.brand{font-size:13px}}
 
 
-.artist-cell:has(.artist-table) > h5{display:none}
+/* Details as an editorial ledger (no pills or buttons): hairlines that fade to the right separate timetable rows,
+   ticket tiers and links. The timetable keeps real table semantics; its column header row is visually hidden. */
+.event-lineup{container-type:inline-size}
 .artist-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}
-.artist-stage{display:block;color:var(--gold);font-size:11px;line-height:1.5;margin:8px 0 5px}.artist-list li:first-child .artist-stage{margin-top:0}
-.artist-name{display:block;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
-.artist-detail{display:block;font-size:11px;font-weight:400;line-height:1.5;color:var(--muted);margin-top:3px}
-.artist-note{font-size:12px;line-height:1.6;color:var(--muted);margin:12px 0 0}
-.artist-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px;line-height:1.55}
-.artist-table th,.artist-table td{padding:9px 6px;text-align:left;vertical-align:top;font-weight:400;overflow-wrap:anywhere;border-bottom:1px solid var(--line)}
-.artist-table th:first-child,.artist-table td:first-child{padding-left:0}
-.artist-table th:last-child,.artist-table td:last-child{padding-right:0}
-.artist-table thead th{font-size:11px;color:var(--muted);padding-top:0;letter-spacing:.03em}
-.artist-table tbody tr:last-child > *{border-bottom:0;padding-bottom:0}
-.artist-time{font-variant-numeric:tabular-nums;color:var(--gold)}
-.artist-genres{color:var(--violet)}
-.artist-stage-table{table-layout:auto}
+.artist-pair{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px}
+.artist-pair .artist-name{display:inline}
+.artist-b2b{font:600 10px/1 var(--font-display);letter-spacing:.12em;color:var(--muted)}
+.artist-name{display:block;font:600 14px/1.35 var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--ink);overflow-wrap:anywhere}
+.artist-detail{display:block;font-size:11px;font-weight:400;line-height:1.5;color:var(--muted);margin-top:3px;letter-spacing:0;text-transform:none}
+.artist-table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.55}
+.artist-table:not(.artist-stage-table) thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.artist-table th,.artist-table td{position:relative;padding:13px 16px 13px 0;text-align:left;vertical-align:baseline;font-weight:400;overflow-wrap:anywhere}
+.artist-table tr > :last-child{padding-right:0}
+.artist-table tbody tr > :first-child::after,.ticket-prices li::after,.info-actions a::before{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:linear-gradient(90deg,rgb(255 255 255/.16),rgb(255 255 255/.16) 70%,transparent);pointer-events:none}
+.artist-table tbody tr > :first-child::after{width:100cqw}
+.artist-table .artist-time{width:9.5em;font:500 14px/1.35 var(--font-display);font-variant-numeric:tabular-nums;color:var(--gold);white-space:nowrap}
+.artist-table .artist-genres{width:34%;text-align:right;color:var(--violet)}
+.artist-genres-inline{display:none}
+.artist-table .stage-row th{padding-top:22px;font:600 12px/1.4 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.artist-table tbody .stage-row:first-child th{padding-top:4px}
+/* Rooms whose artists the sources do not place, as stage heading lines above the plain lineup list (question 203). */
+.stage-rooms{display:grid;gap:6px;margin:0 0 18px;padding:0;list-style:none;font:600 11px/1.4 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.stage-genres{margin-left:12px;letter-spacing:.02em;text-transform:none;color:var(--violet);font-weight:500}
+.stage-note{display:block;margin-top:4px;font:400 12px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;letter-spacing:0;text-transform:none;color:var(--muted)}
+.artist-stage-table thead .stage-genres{display:block;margin:4px 0 0}
+.crew-role{color:var(--muted)!important;font-weight:500}
+.artist-stage-table thead th{padding:0 16px 10px 0;font:600 11px/1.4 var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.artist-stage-table th + th,.artist-stage-table td + td{padding-left:16px;border-left:1px solid rgb(255 255 255/.1)}
 .artist-stage-table .artist-name{overflow-wrap:normal}
-.artist-stage-table thead th{color:var(--gold);font-size:13px;padding-bottom:12px}
-.artist-stage-table tbody td{padding-top:14px}
-.artist-stage-table th + th,.artist-stage-table td + td{padding-left:14px;border-left:1px solid var(--line)}
-.info-section + .info-section{margin-top:14px}
-.info-label{display:block;font-size:11px;line-height:1.5;color:var(--muted);margin-bottom:7px;letter-spacing:.03em}
-.info-section p{margin:0;font-size:12px;line-height:1.7}
+@media screen and (max-width:700px){
+  .artist-table:has(.artist-time) .artist-genres{display:none}
+  .artist-table:has(.artist-time) .artist-genres-inline{display:block;margin-top:4px;font:400 12px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;letter-spacing:0;text-transform:none;color:var(--violet)}
+  .artist-table .artist-time{width:5.6em;white-space:normal}
+  .artist-table:not(:has(.artist-time)) .artist-genres{width:50%;text-align:left}
+}
+.info-section + .info-section{margin-top:18px}
+.info-section p{margin:0;font-size:13px;line-height:1.7;color:#d8cce3}
 .info-section p + p{margin-top:5px}
-.ticket-prices{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
-.ticket-prices li{border-radius:999px;padding:6px 14px;background:rgb(236 203 136/.1);box-shadow:inset 0 1px 0 rgb(255 255 255/.12),inset 0 0 0 1px rgb(236 203 136/.22);color:var(--gold);font-size:12px;line-height:1.55}
-.info-actions{display:flex;flex-wrap:wrap;align-items:start;gap:6px 8px}
-.info-actions p,.info-actions .mini-program{flex-basis:100%;margin:0}
-.info-actions a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;padding:7px 16px;border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);line-height:1.5;font-size:12px}
-.info-actions a:hover{background:rgb(255 255 255/.1);text-decoration:none}
-.info-details a{color:#d8cce3}
-@media screen and (max-width:1280px){.artist-table{font-size:13px}.artist-list{gap:10px}.info-section p,.ticket-prices li{font-size:13px}}
-@media print{.artist-table th,.artist-table td,.artist-name,.artist-time,.artist-genres,.ticket-prices li{color:#111}.artist-table th,.artist-table td{font-size:10px;padding:5px}.info-actions a{min-height:0}.ticket-prices li{background:none;box-shadow:inset 0 0 0 1px #aaa}}
+.info-notes p{font-size:12px;color:var(--muted)}
+.ticket-prices{list-style:none;margin:0;padding:0}
+.ticket-prices li{position:relative;display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;font-size:13px;line-height:1.5;color:#e9e3f2}
+.price-tier small{display:block;margin-top:2px;font-size:11px;color:var(--muted)}
+.price-amount{flex:none;font:600 18px/1.2 var(--font-display);letter-spacing:-.01em;color:var(--gold);text-align:right}
+.info-actions a{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:8px 0;color:#f1ecf7;font:600 13px/1.4 var(--font-display);letter-spacing:.06em;text-decoration:none}
+.info-actions a::after{content:"↗"/"";flex:none;color:var(--brand-pink);transition:translate .3s var(--accordion-ease)}
+@media(hover:hover){.info-actions a:hover::after{translate:3px -3px}.info-actions a:hover{color:#fff}}
+.info-actions p{margin:6px 0}
+.mini-program{margin:6px 0}
+.mini-program-label{display:block;margin-bottom:8px;font:600 13px/1.4 var(--font-display);letter-spacing:.06em;color:#f1ecf7}
+.mini-program code{font-size:12px;overflow-wrap:anywhere}
+.mini-program .copy-target{padding:12px 16px;border:1px solid rgb(255 255 255/.16);border-radius:var(--radius)}
+.mini-program small{display:block;padding:8px 2px 0;font-size:12px;color:var(--muted)}
+/* Content that acts on tap (assets/copy-share.js): the text itself is the button, a small brand-pink icon on the right
+   says it can be shared or copied, and a copy is confirmed in place. Inert and icon-less without the script. */
+.copy-target{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.copy-target:disabled{cursor:text;user-select:text;-webkit-user-select:text}
+.copy-target > :first-child{flex:1;min-width:0}
+.copy-target .action-icon{display:none;flex:none;color:var(--brand-pink)}
+.copy-target.is-share .action-icon:first-of-type,.copy-target.is-copy .action-icon:last-of-type{display:block}
+.copy-status{position:absolute;right:28px;top:50%;translate:0 -50%;font:600 12px/1 var(--font-display);letter-spacing:.06em;color:var(--brand-pink);opacity:0;transition:opacity .2s}
+.copy-target.is-copied .copy-status{opacity:1}
+.copy-target > :first-child{transition:opacity .2s}
+.copy-target.is-copied > :first-child{opacity:.3}
+@media(hover:hover){.copy-target:not(:disabled):hover .venue-name{color:#fff}}
+.copy-target:not(:disabled):active{filter:brightness(.85)}
+.venue-city{margin-right:10px;font:600 15px/1.6 var(--font-display);letter-spacing:.16em;color:var(--gold)}
+.venue-name{display:block;font-size:15px;font-weight:500;line-height:1.6;color:#ece6f4}
+.venue-address{display:block;font-size:13px;line-height:1.7;color:var(--muted)}
+@media print{.artist-table th,.artist-table td,.artist-name,.artist-time,.artist-genres,.ticket-prices li,.price-amount,.info-actions a,.venue-name{color:#111}.artist-table:not(.artist-stage-table) thead{position:static;width:auto;height:auto;clip-path:none}.info-actions a{min-height:0}}
 
-@media print{body{background:#fff;color:#111}.filters,.date-nav,.topography,.event-card::after{display:none}.card-motion .event-posters>a>img{scale:none;translate:none}.topbar{min-height:0;border:0;padding:0 0 24px}.title-lockup{color:#111}.wrap{width:100%}.event-grid,.event-grid.masonry{display:block}.event-card{display:block;break-inside:avoid;margin-bottom:20px;background:#fff;border-color:#aaa;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}.event-posters{-webkit-mask-image:none;mask-image:none}.event-posters{width:160px;background:#fff}.event-body{padding:12px}.event-heading h4{font-size:18px}.event-time,.genre-cell,.event-info a,.event-location,.event-field h5,.info-label{color:#333}.site-footer p{color:#444}}
+@media print{body{background:#fff;color:#111}.filter-dock,.filter-panel,.filter-scrim,.topography,.event-row::after,.event-more,.action-icon{display:none!important}.scroll-motion .event-posters>a>img{scale:none;translate:none}.topbar{min-height:0;border:0;padding:0 0 24px}.title-lockup{color:#111}.wrap{width:100%}.event-row .event-details[hidden]{display:grid!important}.event-row{break-inside:avoid;transform:none;background:#fff;border-color:#aaa;box-shadow:none}.event-stage{min-height:0!important}.event-summary{text-shadow:none;color:#111}.event-details{background:#fff}.event-posters{display:none}.event-heading h4{font-size:18px}.event-time,.lineup-note,.event-info a,.event-location,.event-field h5,.info-label{color:#333}.site-footer p{color:#444}}

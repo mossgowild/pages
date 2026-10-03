@@ -1,4 +1,5 @@
-"""Check event cards, artist details, information order, links, and posters."""
+"""Check event rows, artist details, information order, links, and posters."""
+import html
 import json
 import re
 from html.parser import HTMLParser
@@ -30,30 +31,37 @@ class Page(HTMLParser):
             assert attrs['id'] not in self.ids, 'Duplicate HTML id'
             self.ids.add(attrs['id'])
         if tag == 'article':
-            assert 'event-card' in classes
-            self.card = {'attrs': attrs, 'fields': {}}
+            assert 'event-row' in classes
+            self.card = {'attrs': attrs, 'fields': {}, 'tables': [], 'lineup': None, 'more': None}
             self.cards.append(self.card)
         if 'data-field' in attrs:
             key = attrs['data-field']
             assert key not in self.card['fields'], 'Duplicate event field'
-            self.field = {'text': '', 'links': [], 'images': [], 'artists': 0, 'info': [], 'tables': []}
+            self.field = {'text': '', 'links': [], 'images': [], 'items': 0, 'info': [], 'headings': ''}
             self.card['fields'][key] = self.field
+        if tag == 'section' and 'event-lineup' in classes:
+            assert self.card['lineup'] is None, 'Duplicate lineup section'
+            self.field = self.card['lineup'] = {'text': '', 'links': [], 'images': [], 'items': 0, 'info': [], 'headings': ''}
+        if tag == 'button' and 'event-more' in classes:
+            self.card['more'] = attrs
         if tag == 'table':
-            assert 'artist-table' in classes and self.table is None
+            assert 'artist-table' in classes and self.table is None and self.field is self.card['lineup']
             self.table = {'head': False, 'rows': []}
             self.tables.append(self.table)
-            self.field['tables'].append(self.table)
+            self.card['tables'].append(self.table)
         if tag == 'thead':
             self.table['head'] = True
         if tag == 'tr':
             self.row = []
+            # Stage heading and crew rows are not artist rows; they are checked separately.
+            self.row_kind = next((kind for kind in ('stage-row', 'crew-row') if kind in classes), '')
         if tag in ('td', 'th'):
             self.cell = {'attrs': attrs, 'text': ''}
             self.row.append(self.cell)
             if tag == 'th':
-                assert attrs.get('scope') == ('col' if self.table['head'] else 'row')
-        if tag == 'span' and 'artist-name' in classes:
-            self.field['artists'] += 1
+                assert attrs.get('scope') == ('col' if self.table['head'] else 'colgroup' if self.row_kind == 'stage-row' else 'row')
+        if tag == 'li' and self.field is not None and self.field is self.card['fields'].get('artists'):
+            self.field['items'] += 1
         if tag == 'div' and 'info-section' in classes:
             self.field['info'].append(next(c.removeprefix('info-') for c in classes if c != 'info-section' and c.startswith('info-')))
         if tag == 'a':
@@ -76,6 +84,8 @@ class Page(HTMLParser):
             self.field['text'] += text
         if self.cell is not None:
             self.cell['text'] += text
+        if self.field is not None and any(tag == 'h5' for tag, *_ in self.stack):
+            self.field['headings'] += text
 
     def handle_endtag(self, tag):
         if self.stack and self.stack[-1][0] == tag:
@@ -84,8 +94,11 @@ class Page(HTMLParser):
             self.cell = None
         if tag == 'tr':
             rows = self.table['rows']
-            assert len(self.row) == (len(rows[0]) if rows else len(self.row)), 'Inconsistent artist columns'
-            rows.append(self.row)
+            if self.row_kind:
+                self.table.setdefault(self.row_kind, []).append(self.row)
+            else:
+                assert len(self.row) == (len(rows[0]) if rows else len(self.row)), 'Inconsistent artist columns'
+                rows.append(self.row)
             self.row = None
         if tag == 'thead':
             self.table['head'] = False
@@ -103,9 +116,13 @@ def check():
     page = Page()
     page.feed(source)
     assert not page.stack and page.card is page.field is page.table is page.row is page.cell is None
-    assert 'day-930' in page.ids and 'day-7' in page.ids
+    visible = re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', source, flags=re.S))
+    assert not re.search(r'尚不明确|未知|其它场地|其它时段|其它风格|TBA', visible), 'No unknown or vague placeholders on the page'
+    assert 'date-nav' not in source and not any(ident.startswith('day-') for ident in page.ids), 'The date axis and day anchors are removed'
     assert all(link[1:] in page.ids for link in page.anchors if link.startswith('#'))
-    assert len(page.cards) == len(events), 'Every event needs a card'
+    chips = re.findall(r'name="family" value="([^"]+)"', source)
+    assert chips == data['genre_order']['families'] == list(data['genre_families']), 'Family chips follow genre_order'
+    assert len(page.cards) == len(events), 'Every event needs a row'
     assert {card['attrs']['id'] for card in page.cards} == set(events)
     dates = [card['attrs']['data-date'] for card in page.cards]
     assert dates == sorted(dates), 'Events must be ordered by date'
@@ -114,10 +131,13 @@ def check():
     for card in page.cards:
         attrs, fields = card['attrs'], card['fields']
         event = events[attrs['id']]
-        assert set(fields) == {'name', 'artists', 'genres', 'location', 'info', 'posters'}, 'Keep all six information categories'
-        assert attrs['aria-labelledby'] in page.ids
+        # Six categories; an unknown lineup or genre is left out rather than shown as unknown (question 183).
+        known = {'name', 'location', 'info', 'posters'} | ({'artists'} if event['artists'] else set()) | ({'genres'} if event['genres'] else set())
+        assert set(fields) == known, 'Keep the known information categories'
+        assert attrs['aria-labelledby'] in page.ids and attrs['id'] + '-details' in page.ids, 'Rows need a title and a details region'
+        assert card['more'] and card['more']['aria-controls'] == attrs['id'] + '-details', 'The details line must control the details'
         assert attrs['data-city'] == event['city']
-        for key in ('venues', 'genres', 'starts', 'unknown'):
+        for key in ('venues', 'genres', 'starts'):
             assert json.loads(attrs['data-' + key]) == event[key], 'Preserve filter data'
         families = [name for name, members in data['genre_families'].items()
                     if set(members).intersection(event['genres'])]
@@ -127,32 +147,83 @@ def check():
         match = re.search(r'(\d{1,2}):(\d{2})', fields['name']['text'])
         daily_times.setdefault(attrs['data-date'], []).append(int(match[1]) * 60 + int(match[2]) if match else 9999)
         artists = event['artists']
-        lineup = fields['artists']
-        assert lineup['artists'] == sum(len(artist['names']) for artist in artists), 'Each artist needs a separate line'
-        assert all(name in lineup['text'] for artist in artists for name in artist['names'])
+        if artists:
+            summary = fields['artists']
+            assert summary['items'] == len(artists), 'Each lineup entry needs a separate line'
+            assert all(name in summary['text'] for artist in artists for name in artist['names'])
+        assert all(genre in fields['genres']['text'] for genre in event['genres']), 'Show every genre'
         has_details = any(artist.get('time') or artist.get('genres') for artist in artists)
         stages = list(dict.fromkeys(artist.get('stage', '') for artist in artists))
         grouped = not has_details and len(stages) > 1 and all(stages)
-        assert len(lineup['tables']) == int(has_details or grouped), 'Artist details/groups need a table'
+        assert len(card['tables']) == int(has_details or grouped), 'Artist details/groups need a table'
+        lineup = card['lineup']
+        timed = any(artist.get('time') for artist in artists)
+        label = re.search(rf'aria-controls="{attrs["id"]}-details"><span>([^<]*)</span>', source)[1]
+        info = event['more_info']
+        expected_sections = [(name, short) for name, short, keys in (('tickets', '票务', ('prices', 'booking')),
+                             ('links', '详情', ('details',)), ('entry', '须知', ('notes',))) if any(info[key] for key in keys)]
+        # Rooms the sources name without placing any artist in them (question 203).
+        rooms = [stage for stage in event.get('stages', []) if not any(a.get('stage') == stage['name'] for a in artists)]
+        lineup_area = bool(card['tables'] or event.get('lineup_caption') or (rooms and artists))
+        assert label == ' · '.join((['时间表' if timed else '阵容'] if lineup_area else [])
+                                   + [short for _, short in expected_sections] + ['地点']), 'Details line must name its sections'
+        rendered = re.findall(rf'<section class="event-field event-(tickets|links|entry)">', re.search(
+            rf'id="{attrs["id"]}-details".*?</article>', source, re.S)[0])
+        assert rendered == [name for name, _ in expected_sections], 'Each 更多信息 section appears only with content, in order'
+        assert '未知' not in ''.join(cell['text'] for table in card['tables'] for row in table['rows'][1:] for cell in row[1:]), 'Leave unknown genres blank'
+        for artist in artists:
+            assert not artist.get('genre_sources') or len(artist['genre_sources']) == len(artist['genres']), 'One source per genre line'
+        assert not lineup or not lineup['links'], 'The lineup has no reference links'
+        assert all(text in lineup['headings'] for text in event.get('lineup_caption', [])), 'Captions sit beside the lineup title'
+        for stage in (stage for stage in event.get('stages', []) if any(a.get('stage') == stage['name'] for a in artists)):
+            assert all(genre in lineup['text'] for genre in stage.get('genres', [])) and stage.get('note', '') in lineup['text'], 'Show stage genres and notes'
+        for member in event.get('crew', []):
+            assert any(member['role'] in row[0]['text'] and all(name in ''.join(c['text'] for c in row) for name in member['names'])
+                       for table in card['tables'] for row in table.get('crew-row', [])), 'Crew rows carry role and names'
+        assert '<p class="lineup-note">' not in source, 'No small print under the lineup'
+        for artist in artists:
+            if artist.get('format') == 'B2B' and len(artist['names']) > 1 and card['tables']:
+                pair = '<small class="artist-b2b">B2B</small>'.join(f'<span class="artist-name">{html.escape(n, quote=False)}</span>' for n in artist['names'])
+                assert f'<span class="artist-pair">{pair}</span>' in source, 'A B2B pairing reads as one line'
+        venue_html = re.search(rf'id="{attrs["id"]}-details".*?<section class="event-field event-location"[^>]*>(.*?)</section>', source, re.S)[1]
+        city, _, place = event['location'][0].partition(' · ')
+        assert f'<span class="venue-name"><span class="venue-city">{city}</span>{html.escape(place, quote=False)}</span>' in venue_html, 'The city label leads the place on one line'
+        share = re.search(r'<button type="button" class="copy-target venue-target" data-share-text="([^"]*)"[^>]*>\s*<span class="venue-lines">', venue_html)
+        if not place:
+            assert 'copy-target' not in venue_html, 'A city without a known place stays plain text'
+        else:
+            assert share and html.unescape(share[1]) == ' '.join([city, *event['location'][1:], place]), 'Share city, address, then place'
+        assert '分享地址' not in venue_html and '复制地址' not in venue_html, 'No separate action line'
+        if lineup:
+            assert lineup['headings'].startswith('TIMETABLE时间表' if timed else 'LINEUP阵容'), 'Lineup heading must match its content'
+        if lineup and not card['tables']:
+            # Without a table the area still lists the lineup, never small print alone (question 203).
+            assert artists and all(name in lineup['text'] for artist in artists for name in artist['names']), 'List every artist in the lineup area'
+            assert all(artist.get(key, '') in lineup['text'] for artist in artists for key in ('format', 'note')), 'Keep forms in the lineup list'
+            assert all(stage['name'] in lineup['text'] and all(genre in lineup['text'] for genre in stage.get('genres', [])) for stage in rooms), 'Show unplaced rooms with their genres'
         if grouped:
-            table = lineup['tables'][0]
+            table = card['tables'][0]
             assert len(table['rows']) == 2
-            assert [cell['text'] for cell in table['rows'][0]] == stages, 'Stage names must be column headers'
+            assert all(cell['text'].startswith(stage) for cell, stage in zip(table['rows'][0], stages, strict=True)), 'Stage names must be column headers'
             for stage, cell in zip(stages, table['rows'][1]):
                 expected = [artist for artist in artists if artist['stage'] == stage]
                 assert all(name in cell['text'] for artist in expected for name in artist['names']), 'Artist in wrong stage column'
                 assert all(artist.get('format', '') in cell['text'] for artist in expected), 'Keep B2B/Live relationships'
         elif has_details:
-            table = lineup['tables'][0]
+            table = card['tables'][0]
             assert len(table['rows']) == len(artists) + 1
             assert 2 <= len(table['rows'][0]) <= 3
+            assert [cell['text'] for cell in table['rows'][0]][:2] == (['时段', '艺人'] if timed else ['艺人', '风格']), 'Set times lead the timetable'
             for artist in artists:
                 assert artist.get('time', '') in lineup['text']
                 assert all(genre in lineup['text'] for genre in artist.get('genres', []))
-        assert not re.search(r'（[^）]*[\u4e00-\u9fff]', fields['genres']['text']), 'Remove genre translations'
-        info = event['more_info']
+        assert not re.search(r'（[^）]*[\u4e00-\u9fff]', fields.get('genres', {}).get('text', '')), 'Remove genre translations'
         assert fields['info']['info'] == [key for key in ('prices', 'booking', 'details', 'notes') if info[key]], 'Inconsistent information order'
-        assert all(price in fields['info']['text'] for price in info['prices']), 'Missing price/status'
+        assert all(price[key] in fields['info']['text'] for price in info['prices'] for key in ('label', 'amount', 'note')), 'Missing price/status'
+        assert all(price['label'] or price['amount'] for price in info['prices']), 'A price needs a tier or an amount'
+        for part in info['booking'] + info['details']:
+            if part['type'] == 'mini-program':
+                assert f'data-copy-text="{html.escape(part["code"], quote=True)}"' in source, 'Mini-program codes copy on tap'
         poster = fields['posters']
         assert poster['images'] == [item['image'] for item in event['posters']], 'Use the full-size posters'
         if poster['images']:
@@ -171,8 +242,8 @@ def check():
         image_data = (ROOT / src).read_bytes()
         assert image_data.startswith((b'\xff\xd8\xff', b'\x89PNG', b'GIF8', b'RIFF')), src
     assert not re.search(r'wxid_|@chatroom|localhost|file://|/Users/', source)
-    print(f'OK: {len(events)} event cards, {len(page.tables)} artist tables, '
-          f'{illustrated_cards} illustrated cards, {len(page.images)} image elements, '
+    print(f'OK: {len(events)} event rows, {len(page.tables)} artist tables, '
+          f'{illustrated_cards} illustrated rows, {len(page.images)} image elements, '
           f'{len(set(page.images))} unique image files; artist lines and information order checked')
 
 

@@ -1,9 +1,9 @@
 .hero{padding:34px 0 0;isolation:isolate}
 .hero-edition{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.hero-period{display:flex;align-items:baseline;gap:18px;font-family:ui-monospace,"SFMono-Regular",Consolas,monospace;white-space:nowrap}
+.hero-period{display:flex;align-items:baseline;gap:18px;font-family:var(--font-display);white-space:nowrap}
 .hero-period>span{font-size:11px;letter-spacing:.12em;color:var(--muted)}
 .hero-period strong{font-size:clamp(18px,2.2vw,28px);font-weight:400;letter-spacing:-.05em}
-.hero-coverage{margin:0;font-size:11px;color:var(--muted);white-space:nowrap}
+.hero-coverage{margin:0;font-family:var(--font-display);font-size:11px;color:var(--muted);white-space:nowrap}
 .hero-coverage span{margin-inline:10px;color:#67616f}
 /* Flex Carousel reel: full page width (outside .wrap); WebGL draws the posters, the list is the no-WebGL view. */
 .hero-stage{position:relative;height:720px;margin:16px 0 0;overflow:hidden;cursor:grab;touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
@@ -19,9 +19,9 @@
 .hero-stage.is-webgl .hero-reel{display:none}
 .hero-editorial{padding:8px 0 24px}
 .hero-detail{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
-.hero-event-meta{grid-column:1;grid-row:1;margin:0;font:11px/1.5 ui-monospace,"SFMono-Regular",Consolas,monospace;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+.hero-event-meta{grid-column:1;grid-row:1;margin:0;font:11px/1.5 var(--font-display);letter-spacing:.1em;color:var(--muted);white-space:nowrap}
 .hero-event-meta span{margin-inline:8px;color:#736b80}
-.hero-detail h3{grid-column:1/-1;margin:10px 0 0;font-size:clamp(22px,2.8vw,34px);font-weight:500;line-height:1.2;letter-spacing:-.035em;overflow-wrap:anywhere}
+.hero-detail h3{grid-column:1/-1;margin:10px 0 0;font-family:var(--font-display);font-size:clamp(22px,2.8vw,34px);font-weight:500;line-height:1.2;letter-spacing:-.035em;overflow-wrap:anywhere}
 .hero-genres{grid-column:1/-1;margin:9px 0 0;font-size:12px;color:var(--violet);overflow-wrap:anywhere}
 .hero-event-link{grid-column:2;grid-row:1;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:10px 0;color:var(--ink);text-decoration:none;font-size:12px;white-space:nowrap;border-bottom:1px solid #787082}
 .hero-event-link:hover{color:var(--pink);border-color:var(--pink)}

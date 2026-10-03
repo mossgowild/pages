@@ -3,30 +3,31 @@
 (() => {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
-  // React Bits Specular Button, CSS edition: each pill gets --spec-angle (conic "from" angle of the light) and --spec
-  // (brightness). Defaults: light steers toward the mouse, settles near the diagonal while over the pill,
-  // fades in within 250px (smoothstep), angle eased at rate 7 and brightness at rate 8 per second.
+  // React Bits Specular Button, CSS edition: each lit element gets --spec-angle (conic "from" angle of the light) and
+  // --spec (brightness). Defaults: light steers toward the mouse, settles near the diagonal while over the pill,
+  // fades in within 250px (smoothstep), angle eased at rate 7 and brightness at rate 8 per second. The pills, the
+  // round expand buttons and the event rows share it (questions 192–195); a row is far larger than a pill, so over a
+  // row the light keeps facing the mouse instead of settling on the diagonal.
   const PROXIMITY = 250;
-  const pills = [...document.querySelectorAll('.filter-field, .filter-footer button, .reset-empty, .info-actions a, .mini-program summary')];
+  const LIT = '.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-more i, .event-row';
+  const FOLLOWS = '.event-row';
+  const lit = new Set();
   const visible = new Set();
-  const state = new Map(pills.map(pill => [pill, { angle: 2.4, bright: 0, target: 2.4, near: 0 }]));
+  const state = new Map();
   let pointer = null;
   let frame = 0;
   let last = 0;
 
   const smoothstep = t => t * t * (3 - 2 * t);
-  // The pill whose edge carries the light: form fields light their control, not the label above it.
-  const edgeOf = pill => pill.classList.contains('filter-field') ? pill.querySelector('select, input') : pill;
-
   function aim() {
-    for (const pill of visible) {
-      const box = edgeOf(pill).getBoundingClientRect();
-      const s = state.get(pill);
+    for (const element of visible) {
+      const box = element.getBoundingClientRect();
+      const s = state.get(element);
       const cx = box.left + box.width / 2, cy = box.top + box.height / 2;
       const dx = Math.max(box.left - pointer.x, 0, pointer.x - box.right);
       const dy = Math.max(box.top - pointer.y, 0, pointer.y - box.bottom);
       const dist = Math.hypot(dx, dy);
-      s.target = dist === 0
+      s.target = dist === 0 && !s.follows
         ? Math.atan2(2 / box.height, -2 / box.width) + (pointer.x - cx) / (box.width / 2) * 0.3 + (cy - pointer.y) / (box.height / 2) * 0.15
         : Math.atan2(cy - pointer.y, pointer.x - cx);
       s.near = smoothstep(Math.max(0, 1 - dist / PROXIMITY));
@@ -38,15 +39,15 @@
     const dt = Math.min(Math.max(0, (now - last) / 1000), 0.05);
     last = now;
     let moving = false;
-    for (const pill of visible) {
-      const s = state.get(pill);
+    for (const element of visible) {
+      const s = state.get(element);
       const diff = ((s.target - s.angle + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
       s.angle += diff * (1 - Math.exp(-dt * 7));
       s.bright += (s.near - s.bright) * (1 - Math.exp(-dt * 8));
       if (Math.abs(diff) > 0.002 || Math.abs(s.near - s.bright) > 0.002) moving = true;
       // Math angle (counter-clockwise from +x) to a CSS conic angle (clockwise from the top).
-      pill.style.setProperty('--spec-angle', `${(90 - s.angle * 180 / Math.PI).toFixed(1)}deg`);
-      pill.style.setProperty('--spec', s.bright.toFixed(3));
+      element.style.setProperty('--spec-angle', `${(90 - s.angle * 180 / Math.PI).toFixed(1)}deg`);
+      element.style.setProperty('--spec', s.bright.toFixed(3));
     }
     frame = moving ? requestAnimationFrame(tick) : 0;
   }
@@ -62,8 +63,29 @@
       if (entry.isIntersecting) visible.add(entry.target);
       else visible.delete(entry.target);
     }
+    // An element that scrolls or is drawn into view lights up without waiting for the next pointer move.
+    if (pointer && !reducedMotion.matches) { aim(); request(); }
   });
-  pills.forEach(pill => seen.observe(pill));
+  const litIn = node => node instanceof Element ? [...(node.matches(LIT) ? [node] : []), ...node.querySelectorAll(LIT)] : [];
+  function track(element) {
+    lit.add(element);
+    state.set(element, { angle: 2.4, bright: 0, target: 2.4, near: 0, follows: element.matches(FOLLOWS) });
+    seen.observe(element);
+  }
+  function untrack(element) {
+    seen.unobserve(element);
+    lit.delete(element);
+    visible.delete(element);
+    state.delete(element);
+  }
+  litIn(document.body).forEach(track);
+  // filters.js redraws the toolbar's condition tags on every change; new tags pick up the same light.
+  new MutationObserver(records => {
+    for (const record of records) {
+      record.removedNodes.forEach(node => litIn(node).forEach(untrack));
+      record.addedNodes.forEach(node => litIn(node).forEach(track));
+    }
+  }).observe(document.querySelector('.filter-tags'), { childList: true });
   addEventListener('pointermove', event => {
     if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
     pointer = { x: event.clientX, y: event.clientY };
@@ -77,7 +99,7 @@
   }, { passive: true });
   reducedMotion.addEventListener('change', () => {
     if (!reducedMotion.matches) return;
-    for (const pill of pills) pill.style.setProperty('--spec', '0');
+    for (const element of lit) element.style.setProperty('--spec', '0');
   });
 
   // React Bits Glass Surface refraction (Chromium only, like the original): a per-element SVG displacement map,
@@ -104,8 +126,8 @@
   const channel = (scale, matrix, name) => `<feDisplacementMap in="SourceGraphic" in2="map" scale="${scale}" xChannelSelector="R" yChannelSelector="G" result="d${name}"/>`
     + `<feColorMatrix in="d${name}" type="matrix" values="${matrix}" result="${name}"/>`;
   const refracted = [
-    ...document.querySelectorAll('.filters, .empty-state'),
-    ...document.querySelectorAll('.filter-field select, .filter-field input, .filter-footer button, .reset-empty'),
+    ...document.querySelectorAll('.filter-bar, .filter-card, .empty-state'),
+    ...document.querySelectorAll('.picker-trigger, .ms-search, .filter-select input, .reset-empty'),
   ];
   const images = new Map();
   refracted.forEach((element, index) => {
@@ -125,7 +147,7 @@
     defs.append(filter);
     images.set(element, filter.querySelector('feImage'));
     // Panels keep their frost underneath; pills follow the original's clear refraction.
-    const frost = element.matches('.filters, .empty-state') ? 'blur(18px) ' : '';
+    const frost = element.matches('.filter-bar, .filter-card, .empty-state') ? 'blur(18px) ' : '';
     element.style.backdropFilter = `${frost}url(#${id}) saturate(1.5)`;
   });
   const resized = new ResizeObserver(entries => {
