@@ -17,8 +17,8 @@
 .filter-dock.is-stuck{--dock:1}
 .filter-scrim{position:fixed;inset:0;z-index:19;background:rgb(5 5 11/.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
-.filter-bar{display:flex;align-items:center;gap:8px;height:60px;background:linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);margin-inline:calc(-1*var(--bleed));padding:0 calc(12px*(1 - var(--dock)) + var(--bleed));border-color:rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);border-radius:calc(30px*(1 - var(--dock)));box-shadow:inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04)}
-.filter-toggle{display:inline-flex;flex:none;align-items:center;gap:8px;min-height:36px;padding:0 12px 0 10px;border:0;border-radius:999px;background:none;color:var(--ink);font:700 14px/1 var(--font-display);cursor:pointer}
+.filter-bar{display:flex;align-items:center;gap:8px;height:48px;background:linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);margin-inline:calc(-1*var(--bleed));padding:0 calc(7px*(1 - var(--dock)) + var(--bleed));border-color:rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);border-radius:calc(24px*(1 - var(--dock)));box-shadow:inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04)}
+.filter-toggle{display:inline-flex;flex:none;align-items:center;gap:8px;min-height:32px;padding:0 12px 0 10px;border:0;border-radius:999px;background:none;color:var(--ink);font:700 13px/1 var(--font-display);cursor:pointer}
 .filter-burger{display:flex;flex-direction:column;gap:4px;width:16px}
 .filter-burger i{height:1.5px;border-radius:1px;background:currentColor;transition:transform .3s cubic-bezier(.215,.61,.355,1)}
 .filter-bar.is-open .filter-burger i:first-child{transform:translateY(2.75px) rotate(45deg)}
@@ -32,10 +32,10 @@ html.is-filtering{overflow:hidden;scrollbar-gutter:stable}
 .filter-tags{position:relative;display:flex;flex:1;align-items:center;gap:6px;min-width:0;margin:0;padding:0;list-style:none;overflow-x:auto;scrollbar-width:none}
 .filter-tags::-webkit-scrollbar{display:none}
 /* One tag tall even when every tag is leaving (lifted out of flow), so they are not clipped while they go. */
-.filter-tags{min-height:36px}.filter-tags li{flex:none}
-.filter-tag{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 6px 0 14px;border:0;border-radius:999px;background:color-mix(in srgb,var(--brand-pink) 16%,transparent);--spec-base:color-mix(in srgb,var(--brand-pink) 70%,transparent);color:#fff;font:600 13px/1 var(--font-display);white-space:nowrap;cursor:pointer}
+.filter-tags{min-height:32px}.filter-tags li{flex:none}
+.filter-tag{display:inline-flex;align-items:center;gap:8px;min-height:32px;padding:0 6px 0 14px;border:0;border-radius:999px;background:color-mix(in srgb,var(--brand-pink) 16%,transparent);--spec-base:color-mix(in srgb,var(--brand-pink) 70%,transparent);color:#fff;font:600 13px/1 var(--font-display);white-space:nowrap;cursor:pointer}
 .filter-tag span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--brand-pink);font-size:12px;line-height:1}
-.filter-clear{flex:none;min-height:36px;padding:0 8px;border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer}
+.filter-clear{flex:none;min-height:32px;padding:0 8px;border:0;background:none;color:var(--muted);font-size:12px;cursor:pointer}
 .filter-count{display:flex;flex:none;align-items:center;gap:4px;height:28px;margin:0;padding:0 0 0 10px;border-left:1px solid rgb(255 255 255/.14)}
 .filter-count strong{font:700 17px/1 var(--font-display);color:var(--brand-pink)}
 .filter-count>span[aria-hidden]{font-size:11px;color:var(--muted)}

@@ -553,8 +553,9 @@ export function createReelEngine(stage, items, { start, onChange, onSelect }) {
   document.addEventListener('visibilitychange', () => { if (!document.hidden) requestFrame(); });
   reduced.addEventListener('change', requestFrame);
   new ResizeObserver(resize).observe(stage);
-  new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
+  // The latest entry of a batch decides (a reload restoring a deep scroll reports the first layout, then the real place).
+  new IntersectionObserver(entries => {
+    visible = entries.at(-1).isIntersecting;
     requestFrame();
   }).observe(stage);
   canvas.addEventListener('webglcontextlost', event => {

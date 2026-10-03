@@ -395,8 +395,10 @@ if (typeof document !== 'undefined') {
   // is-stuck marks the dock while it is pinned to the top: a state switch (question 170), after which site.css eases the
   // bar into a flush full-width bar. --edge is how far the bar then reaches past the content column.
   // The root reaches far below the screen, so the sentinel only stops intersecting once it has passed the top: a jump
-  // from below the screen to above it still crosses that edge and reports.
-  new IntersectionObserver(([entry]) => {
+  // from below the screen to above it still crosses that edge and reports. A batch can hold several entries (a reload
+  // restoring a deep scroll reports the first layout and then the restored place), so the latest one decides.
+  new IntersectionObserver(entries => {
+    const entry = entries.at(-1);
     dock.classList.toggle('is-stuck', !entry.isIntersecting && entry.boundingClientRect.top < 0);
   }, { rootMargin: '0px 0px 100000px 0px' }).observe(sentinel);
   const setEdge = () => dock.style.setProperty('--edge', `${dock.getBoundingClientRect().left}px`);

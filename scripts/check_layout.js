@@ -54,7 +54,7 @@ function checkLayout() {
     assert(parseFloat(getComputedStyle(nav).paddingBottom) >= 24, 'The last card clears the bottom edge');
     assert(nav.classList.contains('has-more') === (nav.scrollHeight - nav.clientHeight - nav.scrollTop > 1), 'The bottom fade shows exactly while more cards lie below');
   }
-  assert(Math.abs(bar.getBoundingClientRect().height - 60) < 1, 'The filter bar is 60px tall');
+  assert(Math.abs(bar.getBoundingClientRect().height - 48) < 1, 'The filter bar is 48px tall');
   assert(getComputedStyle(bar).boxShadow.split(/,(?![^(]*\))/).every(shadow => shadow.includes('inset')), 'The filter bar casts no shadow');
   assert(getComputedStyle(dock, '::before').content === 'none', 'No backdrop band behind the stuck bar');
   if (Number(getComputedStyle(dock).getPropertyValue('--dock')) === 1) {
@@ -74,7 +74,7 @@ function checkLayout() {
   assert(edge.classList.contains('has-before') === strip.scrollLeft > 1
     && edge.classList.contains('has-after') === strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 1, 'The tag strip fades exactly where tags lie beyond it');
   // Layout height, so a tag mid-unfold (scaled from 0.8) still counts; leaving tags are on their way out.
-  for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) assert(Math.abs(tag.offsetHeight - 36) < 1, 'Selected tags are 36px pills, as tall as the filter button');
+  for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) assert(Math.abs(tag.offsetHeight - 32) < 1, 'Selected tags are 32px pills, as tall as the filter button');
   const barBox = bar.getBoundingClientRect();
   for (const part of bar.children) {
     if (!part.getClientRects().length) continue;
@@ -85,8 +85,8 @@ function checkLayout() {
   for (const panel of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card') : []), document.getElementById('empty-state')]) {
     if (!panel.getClientRects().length) continue;
     const style = getComputedStyle(panel);
-    // The bar is a full pill (30px on its 60px height) and squares its corners as it docks (× (1 − --dock); question 216).
-    const radius = panel === bar ? 30 * (1 - Number(getComputedStyle(dock).getPropertyValue('--dock'))) : 24;
+    // The bar is a full pill (24px on its 48px height) and squares its corners as it docks (× (1 − --dock); question 216).
+    const radius = panel === bar ? 24 * (1 - Number(getComputedStyle(dock).getPropertyValue('--dock'))) : 24;
     assert(Math.abs(parseFloat(style.borderTopLeftRadius) - radius) < 0.5 && style.backdropFilter.includes('blur'), `${panel.className}: panel must be frosted glass`);
   }
   for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip span, .family-chip, .filter-select input, .picker-trigger, .ms-search, .filter-tag, .reset-empty')) {
