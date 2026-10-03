@@ -15,6 +15,7 @@ uniform vec3 uColors[4];
 uniform vec2 uMouse;
 uniform float uMouseActive;
 uniform float uScroll;
+uniform float uSpan;
 uniform vec4 uCtrlA;
 uniform vec4 uCtrlB;
 uniform vec4 uCtrlC;
@@ -53,7 +54,9 @@ vec3 palette(float e) {
 void main() {
   vec2 uv = gl_FragCoord.xy / iResolution;
   // The contours drift up with the page at a fraction of the scroll (layered depth); the field repeats, so any offset works.
-  vec2 terrain = (gl_FragCoord.xy - vec2(0.0, uScroll)) / iResolution;
+  // One fixed span in both axes, centred on the canvas: resizing the window shows more or less of the terrain instead of
+  // stretching it (React Bits normalises x and y by the canvas width and height separately; question 213).
+  vec2 terrain = (gl_FragCoord.xy - 0.5 * iResolution - vec2(0.0, uScroll)) / uSpan + 0.5;
   float fv = field((terrain - 0.5) / SCALE + 0.5);
 
   vec2 d = uv - uMouse;
@@ -74,16 +77,23 @@ void main() {
   fragColor = vec4(color * a, a);
 }`;
 
+const MAX_BANDS = 8; // Only bands that reach the screen are passed; a screen shows a few headings at most.
+
 // Frosted glass behind the text: the drawn contours are blurred with a separable Gaussian (a horizontal then a vertical
 // pass, sampling every texel out to 3 sigma) whose sigma varies smoothly per pixel row. The glass is full above the
-// reel and from below it to the date axis, easing out across the reel's margins and below the axis. Colours are kept.
+// reel and from below it to the filter bar's resting place, easing out across the reel's margins and below the bar.
+// Further bands sit behind the text that stands on the background (the day headings, the footer), each easing in and
+// out across the gaps around it. Colours are kept.
 const blurFragment = `#version 300 es
 precision highp float;
+#define MAX_BANDS ${MAX_BANDS}
 uniform sampler2D tMap;
 uniform vec2 uResolution;
 uniform vec2 uDirection;
 uniform vec4 uGlassReel;
 uniform vec2 uGlassEnd;
+uniform vec4 uBands[MAX_BANDS]; // Per band: ease-in start, full from, full until, ease-out end (canvas px from the top).
+uniform int uBandCount;
 uniform float uSigma;
 out vec4 fragColor;
 
@@ -92,6 +102,11 @@ void main() {
   float y = uResolution.y - gl_FragCoord.y;
   float glass = max(1.0 - smoothstep(uGlassReel.x, uGlassReel.y, y),
     smoothstep(uGlassReel.z, uGlassReel.w, y) * (1.0 - smoothstep(uGlassEnd.x, uGlassEnd.y, y)));
+  for (int i = 0; i < MAX_BANDS; i++) {
+    if (i >= uBandCount) break;
+    vec4 band = uBands[i];
+    glass = max(glass, smoothstep(band.x, band.y, y) * (1.0 - smoothstep(band.z, band.w, y)));
+  }
   float sigma = uSigma * glass;
   vec4 color = texture(tMap, uv);
   if (sigma < 0.3) {
@@ -115,6 +130,8 @@ const SPEED = 0.35, MORPH_AMOUNT = 3, MORPH_SPEED = 0.05;
 const REEL_GAP = (1 - 0.7) / 2; // Blank share above and below the posters (CARD_HEIGHT 0.7 in scripts/hero.mjs).
 const GLASS_TAIL = 224; // 14rem fade below the filter bar's resting place.
 const GLASS_SIGMA = 6; // CSS px, like blur(6px).
+const TEXT_FADE = 4; // Text bands ease across 4× the gap beside them, mostly under the neighbouring cards (question 211).
+const TERRAIN_SPAN = 1140; // CSS px per terrain unit: on a 1440 × 900 window each shape keeps the area React Bits gives it (question 220).
 const SCROLL_DEPTH = 0.15; // The contours move at 0.15× the page scroll.
 
 function hexToRgb(hex) {
@@ -122,7 +139,7 @@ function hexToRgb(hex) {
   return [r, g, b];
 }
 
-export function initTopography(canvas, reel, sentinel, dock) {
+export function initTopography(canvas, reel, sentinel, dock, footer) {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const unavailable = reason => {
     canvas.hidden = true;
@@ -146,6 +163,7 @@ export function initTopography(canvas, reel, sentinel, dock) {
       uMouse: { value: mouse },
       uMouseActive: { value: 0 },
       uScroll: { value: 0 },
+      uSpan: { value: 1 },
       uCtrlA: { value: [0, 0, 0, 0] },
       uCtrlB: { value: [0, 0, 0, 0] },
       uCtrlC: { value: [0, 0, 0, 0] },
@@ -163,6 +181,8 @@ export function initTopography(canvas, reel, sentinel, dock) {
       uDirection: { value: [1, 0] },
       uGlassReel: { value: [0, 0, 0, 0] },
       uGlassEnd: { value: [0, 0] },
+      uBands: { value: Array.from({ length: MAX_BANDS }, () => [0, 0, 0, 0]) },
+      uBandCount: { value: 0 },
       uSigma: { value: 1 }
     }
   });
@@ -185,6 +205,7 @@ export function initTopography(canvas, reel, sentinel, dock) {
     mouse[0] += 0.05 * (mouseTarget[0] - mouse[0]);
     mouse[1] += 0.05 * (mouseTarget[1] - mouse[1]);
     u.uMouseActive.value = reducedMotion.matches ? 0 : u.uMouseActive.value + 0.05 * (mouseActiveTarget - u.uMouseActive.value);
+    u.uSpan.value = TERRAIN_SPAN * renderer.dpr;
     u.uScroll.value = reducedMotion.matches ? 0 : scrollY * SCROLL_DEPTH * renderer.dpr; // GL y points up: features rise.
     // Glass edges in page px, shifted by the scroll and scaled to the canvas: each reel fade spans the blank margin
     // plus the same length into the text beside it.
@@ -193,6 +214,11 @@ export function initTopography(canvas, reel, sentinel, dock) {
     const reelBottom = reelTop + reel.offsetHeight, barBottom = sentinel.getBoundingClientRect().bottom + dock.offsetHeight;
     g.uGlassReel.value = [reelTop - gap, reelTop + gap, reelBottom - gap, reelBottom + gap].map(value => value * renderer.dpr);
     g.uGlassEnd.value = [barBottom, barBottom + GLASS_TAIL].map(value => value * renderer.dpr);
+    g.uBandCount.value = textBands(barBottom).reduce((count, band) => {
+      if (count === MAX_BANDS || band[3] < 0 || band[0] > renderer.height) return count;
+      g.uBands.value[count] = band.map(value => value * renderer.dpr);
+      return count + 1;
+    }, 0);
     g.uSigma.value = GLASS_SIGMA * renderer.dpr;
     renderer.render({ scene: mesh, target: drawn });
     g.tMap.value = drawn.texture;
@@ -202,6 +228,24 @@ export function initTopography(canvas, reel, sentinel, dock) {
     g.uDirection.value = [0, 1];
     renderer.render({ scene: blurMesh });
     if (animating()) frame = requestAnimationFrame(render);
+  }
+  // Bands behind the text on the background, in viewport px: each visible day's heading (with the note of a day without
+  // events) eases in from the content above and out towards its first card, or to what follows, over TEXT_FADE times
+  // the gap between; the footer eases in from its divider over TEXT_FADE times its top padding and stays full to the
+  // page's end.
+  function textBands(barBottom) {
+    const days = [...document.querySelectorAll('.day-group:not([hidden])')];
+    const bands = days.map((day, i) => {
+      const heading = day.querySelector('.day-heading'), cards = day.querySelector('.event-accordion');
+      const text = heading.getBoundingClientRect(), last = (day.querySelector('.empty-day') ?? heading).getBoundingClientRect();
+      const above = i ? days[i - 1].getBoundingClientRect().bottom : barBottom;
+      const below = (cards ?? days[i + 1] ?? footer).getBoundingClientRect().top;
+      const fadeIn = Math.max(TEXT_FADE * (text.top - above), 1), fadeOut = Math.max(TEXT_FADE * (below - last.bottom), 1);
+      return [text.top - fadeIn, text.top, last.bottom, last.bottom + fadeOut];
+    });
+    const top = footer.getBoundingClientRect().top;
+    const end = renderer.height + 2; // Past the canvas: full to the bottom of the screen.
+    return [...bands, [top, top + TEXT_FADE * parseFloat(getComputedStyle(footer).paddingTop), end, end + 1]];
   }
   function requestRender() {
     if (!frame && !canvas.hidden) frame = requestAnimationFrame(render);
@@ -241,7 +285,7 @@ export function initTopography(canvas, reel, sentinel, dock) {
 
 if (typeof document !== 'undefined') {
   const start = () => initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'),
-    document.querySelector('.filter-sentinel'), document.querySelector('.filter-dock'));
+    document.querySelector('.filter-sentinel'), document.querySelector('.filter-dock'), document.querySelector('.site-footer'));
   // The brand colour tokens and the canvas size come from site.css. On a first visit iOS Safari can run this deferred
   // script while those tokens still resolve empty, even with the stylesheet object present, so wait for `load`.
   if (getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim()) start();

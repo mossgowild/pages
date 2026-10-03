@@ -208,6 +208,30 @@ if (typeof document !== 'undefined') {
     return items.length > 0;
   }
 
+  // Where the bar docks: 2px past the sentinel (scroll positions round to whole pixels, and the observer counts a
+  // sentinel within a pixel of the edge as still visible).
+  const dockPoint = () => Math.ceil(sentinel.getBoundingClientRect().bottom + scrollY) + 2;
+  // However few the results, the page keeps a screen below the dock point, so the bar can stay docked instead of
+  // sliding down when a filter shortens the list. The room is space after the list (a margin), measured off the page.
+  const schedule = document.getElementById('schedule');
+  let dockRoom = 0;
+  function keepDockRoom() {
+    const natural = document.documentElement.scrollHeight - dockRoom;
+    dockRoom = Math.max(0, Math.ceil(innerHeight - (natural - dockPoint())));
+    schedule.style.marginBottom = dockRoom ? `${dockRoom}px` : '';
+  }
+
+  // Any change of conditions brings the page to the start of the results, right under the docked bar (questions 205,
+  // 207): at once behind the open panel, smoothly otherwise.
+  // The glide can be cut off as the list grows under it, so it ends with an exact placement.
+  function showResults() {
+    const settle = () => {
+      if (Math.abs(scrollY - dockPoint()) >= 1) scrollTo({ top: dockPoint(), behavior: 'instant' });
+    };
+    if (isOpen()) settle();
+    else if (Math.abs(scrollY - dockPoint()) >= 1) glideTo(dockPoint()).then(settle);
+  }
+
   function apply() {
     const filters = readFilters();
     const valid = validRange(filters) && fields.from.validity.valid && fields.to.validity.valid;
@@ -230,6 +254,7 @@ if (typeof document !== 'undefined') {
     count.textContent = valid ? total : events.length;
     summary.textContent = !valid ? '日期条件无效，暂显示全部活动'
       : active ? `找到 ${total} / ${events.length} 场活动` : `全部 ${events.length} 场活动`;
+    keepDockRoom();
   }
 
   // React Bits Card Nav: the panel (the form, an overlay below the bar like Card Nav's own) grows over 0.4s (power3.out)
@@ -264,10 +289,13 @@ if (typeof document !== 'undefined') {
   // The overlay drops from the docked bar, so a bar still in the page first scrolls up to dock (question 180). Resolves
   // when the scroll arrives or stops short (a page too short to reach that place).
   function dockBar() {
-    // 2px past the sentinel: scroll positions round to whole pixels, and the observer counts a sentinel within a pixel
-    // of the edge as still visible.
-    const target = Math.min(Math.ceil(sentinel.getBoundingClientRect().bottom + scrollY) + 2, document.documentElement.scrollHeight - innerHeight);
+    const target = Math.min(dockPoint(), document.documentElement.scrollHeight - innerHeight);
     if (isStuck() || scrollY >= target - 0.5) return Promise.resolve();
+    return glideTo(target);
+  }
+  // A smooth scroll that resolves when it arrives, stalls (a page too short, or the motion cut off by content changing
+  // underneath) or runs past 1.5s.
+  function glideTo(target) {
     scrollTo({ top: target, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
     const start = performance.now();
     return new Promise(resolve => {
@@ -327,6 +355,7 @@ if (typeof document !== 'undefined') {
   form.addEventListener('change', event => {
     if (event.target.name === 'city') updateVenues();
     apply();
+    showResults();
   });
   form.addEventListener('reset', event => {
     event.preventDefault();
@@ -335,7 +364,15 @@ if (typeof document !== 'undefined') {
     fields.from.value = fields.to.value = '';
     updateVenues();
     apply();
+    if (!quietReset) showResults();
   });
+  // Resets that lead somewhere else (an anchor, a spotlight card) leave the scrolling to that destination.
+  let quietReset = false;
+  const resetQuietly = () => {
+    quietReset = true;
+    form.reset();
+    quietReset = false;
+  };
   document.getElementById('reset-empty').addEventListener('click', () => {
     form.reset();
     toggle.focus();
@@ -343,13 +380,13 @@ if (typeof document !== 'undefined') {
   function revealTarget() {
     const target = document.getElementById(location.hash.slice(1));
     if (target && (target.hidden || target.closest('.day-group')?.hidden)) {
-      form.reset();
+      resetQuietly();
       target.scrollIntoView();
     }
   }
   for (const link of document.querySelectorAll('.spotlight-card')) link.addEventListener('click', () => {
     const target = document.querySelector(link.hash);
-    if (target.hidden || target.closest('.day-group').hidden) form.reset();
+    if (target.hidden || target.closest('.day-group').hidden) resetQuietly();
   });
   window.addEventListener('hashchange', revealTarget);
   updateVenues();
@@ -363,8 +400,16 @@ if (typeof document !== 'undefined') {
     dock.classList.toggle('is-stuck', !entry.isIntersecting && entry.boundingClientRect.top < 0);
   }, { rootMargin: '0px 0px 100000px 0px' }).observe(sentinel);
   const setEdge = () => dock.style.setProperty('--edge', `${dock.getBoundingClientRect().left}px`);
+  // The list also changes size after a filter (a row opening in the accordion, posters loading), so the room and, with
+  // the panel open, the page's place at the start of the results follow its size.
+  // Deferred a frame: adjusting the page inside the observer's own callback would re-trigger layout observers in WebKit.
+  new ResizeObserver(() => requestAnimationFrame(() => {
+    keepDockRoom();
+    if (isOpen() && Math.abs(scrollY - dockPoint()) >= 1) scrollTo({ top: dockPoint(), behavior: 'instant' });
+  })).observe(schedule);
   addEventListener('resize', () => {
     setEdge();
+    keepDockRoom();
     if (isOpen() && !panel.hidden) {
       fitPanel();
       markMore();
