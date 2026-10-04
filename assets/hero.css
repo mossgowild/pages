@@ -1,39 +1,48 @@
 .hero{padding:34px 0 0;isolation:isolate}
-.hero-edition{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.hero-period{display:flex;align-items:baseline;gap:18px;font-family:var(--font-display);white-space:nowrap}
-.hero-period>span{font-size:11px;letter-spacing:.12em;color:var(--muted)}
-.hero-period strong{font-size:clamp(18px,2.2vw,28px);font-weight:400;letter-spacing:-.05em}
-.hero-coverage{margin:0;font-family:var(--font-display);font-size:11px;color:var(--muted);white-space:nowrap}
-.hero-coverage span{margin-inline:10px;color:#67616f}
-/* Flex Carousel reel: full page width (outside .wrap); WebGL draws the posters, the list is the no-WebGL view. */
-.hero-stage{position:relative;height:720px;margin:16px 0 0;overflow:hidden;cursor:grab;touch-action:pan-y pinch-zoom;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-.hero-stage:not(.is-webgl){cursor:auto}
-.hero-stage[data-dragging]{cursor:grabbing}
-.hero-stage:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.hero-canvas{position:absolute;inset:0;display:block}
+/* Drift Wall poster wall: full page width (outside .wrap); without the script the poster list scrolls sideways.
+   It runs down to the schedule heading (hero-mobile question 10): the negative bottom margin equals the schedule's top
+   padding in site.css (44px, 32px on phones) and the height grows by the old gap (720 + 68, 480 + 54). */
+.hero-stage{position:relative;height:788px;margin:16px 0 -44px;overflow:hidden;-webkit-tap-highlight-color:transparent}
 .hero-reel{display:flex;align-items:center;gap:12px;height:100%;margin:0;padding:0;list-style:none;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}
 .hero-reel::-webkit-scrollbar{display:none}
 .hero-reel li{flex:none;height:70%;scroll-snap-align:center}
 .hero-poster{display:block;height:100%}
 .hero-poster img{display:block;width:auto;height:100%}
-.hero-stage.is-webgl .hero-reel{display:none}
-.hero-editorial{padding:8px 0 24px}
-.hero-detail{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px;align-items:center}
-.hero-event-meta{grid-column:1;grid-row:1;margin:0;font:11px/1.5 var(--font-display);letter-spacing:.1em;color:var(--muted);white-space:nowrap}
-.hero-event-meta span{margin-inline:8px;color:#736b80}
-.hero-detail h3{grid-column:1/-1;margin:10px 0 0;font-family:var(--font-display);font-size:clamp(22px,2.8vw,34px);font-weight:500;line-height:1.2;letter-spacing:-.035em;overflow-wrap:anywhere}
-.hero-genres{grid-column:1/-1;margin:9px 0 0;font-size:12px;color:var(--violet);overflow-wrap:anywhere}
-.hero-event-link{grid-column:2;grid-row:1;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:10px 0;color:var(--ink);text-decoration:none;font-size:12px;white-space:nowrap;border-bottom:1px solid #787082}
-.hero-event-link:hover{color:var(--pink);border-color:var(--pink)}
+.hero-stage.is-wall .hero-reel{display:none}
+/* React Bits Drift Wall styles with its defaults, except tiles without dimming or the dark tile overlay (column widths and
+   square tile heights, the turn and the poster parallax are set by scripts/hero.mjs, hero-mobile questions 11–12 and Q14),
+   and its elliptical edge fade with 12% fades at the top and bottom instead of its fade towards the top
+   (hero-mobile questions 5, 7 and 8): the middle stays opaque and the wall never ends in a hard edge. */
+.drift-wall{position:absolute;inset:0;overflow:hidden;perspective:1200px;perspective-origin:50% 50%;
+  -webkit-mask-image:radial-gradient(ellipse 78% 82% at 50% 46%,#000 40%,transparent 100%),linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:radial-gradient(ellipse 78% 82% at 50% 46%,#000 40%,transparent 100%),linear-gradient(to bottom,transparent,#000 12%,#000 88%,transparent);
+  mask-composite:intersect}
+.drift-wall__plane{position:absolute;top:50%;left:50%;display:flex;transform-style:preserve-3d;cursor:pointer;transform-origin:50% 50%;will-change:transform}
+/* Only the posters take the pointer: the plane, columns and tracks are coplanar with them, and Chrome's 3D hit testing
+   otherwise hands many taps and clicks on a poster to its track. */
+.drift-wall__plane,.drift-wall__col,.drift-wall__track{pointer-events:none}
+.drift-wall__tile{pointer-events:auto}
+.drift-wall__col{position:relative;transform-style:preserve-3d}
+.drift-wall__track{display:flex;flex-direction:column;will-change:transform;transform-style:preserve-3d}
+.drift-wall__tile{position:relative;display:block;flex:none;width:100%;outline:none;transform-style:preserve-3d}
+.drift-wall__inner{position:absolute;inset:9px;display:block;overflow:hidden;border-radius:14px;background:#0b0b12;pointer-events:none;
+  transition:transform .42s cubic-bezier(.22,1,.36,1),box-shadow .42s cubic-bezier(.22,1,.36,1)}
+.drift-wall__tile img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92);transition:filter .42s cubic-bezier(.22,1,.36,1);user-select:none;-webkit-user-drag:none}
+.drift-wall__tile.is-active .drift-wall__inner,.drift-wall__tile:focus-visible .drift-wall__inner{transform:translateZ(64px);box-shadow:0 24px 60px -18px rgb(0 0 0/.7)}
+/* While motion is allowed the poster is uncropped: as wide as the tile (a landscape poster as tall), so scripts/hero.mjs
+   can pan it across the whole poster; still, it is cropped to the square tile. */
+@media(prefers-reduced-motion:no-preference){
+  .drift-wall__tile img{height:calc(var(--ratio)*100%)}
+  .drift-wall__tile img.is-wide{width:calc(100%/var(--ratio));height:100%}
+}
+.drift-wall__tile.is-active img,.drift-wall__tile:focus-visible img{filter:saturate(1.05)}
+/* The original's ring on the lifted poster replaces the site outline, which would frame the unlifted tile. */
+.drift-wall .drift-wall__tile:focus-visible{outline:none}
+.drift-wall__tile:focus-visible .drift-wall__inner{box-shadow:0 24px 60px -18px rgb(0 0 0/.7),0 0 0 2px rgb(255 255 255/.9)}
+@media(prefers-reduced-motion:reduce){.drift-wall__plane,.drift-wall__track{will-change:auto}}
 @media(max-width:700px){
   .hero{padding-top:24px}
-  .hero-edition{align-items:start;flex-direction:column;gap:8px}
-  .hero-period{width:100%;justify-content:space-between}
-  .hero-period strong{font-size:23px}
-  .hero-coverage{font-size:11px}
-  .hero-coverage span{margin-inline:8px}
-  .hero-stage{height:480px;margin-top:14px}
-  .hero-editorial{padding-block:6px 22px}
-  .hero-detail h3{font-size:23px}
+  .hero-stage{height:534px;margin:14px 0 -32px}
 }
-@media print{.hero{padding:0}.hero-stage{display:none}.hero-edition,.hero-editorial{padding:10px 0}.hero-detail h3,.hero-coverage,.hero-event-link{color:#111}}
+@media print{.hero{display:none}}

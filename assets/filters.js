@@ -385,7 +385,10 @@ if (typeof document !== 'undefined') {
       target.scrollIntoView();
     }
   }
-  for (const link of document.querySelectorAll('.spotlight-card')) link.addEventListener('click', () => {
+  // Delegated, so the poster wall's repeated tiles clear the filters like the original links.
+  document.addEventListener('click', event => {
+    const link = event.target.closest('.spotlight-card');
+    if (!link) return;
     const target = document.querySelector(link.hash);
     if (target.hidden || target.closest('.day-group').hidden) resetQuietly();
   });

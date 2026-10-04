@@ -353,37 +353,31 @@ def render():
                       for name, members in genre_families.items()}
     featured = [next(event for event in events if event['id'] == ident) for ident in data['featured']]
     assert len(featured) >= 3 and len(set(data['featured'])) == len(featured), 'Choose distinct featured events'
-    cards, captions = [], []
+    cards = []
     for index, event in enumerate(featured):
         poster = event['posters'][0]
         image = images[poster['image']]
         loading = 'eager' if index < 4 else 'lazy'
-        cards.append(f'<li><a class="hero-poster" href="#{escape(event["id"])}" draggable="false"'
+        # Each poster opens its event (question 6); spotlight-card clears filters that hide it (assets/filters.js).
+        cards.append(f'<li><a class="hero-poster spotlight-card" href="#{escape(event["id"])}" draggable="false"'
                      f' aria-label="{escape(event["name"], quote=True)} · 阵容与购票">'
                      f'<img src="{poster_path(poster["image"])}" width="{image["width"]}" height="{image["height"]}"'
                      f' loading="{loading}" decoding="async" draggable="false"'
                      f' alt="{escape(poster["alt"], quote=True)}"></a></li>')
-        hidden = '' if index == 1 else ' hidden'
-        captions.append(f'<div class="hero-detail"{hidden}>'
-                        f'<p class="hero-event-meta">{event["date"][5:].replace("-", ".")} <span>·</span> {escape(event["city"])}</p>'
-                        f'<a class="hero-event-link spotlight-card" href="#{escape(event["id"])}">阵容与购票 <span aria-hidden="true">↗</span></a>'
-                        f'<h3>{escape(event["name"])}</h3>'
-                        f'<p class="hero-genres">{escape(" · ".join(event["genres"]))}</p></div>')
     title, publisher = data['title'], data['publisher']
     values = {
         'title': escape(''.join(title[key] for key in ('region', 'topic', 'guide'))),
         'title_region': escape(title['region']), 'title_topic': escape(title['topic']), 'title_guide': escape(title['guide']),
         'byline': escape('By ' + publisher['name'] + publisher['latin']), 'brand_logo': brand_logo(),
         'edition_year': str(start.year), 'date_range': f'{start:%m.%d} — {end:%m.%d}',
-        'schedule': '\n'.join(groups), 'event_count': str(len(events)), 'city_count': f'{len(cities):02}',
-        'day_count': f'{len(days):02}', 'updated_iso': data['updated_at'],
+        'schedule': '\n'.join(groups), 'event_count': str(len(events)), 'updated_iso': data['updated_at'],
         'updated_date': datetime.fromisoformat(data['updated_at']).strftime('%m.%d'),
         'updated_time': datetime.fromisoformat(data['updated_at']).strftime('%H:%M'),
         'start_date': start.isoformat(), 'end_date': end.isoformat(),
         'city_chips': ''.join(chip('city', city, city) for city in cities),
         'family_chips': ''.join(family_chip(index, name, family_members[name]) for index, name in enumerate(genre_order['families'])),
         'genre_options': ''.join(option(genre, genre) for genre in genre_order['genres']),
-        'hero_posters': ''.join(cards), 'hero_details': ''.join(captions),
+        'hero_posters': ''.join(cards),
     }
     output = (ROOT / 'templates/index.html').read_text()
     for key, value in values.items():

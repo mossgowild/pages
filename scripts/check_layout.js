@@ -29,7 +29,9 @@ function checkLayout() {
   assert(!document.querySelector('.hero-bottom, .top-links, .top-meta, .date-panel, .date-trigger'),
     'Remove the repeated hero footer, header navigation and date drawer');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  for (const [selector, pseudo, edge] of [['.topbar', '::after', 'borderBottomColor'], ['.schedule', '::before', 'borderTopColor'],
+  assert(getComputedStyle(document.querySelector('.schedule'), '::before').content === 'none',
+    'No divider between the poster wall and the schedule (hero-mobile question 8)');
+  for (const [selector, pseudo, edge] of [['.topbar', '::after', 'borderBottomColor'],
     ['.site-footer', '::before', 'borderTopColor'], ['.day-heading', '::after']]) {
     const host = document.querySelector(selector);
     const line = getComputedStyle(host, pseudo);
@@ -173,16 +175,17 @@ function checkLayout() {
   if (hero) {
     const box = hero.getBoundingClientRect();
     assert(Math.abs(box.left) < 1 && Math.abs(box.right - viewport) < 1, 'Poster stage must extend to both viewport edges');
-    assert(hero.classList.contains('is-webgl') ? !!hero.querySelector('.hero-canvas') && hero.tabIndex === 0
-      : hero.querySelectorAll('.hero-poster').length > 0, 'Show the WebGL reel or the poster list');
-    assert(!document.querySelector('.hero-controls, .hero-arrow'), 'The reel has no arrow or page-number controls');
-    assert(getComputedStyle(hero).overscrollBehaviorY === 'auto', 'Vertical scrolling over the reel must reach the page');
-    const detail = document.querySelector('.hero-detail:not([hidden])');
-    const date = detail.querySelector('.hero-event-meta').getBoundingClientRect();
-    const booking = detail.querySelector('.hero-event-link').getBoundingClientRect();
-    assert(Math.abs((date.top + date.bottom) / 2 - (booking.top + booking.bottom) / 2) < 1,
-      'Featured date and booking link must share a row');
-    assert(date.right <= booking.left && booking.right <= viewport, 'Featured metadata overlaps or overflows');
+    const posters = hero.querySelectorAll('.hero-poster').length;
+    if (hero.classList.contains('is-wall')) {
+      const tiles = [...hero.querySelectorAll('.drift-wall__tile')];
+      const focusable = tiles.filter(tile => tile.tabIndex >= 0);
+      assert(focusable.length === posters && focusable.every(tile => !tile.hasAttribute('aria-hidden')),
+        'Each featured poster is focusable exactly once in the poster wall');
+      assert(tiles.every(tile => tile.tabIndex >= 0 || tile.getAttribute('aria-hidden') === 'true'),
+        'Repeated wall tiles are hidden from assistive technology');
+    } else assert(posters > 0, 'Show the poster wall or the poster list');
+    assert(!document.querySelector('.hero-detail, .hero-controls, .hero-arrow'), 'The wall has no featured details, arrows or page numbers');
+    assert(getComputedStyle(hero).overscrollBehaviorY === 'auto', 'Vertical scrolling over the wall must reach the page');
   }
   const lists = [...document.querySelectorAll('.event-accordion')].filter(list => list.getClientRects().length);
   let visible = 0;
