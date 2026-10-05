@@ -32,18 +32,18 @@ class Page(HTMLParser):
             self.ids.add(attrs['id'])
         if tag == 'article':
             assert 'event-row' in classes
-            self.card = {'attrs': attrs, 'fields': {}, 'tables': [], 'lineup': None, 'more': None}
+            self.card = {'attrs': attrs, 'fields': {}, 'tables': [], 'lineup': None, 'toggle': None}
             self.cards.append(self.card)
         if 'data-field' in attrs:
             key = attrs['data-field']
             assert key not in self.card['fields'], 'Duplicate event field'
-            self.field = {'text': '', 'links': [], 'images': [], 'items': 0, 'info': [], 'headings': ''}
+            self.field = {'text': '', 'links': [], 'images': [], 'originals': [], 'items': 0, 'info': [], 'headings': ''}
             self.card['fields'][key] = self.field
         if tag == 'section' and 'event-lineup' in classes:
             assert self.card['lineup'] is None, 'Duplicate lineup section'
-            self.field = self.card['lineup'] = {'text': '', 'links': [], 'images': [], 'items': 0, 'info': [], 'headings': ''}
-        if tag == 'button' and 'event-more' in classes:
-            self.card['more'] = attrs
+            self.field = self.card['lineup'] = {'text': '', 'links': [], 'images': [], 'originals': [], 'items': 0, 'info': [], 'headings': ''}
+        if tag == 'button' and 'event-toggle' in classes:
+            self.card['toggle'] = attrs
         if tag == 'table':
             assert 'artist-table' in classes and self.table is None and self.field is self.card['lineup']
             self.table = {'head': False, 'rows': []}
@@ -78,6 +78,7 @@ class Page(HTMLParser):
             if self.field is not None:
                 assert int(attrs['width']) > 0 and int(attrs['height']) > 0, 'Reserve image dimensions'
                 self.field['images'].append(attrs['src'])
+                self.field['originals'].append(attrs.get('data-full'))
 
     def handle_data(self, text):
         if self.field is not None:
@@ -115,6 +116,10 @@ def check():
     events = {event['id']: event for event in data['events']}
     page = Page()
     page.feed(source)
+    manifest = json.loads((ROOT / 'assets/posters/sources.json').read_text())
+    # Every poster's light version (scripts/build_posters.py), a WebP beside the original.
+    lights = {image['path']: image['thumbnail'] for image in manifest['images']}
+    assert all(light.endswith('.thumb.webp') and (ROOT / light).is_file() for light in lights.values()), 'Run scripts/build_posters.py'
     assert not page.stack and page.card is page.field is page.table is page.row is page.cell is None
     visible = re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', source, flags=re.S))
     assert not re.search(r'尚不明确|未知|其它场地|其它时段|其它风格|TBA', visible), 'No unknown or vague placeholders on the page'
@@ -135,7 +140,10 @@ def check():
         known = {'name', 'location', 'info', 'posters'} | ({'artists'} if event['artists'] else set()) | ({'genres'} if event['genres'] else set())
         assert set(fields) == known, 'Keep the known information categories'
         assert attrs['aria-labelledby'] in page.ids and attrs['id'] + '-details' in page.ids, 'Rows need a title and a details region'
-        assert card['more'] and card['more']['aria-controls'] == attrs['id'] + '-details', 'The details line must control the details'
+        # The title opens the event's detail sheet (docs/event-browsing.md Q20–Q25); rows no longer expand in place.
+        toggle = card['toggle']
+        assert toggle and toggle.get('aria-haspopup') == 'dialog' and toggle.get('aria-controls') == 'event-detail' in page.ids and 'aria-expanded' not in toggle, \
+            'The event title must open the detail sheet'
         assert attrs['data-city'] == event['city']
         for key in ('venues', 'genres', 'starts'):
             assert json.loads(attrs['data-' + key]) == event[key], 'Preserve filter data'
@@ -158,18 +166,14 @@ def check():
         assert len(card['tables']) == int(has_details or grouped), 'Artist details/groups need a table'
         lineup = card['lineup']
         timed = any(artist.get('time') for artist in artists)
-        label = re.search(rf'aria-controls="{attrs["id"]}-details"><span>([^<]*)</span>', source)[1]
-        info = event['more_info']
-        expected_sections = [(name, short) for name, short, keys in (('tickets', '票务', ('prices', 'booking')),
-                             ('links', '详情', ('details',)), ('entry', '须知', ('notes',))) if any(info[key] for key in keys)]
         # Rooms the sources name without placing any artist in them (question 203).
         rooms = [stage for stage in event.get('stages', []) if not any(a.get('stage') == stage['name'] for a in artists)]
-        lineup_area = bool(card['tables'] or event.get('lineup_caption') or (rooms and artists))
-        assert label == ' · '.join((['时间表' if timed else '阵容'] if lineup_area else [])
-                                   + [short for _, short in expected_sections] + ['地点']), 'Details line must name its sections'
+        info = event['more_info']
+        expected_sections = [name for name, keys in (('tickets', ('prices', 'booking')), ('links', ('details',)), ('entry', ('notes',)))
+                             if any(info[key] for key in keys)]
         rendered = re.findall(rf'<section class="event-field event-(tickets|links|entry)">', re.search(
             rf'id="{attrs["id"]}-details".*?</article>', source, re.S)[0])
-        assert rendered == [name for name, _ in expected_sections], 'Each 更多信息 section appears only with content, in order'
+        assert rendered == expected_sections, 'Each 更多信息 section appears only with content, in order'
         assert '未知' not in ''.join(cell['text'] for table in card['tables'] for row in table['rows'][1:] for cell in row[1:]), 'Leave unknown genres blank'
         for artist in artists:
             assert not artist.get('genre_sources') or len(artist['genre_sources']) == len(artist['genres']), 'One source per genre line'
@@ -225,20 +229,22 @@ def check():
             if part['type'] == 'mini-program':
                 assert f'data-copy-text="{html.escape(part["code"], quote=True)}"' in source, 'Mini-program codes copy on tap'
         poster = fields['posters']
-        assert poster['images'] == [item['image'] for item in event['posters']], 'Use the full-size posters'
+        # Rows show the light version and name the original for the screen, the detail sheet and the preview (Q34).
+        originals = [item['image'] for item in event['posters']]
+        assert poster['images'] == [lights[original] for original in originals], 'Rows show the light posters'
+        assert poster['originals'] == originals, 'Rows name their original posters (data-full)'
         if poster['images']:
             illustrated_cards += 1
             assert not poster['text'].strip(), 'Remove the poster link label strip'
-            assert poster['links'] == poster['images'], 'Poster links must open their original images'
+            assert poster['links'] == originals, 'Poster links must open their original images'
             assert all((ROOT / link).is_file() for link in poster['links']), 'Missing full-size poster'
         else:
             assert not poster['links'], 'Do not repeat event links in the poster area'
             assert '暂无图片' in poster['text']
     assert all(times == sorted(times) for times in daily_times.values()), 'Events must be ordered by start time'
-    manifest = json.loads((ROOT / 'assets/posters/sources.json').read_text())
-    paths = {image[key] for image in manifest['images'] for key in ('path', 'thumbnail')}
+    # The page itself (hero wall and rows) only loads light versions; the originals come on demand.
     for src in page.images:
-        assert src in paths, f'Poster source missing: {src}'
+        assert src in lights.values(), f'Not a light poster: {src}'
         image_data = (ROOT / src).read_bytes()
         assert image_data.startswith((b'\xff\xd8\xff', b'\x89PNG', b'GIF8', b'RIFF')), src
     assert not re.search(r'wxid_|@chatroom|localhost|file://|/Users/', source)

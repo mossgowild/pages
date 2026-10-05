@@ -112,7 +112,7 @@ function checkLayout() {
   for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip span, .family-chip, .filter-select input, .picker-trigger, .ms-search, .filter-tag, .reset-empty')) {
     if (pill.getClientRects().length) assert(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2, `${pill.className || pill.id}: control must be a pill`);
   }
-  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-more i')) {
+  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close')) {
     assert(getComputedStyle(pill, '::after').backgroundImage.includes('conic-gradient'), 'Pills must carry the specular rim');
   }
   for (const row of document.querySelectorAll('.event-row')) {
@@ -202,31 +202,26 @@ function checkLayout() {
       assert(row.scrollWidth <= row.clientWidth, `${row.id}: overflowing content`);
       // Unknown lineup and genres are left out (question 183); the other four categories are always there.
       const known = 4 + (JSON.parse(row.dataset.genres).length > 0) + (row.querySelector('.row-artists') !== null);
-      assert(row.querySelectorAll('[data-field]').length === known && ['name', 'location', 'info', 'posters']
-        .every(field => row.querySelector(`[data-field="${field}"]`)), `${row.id}: missing information`);
+      // An open detail sheet holds the row's own details (assets/event-detail.js).
+      const parts = [row, ...(row.classList.contains('event-detail-origin') ? [document.querySelector('.event-detail .event-details')] : [])];
+      const field = name => parts.some(part => part.querySelector(`[data-field="${name}"]`));
+      assert(parts.reduce((sum, part) => sum + part.querySelectorAll('[data-field]').length, 0) === known
+        && ['name', 'location', 'info', 'posters'].every(field), `${row.id}: missing information`);
       assert(getComputedStyle(row).borderTopLeftRadius === '24px', `${row.id}: rows use the shared radius`);
+      assert(getComputedStyle(row).transform === 'none', `${row.id}: rows lie flat (docs/glass-effects.md)`);
       const stage = row.querySelector('.event-stage').getBoundingClientRect();
       assert(open ? stage.height >= openHeight - 1 : stage.height >= 84, `${row.id}: wrong ${open ? 'open' : 'collapsed'} height`);
-      assert(row.querySelector('.event-toggle').getAttribute('aria-expanded') === String(open), `${row.id}: toggle state out of sync`);
+      // Rows do not switch or expand any more: the title opens the event's detail sheet (docs/event-browsing.md Q20–Q25).
+      const toggle = row.querySelector('.event-toggle');
+      assert(toggle.getAttribute('aria-haspopup') === 'dialog' && !toggle.hasAttribute('aria-expanded'), `${row.id}: the title opens the details`);
+      assert(!row.querySelector('.event-more'), `${row.id}: no details line`);
       const summary = row.querySelector('.row-artists')?.textContent ?? '';
       assert([...row.querySelectorAll('.artist-table tr:not(.crew-row) .artist-name')].every(name => summary.includes(name.textContent)),
         `${row.id}: the collapsed row must list every artist`);
       assert(!row.querySelector('.row-genres') || row.querySelector('.row-genres').children.length > 0, `${row.id}: a genre line needs genres`);
-      const more = row.querySelector('.event-more');
-      const expanded = more.getAttribute('aria-expanded') === 'true';
-      assert(row.querySelector('.event-details').hidden === !expanded, `${row.id}: details visibility out of sync with the details line`);
-      if (!open) assert(!expanded, `${row.id}: collapsed row must hide its details`);
-      if (open) assert(Math.abs(more.querySelector('i').getBoundingClientRect().height - control) < 1 && more.getBoundingClientRect().height >= control, `${row.id}: the details line's round button is control height`);
-      if (expanded) for (const target of row.querySelectorAll('.info-actions a, .copy-target')) assert(target.getBoundingClientRect().height >= 44, `${row.id}: detail links need a 44px target`);
-      if (expanded) for (const section of row.querySelectorAll('.event-field')) {
-        const box = section.getBoundingClientRect();
-        for (const other of row.querySelectorAll('.event-field')) {
-          const next = other.getBoundingClientRect();
-          assert(other === section || box.right <= next.left + 1 || next.right <= box.left + 1 || box.bottom <= next.top + 1 || next.bottom <= box.top + 1,
-            `${row.id}: detail sections overlap`);
-        }
-      }
-      for (const link of row.querySelectorAll('.row-genres span, .event-more i')) {
+      const details = row.querySelector('.event-details');
+      if (document.documentElement.classList.contains('accordion-ready')) assert(!details || !details.getClientRects().length, `${row.id}: details stay out of the row while the script runs`);
+      for (const link of row.querySelectorAll('.row-genres span')) {
         if (link.getClientRects().length) assert(parseFloat(getComputedStyle(link).borderTopLeftRadius) >= link.offsetHeight / 2, `${row.id}: pills must be fully rounded`);
       }
       if (i) assert(box.top >= boxes[i - 1].bottom - 1, `${row.id}: rows overlap or lose date/time order`);
@@ -240,5 +235,83 @@ function checkLayout() {
     }
     visible += rows.length;
   }
+  // An open detail sheet: its sections never overlap, its links keep a 44px target, the × is a control-size circle and
+  // nothing runs past the sheet.
+  const detail = document.querySelector('.event-detail[open]');
+  if (detail) {
+    const scroll = detail.querySelector('.event-detail-scroll');
+    assert(scroll.scrollWidth <= scroll.clientWidth + 1, 'The detail sheet must not scroll sideways');
+    const sheet = detail.querySelector('.event-detail-sheet').getBoundingClientRect();
+    assert(sheet.left >= -1 && sheet.right <= viewport + 1, 'The detail sheet stays on the screen');
+    // Above 700px the sheet is a card up to 760px wide: two columns with the lineup across, lit like the event rows; a
+    // phone-filling sheet takes one column and has no edge to light. Frosted either way (docs/glass-effects.md F9–F11).
+    const card = viewport > 700, glass = detail.querySelector('.event-detail-sheet');
+    assert(getComputedStyle(detail.querySelector('.event-details')).gridTemplateColumns.split(' ').length === (card ? 2 : 1),
+      'The detail sheet lays its sections out by its own width');
+    assert(getComputedStyle(glass).backdropFilter.includes('blur'), 'The detail sheet is frosted glass');
+    const ring = getComputedStyle(glass, '::after');
+    assert(card ? ring.maskImage.startsWith('conic-gradient') : ring.display === 'none', 'Only the detail card carries the event rows\' light');
+    const close = detail.querySelector('.event-detail-close').getBoundingClientRect();
+    assert(Math.abs(close.width - control) < 1 && Math.abs(close.height - control) < 1, 'The × is a control-size circle');
+    const sections = [...detail.querySelectorAll('.event-field')].map(section => section.getBoundingClientRect());
+    sections.forEach((box, i) => sections.forEach((next, j) => assert(i === j || box.right <= next.left + 1 || next.right <= box.left + 1
+      || box.bottom <= next.top + 1 || next.bottom <= box.top + 1, 'Detail sections overlap')));
+    for (const target of detail.querySelectorAll('.info-actions a, .copy-target')) assert(target.getBoundingClientRect().height >= 44, 'Detail links need a 44px target');
+    // The text over the sheet's poster lets taps through to it (docs/event-browsing.md F35).
+    const stage = detail.querySelector('.event-stage');
+    if (stage) assert(getComputedStyle(stage.querySelector('.event-summary')).pointerEvents === 'none', 'The text over the poster must not block opening the image');
+  }
+  // The image preview: with a mouse its toolbar holds control-size round buttons 8px inside a 56px capsule, with a
+  // control-size × (docs/event-browsing.md Q31–Q33); touch screens show neither.
+  const preview = document.querySelector('.poster-preview[open]');
+  if (preview) {
+    const toolbar = preview.querySelector('.poster-preview-tools'), shown = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    assert(Boolean(toolbar.getClientRects().length) === shown, 'The preview toolbar shows with a mouse only');
+    if (shown) {
+      assert(Math.abs(toolbar.getBoundingClientRect().height - (control + 16)) < 1, 'The preview toolbar is one control plus 8px on each side');
+      for (const button of preview.querySelectorAll('.poster-preview-button, .poster-preview-close')) {
+        const box = button.getBoundingClientRect();
+        assert(Math.abs(box.width - control) < 1 && Math.abs(box.height - control) < 1, `${button.getAttribute('aria-label')}: preview buttons are control-size circles`);
+      }
+    }
+  }
   return { viewport, visibleRows: visible, dateGroups: lists.length, result: 'No overflow, overlap or missing fields; one open row per day' };
+}
+
+// Touch screens follow the phone's movement (docs/glass-effects.md Q2): in a touch emulation (hover: none) on a secure
+// origin such as 127.0.0.1, `await checkMotionLight()` tilts the phone with synthetic orientation readings. Tilting
+// lights the lit elements on the screen and turns their streaks toward the tilt; about a second after the phone is still
+// they fade; with reduced motion they stay dark.
+async function checkMotionLight() {
+  const assert = (condition, message) => { if (!condition) throw new Error(message); };
+  assert(matchMedia('(hover: none)').matches && 'DeviceOrientationEvent' in window, 'Run in a touch emulation on a secure origin');
+  const lit = [...document.querySelectorAll('.event-row, .filter-toggle')].filter(element => {
+    const box = element.getBoundingClientRect();
+    return box.width && box.bottom > 0 && box.top < innerHeight;
+  });
+  assert(lit.length, 'Scroll some event rows into view first');
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const hold = async (ms, beta, gamma) => {
+    for (const end = performance.now() + ms; performance.now() < end;) {
+      dispatchEvent(new DeviceOrientationEvent('deviceorientation', { alpha: 0, beta, gamma }));
+      await wait(16);
+    }
+  };
+  const brightness = () => lit.map(element => parseFloat(element.style.getPropertyValue('--spec')) || 0);
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  await hold(1600, 40, 0);
+  assert(brightness().every(value => value < .05), 'A phone held still leaves the light off');
+  // A quarter-second tilt to the right (gamma 0° → 20°) and a moment later.
+  for (let step = 1; step <= 15; step++) await hold(16, 40, step * 20 / 15);
+  await hold(200, 40, 20);
+  const shaken = brightness();
+  assert(reduced ? shaken.every(value => value === 0) : shaken.every(value => value > .5), 'Tilting lights every lit element on the screen');
+  if (!reduced) {
+    // Facing right: math angle 0, the conic's 90deg.
+    const angle = parseFloat(lit[0].style.getPropertyValue('--spec-angle'));
+    assert(Math.abs(angle - 90) < 25, `The streaks turn toward the tilt (got ${angle}deg)`);
+  }
+  await hold(2000, 40, 20);
+  assert(brightness().every(value => value < .1), 'The light fades about a second after the phone is still');
+  return { lit: lit.length, peak: Math.max(...shaken), result: 'Tilting lights and turns the streaks; stillness fades them' };
 }

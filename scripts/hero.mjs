@@ -50,6 +50,14 @@ const columnFactor = index => 1 + VARIANCE * ((((index * 0.6180339887 + 0.35) % 
 // stretch holds it, the copy that a drift offset can bring to the plane's middle.
 export const planeHeight = (width, height) => PLANE_SPAN * turnedReach(width, height).along;
 
+// Download order for the tiles' light posters (docs/event-browsing.md Q34): the tiles on the stage, then the rest by how
+// soon they drift onto it (Infinity for those drifting away). Many tiles share one file; its first place sets its turn.
+export function loadOrder(places) {
+  const indices = places.map((_, index) => index);
+  return [indices.filter(index => places[index].shown),
+    indices.filter(index => !places[index].shown).sort((a, b) => (places[a].time - places[b].time) || 0)];
+}
+
 export function wallLayout(count, width, height) {
   const plane = planeHeight(width, height);
   const columns = columnCount(width), base = baseWidth(width);
@@ -108,7 +116,11 @@ function buildWall(stage, links, layout, span) {
         }
         const inner = document.createElement('span');
         inner.className = 'drift-wall__inner';
-        const image = links[poster].querySelector('img').cloneNode(false);
+        // A fresh image without its source (a clone would start downloading at once): the picture downloads once the wall
+        // knows which tiles are on screen (load in initHero).
+        const original = links[poster].querySelector('img'), src = original.getAttribute('src');
+        const image = document.createElement('img');
+        for (const { name, value } of original.attributes) if (name !== 'src' && name !== 'loading') image.setAttribute(name, value);
         // Height over width; assets/hero.css sizes the uncropped poster from it while motion is allowed.
         const ratio = Number(image.getAttribute('height')) / Number(image.getAttribute('width'));
         image.style.setProperty('--ratio', ratio);
@@ -117,7 +129,7 @@ function buildWall(stage, links, layout, span) {
         tile.append(inner);
         // The share of the poster that overflows the square tile, as a percentage of the poster along its pan.
         const pan = ratio < 1 ? (1 - ratio) * 100 : (1 - 1 / ratio) * 100;
-        posters.push({ tile, image, column: c, middle: column.middle(k, copy), size: column.heights[k], pan, wide: ratio < 1, still: tile.tabIndex === -1 });
+        posters.push({ tile, image, src, column: c, middle: column.middle(k, copy), size: column.heights[k], pan, wide: ratio < 1, still: tile.tabIndex === -1 });
         track.append(tile);
       });
     }
@@ -140,7 +152,7 @@ export function initHero(root) {
   let layout, wall, plane, tracks, posters, offsets, velocities, span = 0, view = 0, reach = 0;
   let active = null, activeCol = -1, keyboard = false;
   let pointer = { x: 0, y: 0 }, tilt = { x: 0, y: 0 }, shift = 0, shiftGoal = 0, hover = null;
-  let size = '', visible = false, raf = 0, last = null, zoom = 1;
+  let size = '', visible = false, raf = 0, last = null, zoom = 1, holding = false, held = false;
 
   const paint = () => {
     plane.style.transform = `translate(-50%, -50%) rotate(${ROTATE}deg) scale(${SCALE * zoom}) rotateX(${TILT + tilt.y}deg) rotateY(${TURN + tilt.x}deg) `
@@ -170,7 +182,7 @@ export function initHero(root) {
     tilt.y += (-pointer.y * PARALLAX * 8 - tilt.y) * damp;
     shift += (shiftGoal - shift) * damp;
     layout.forEach((column, c) => {
-      const target = activeCol === c ? 0 : column.velocity;
+      const target = holding || activeCol === c ? 0 : column.velocity;
       velocities[c] += (target - velocities[c]) * (1 - Math.exp(-dt / (target === 0 ? 0.16 : 0.28)));
       offsets[c] = column.wrap(offsets[c] + velocities[c] * dt);
     });
@@ -178,9 +190,10 @@ export function initHero(root) {
     track();
     request();
   };
-  // Frames run only while the wall is on screen, the page is shown and motion is allowed.
+  // Frames run only while the wall is on screen, the page is shown, motion is allowed and no event's details cover the
+  // page (assets/event-detail.js pauses the wall so a poster it opened from is still there to return to).
   const request = () => {
-    if (!visible || document.hidden || reduced.matches) last = null;
+    if (!visible || document.hidden || reduced.matches || document.documentElement.classList.contains('is-detail')) last = null;
     else if (!raf) raf = requestAnimationFrame(frame);
   };
   // Reduced motion keeps the wall still without parallax; focus changes jump instead of easing.
@@ -225,7 +238,7 @@ export function initHero(root) {
     offsets = layout.map(column => column.start);
     velocities = layout.map(() => 0);
     // Highlighting, stopping a column and the parallax follow a hovering mouse only: on touch screens (also when a phone's
-    // taps arrive as mouse events) the wall keeps drifting under a finger and a tap goes straight to the event (question 6).
+    // taps arrive as mouse events) the wall keeps drifting under a finger and a tap opens the event's details (Q6, Q24).
     wall.addEventListener('pointermove', event => {
       if (event.pointerType !== 'mouse' || !canHover.matches) return;
       const rect = wall.getBoundingClientRect();
@@ -263,7 +276,62 @@ export function initHero(root) {
     });
     stage.classList.add('is-wall');
     paint();
+    load();
     settle();
+  };
+
+  // After the first paint the light posters download in order: the files on the stage first, then the rest by how soon
+  // they drift in, at most four files at a time so each arrives quickly instead of all sharing the bandwidth. The wall
+  // holds still until the files on the stage have arrived (at most 8s), so it never drifts blank tiles in (Q36).
+  const load = () => {
+    const tiles = posters, box = stage.getBoundingClientRect();
+    // On the stage: overlapping it inside the edge fade (assets/hero.css fades the outer 12% of its height).
+    const inset = { left: box.left + box.width * 0.1, right: box.right - box.width * 0.1, top: box.top + box.height * 0.12, bottom: box.bottom - box.height * 0.12 };
+    const shown = tiles.map(({ tile }) => {
+      const rect = tile.getBoundingClientRect();
+      return rect.right > inset.left && rect.left < inset.right && rect.bottom > inset.top && rect.top < inset.bottom && tile.style.visibility !== 'hidden';
+    });
+    // Only columns crossing the stage ever show their tiles (a phone shows about two of five).
+    const columns = new Set(tiles.filter((_, index) => shown[index]).map(({ column }) => column));
+    const [first, rest] = loadOrder(tiles.map(({ column, middle, size }, index) => {
+      if (shown[index]) return { shown: true, time: 0 };
+      if (!columns.has(column)) return { shown: false, time: Infinity };
+      // Along its column, from the plane's middle; a column with positive velocity moves its tiles up (paint).
+      const { velocity } = layout[column];
+      const y = layout[column].base - offsets[column] + middle - span / 2, edge = reach / 2 + size / 2;
+      const ahead = velocity > 0 ? y - edge : -y - edge;
+      return { shown: false, time: Math.abs(y) < edge ? 0 : ahead > 0 ? ahead / Math.abs(velocity) : Infinity };
+    }));
+    // One download per file: every tile showing that file gets it at once.
+    const files = new Map();
+    for (const index of [...first, ...rest]) {
+      const { src } = tiles[index];
+      if (!files.has(src)) files.set(src, { tiles: [], priority: first.includes(index) ? 'high' : 'low' });
+      files.get(src).tiles.push(tiles[index]);
+    }
+    const queue = [...files.values()];
+    for (const file of queue) file.ready = new Promise(resolve => { file.arrived = resolve; });
+    const onStage = queue.filter(file => file.priority === 'high');
+    const next = () => {
+      const file = queue.shift();
+      if (!file) return;
+      for (const { image, src } of file.tiles) {
+        image.fetchPriority = file.priority;
+        image.src = src;
+      }
+      file.tiles[0].image.decode().catch(() => {}).then(() => {
+        file.arrived();
+        next();
+      });
+    };
+    for (let lane = 0; lane < 4; lane++) next();
+    // Only the first build waits: a rebuild after a resize finds the files downloaded.
+    if (held) return;
+    held = holding = true;
+    Promise.race([Promise.all(onStage.map(file => file.ready)), new Promise(resolve => setTimeout(resolve, 8000))]).then(() => {
+      holding = false;
+      request();
+    });
   };
 
   // Focusing a tile must not scroll the clipped stage; the column brings the poster into view instead.
@@ -272,6 +340,8 @@ export function initHero(root) {
     event.target.scrollTop = 0;
     event.target.scrollLeft = 0;
   }, true);
+  // The detail sheet starts from a wall poster turned like the wall.
+  stage.style.setProperty('--wall-turn', `${ROTATE}deg`);
   build();
   new ResizeObserver(build).observe(stage);
   // The latest entry of a batch decides (a reload restoring a deep scroll reports the first layout, then the real place).
@@ -280,6 +350,7 @@ export function initHero(root) {
     request();
   }).observe(stage);
   document.addEventListener('visibilitychange', request);
+  document.addEventListener('detail-toggle', request);
   reduced.addEventListener('change', settle);
 }
 

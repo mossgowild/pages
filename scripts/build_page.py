@@ -174,17 +174,17 @@ def info_part(key, items):
 
 
 # The 更多信息 fields split into strictly separate detail sections, in field order; empty sections are left out.
-INFO_SECTIONS = [('tickets', 'TICKETS', '票务', '票务', ('prices', 'booking')),
-                 ('links', 'DETAILS', '活动详情', '详情', ('details',)),
-                 ('entry', 'ENTRY', '入场须知', '须知', ('notes',))]
+INFO_SECTIONS = [('tickets', 'TICKETS', '票务', ('prices', 'booking')),
+                 ('links', 'DETAILS', '活动详情', ('details',)),
+                 ('entry', 'ENTRY', '入场须知', ('notes',))]
 
 
 def info_sections(info):
-    present = [(name, english, title, short, keys) for name, english, title, short, keys in INFO_SECTIONS
-               if any(info[key] for key in keys)]
+    # The sections with content and how many there are (the wide layout stacks that many beside the lineup).
+    present = [(name, english, title, keys) for name, english, title, keys in INFO_SECTIONS if any(info[key] for key in keys)]
     html = ''.join(detail_section(name, english, title, ''.join(info_part(key, info[key]) for key in keys if info[key]))
-                   for name, english, title, _, keys in present)
-    return html, [short for *_, short, _ in present]
+                   for name, english, title, keys in present)
+    return html, len(present)
 
 
 def poster_path(value):
@@ -229,10 +229,12 @@ def event_row(event, images, genre_families):
     for poster in event['posters']:
         image = images[poster['image']]
         assert image['width'] > 0 and image['height'] > 0
+        # The light version shows first; near the screen, in the detail sheet and in the preview the original takes over
+        # (data-full; scripts/build_posters.py, docs/event-browsing.md).
         poster_content = (
             f'<a href="{poster_path(poster["image"])}" aria-haspopup="dialog" aria-label="预览：{escape(poster["alt"], quote=True)}">'
-            f'<img width="{image["width"]}" height="{image["height"]}" src="{poster_path(poster["image"])}"'
-            f' loading="lazy" alt="{escape(poster["alt"], quote=True)}"></a>')
+            f'<img width="{image["width"]}" height="{image["height"]}" src="{poster_path(image["thumbnail"])}"'
+            f' data-full="{poster_path(poster["image"])}" loading="lazy" fetchpriority="low" alt="{escape(poster["alt"], quote=True)}"></a>')
     ident = escape(event['id'], quote=True)
     # Unknown start, venue or genres leave their place empty rather than saying so.
     start = escape(start_label(event)) if event['starts'] else ''
@@ -240,27 +242,25 @@ def event_row(event, images, genre_families):
                       + [f'<span class="event-time">{escape(" / ".join(event["time"]))}</span>'])
     heading = (f'<header class="event-heading" data-field="name"><p class="event-start">{start}'
                f'<small>{escape(event["city"])}</small></p>'
-               f'<h4 id="{ident}-title"><button type="button" class="event-toggle" aria-expanded="true">{escape(event["name"])}</button></h4>'
+               f'<h4 id="{ident}-title"><button type="button" class="event-toggle" aria-haspopup="dialog" aria-controls="event-detail">{escape(event["name"])}</button></h4>'
                f'<p class="event-meta">{meta}</p>'
                + ''.join('<small class="event-note">' + escape(note) + '</small>' for note in event['notes'])
                + '</header>')
     # Details: the lineup table (时间表 when it has set times, otherwise 阵容) with its small print on a full row, then the
-    # 更多信息 sections that have content (the 更多信息 field) and the venue side by side.
+    # 更多信息 sections that have content (the 更多信息 field) and the venue side by side. With the script they open in the
+    # event's detail sheet (assets/event-detail.js); without it they stay in the row.
     content, captions = lineup_content(event), event.get('lineup_caption', [])
     timed = any(artist.get('time') for artist in event['artists'])
     lineup = ('TIMETABLE', '时间表') if timed else ('LINEUP', '阵容')
-    info, info_names = info_sections(event['more_info'])
-    columns = len(info_names) + 1
+    info, sections_count = info_sections(event['more_info'])
+    columns = sections_count + 1
     caption = ''.join(f'<small class="lineup-caption">{escape(text)}</small>' for text in captions)
     sections = (([detail_section('', *lineup, content, caption)] if content or captions else [])
                 + [f'<div class="event-info" data-field="info">{info}</div>',
                    detail_section('location', 'VENUE', '地点', venue(event['location']))])
-    label = ' · '.join(([lineup[1]] if content or captions else []) + info_names + ['地点'])
     genres = ('<p class="row-genres" data-field="genres" aria-label="风格">'
               + ''.join(f'<span>{escape(genre)}</span>' for genre in event['genres']) + '</p>') if event['genres'] else ''
-    summary = (heading + artist_summary(event) + genres
-               + f'<button type="button" class="event-more" aria-expanded="false" aria-controls="{ident}-details">'
-               + f'<span>{label}</span><i aria-hidden="true"><span></span></i></button>')
+    summary = heading + artist_summary(event) + genres
     details = ''.join(sections)
     return (f'<article class="event-row" {attrs} aria-labelledby="{ident}-title">'
             '<div class="event-stage"><div class="event-posters" data-field="posters">' + poster_content + '</div>'
@@ -357,12 +357,12 @@ def render():
     for index, event in enumerate(featured):
         poster = event['posters'][0]
         image = images[poster['image']]
-        loading = 'eager' if index < 4 else 'lazy'
-        # Each poster opens its event (question 6); spotlight-card clears filters that hide it (assets/filters.js).
+        # Each poster opens its event's details (assets/event-detail.js, docs/event-browsing.md Q24); without the script it
+        # links to the event's row.
         cards.append(f'<li><a class="hero-poster spotlight-card" href="#{escape(event["id"])}" draggable="false"'
                      f' aria-label="{escape(event["name"], quote=True)} · 阵容与购票">'
-                     f'<img src="{poster_path(poster["image"])}" width="{image["width"]}" height="{image["height"]}"'
-                     f' loading="{loading}" decoding="async" draggable="false"'
+                     f'<img src="{poster_path(image["thumbnail"])}" width="{image["width"]}" height="{image["height"]}"'
+                     f' loading="lazy" decoding="async" draggable="false"'
                      f' alt="{escape(poster["alt"], quote=True)}"></a></li>')
     title, publisher = data['title'], data['publisher']
     values = {

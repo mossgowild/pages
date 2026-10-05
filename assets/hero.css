@@ -9,6 +9,8 @@
 .hero-poster{display:block;height:100%}
 .hero-poster img{display:block;width:auto;height:100%}
 .hero-stage.is-wall .hero-reel{display:none}
+/* With scripting the wall replaces the reel, which stays unrendered so its lazy posters never download (docs/event-browsing.md Q34). */
+@media(scripting:enabled){.hero-reel{display:none}}
 /* React Bits Drift Wall styles with its defaults, except tiles without dimming or the dark tile overlay (column widths and
    square tile heights, the turn and the poster parallax are set by scripts/hero.mjs, hero-mobile questions 11–12 and Q14),
    and its elliptical edge fade with 12% fades at the top and bottom instead of its fade towards the top

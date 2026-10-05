@@ -2,19 +2,22 @@
 
 (() => {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const hover = matchMedia('(hover: hover)');
 
   // React Bits Specular Button, CSS edition: each lit element gets --spec-angle (conic "from" angle of the light) and
   // --spec (brightness). Defaults: light steers toward the mouse, settles near the diagonal while over the pill,
-  // fades in within 250px (smoothstep), angle eased at rate 7 and brightness at rate 8 per second. The pills, the
-  // round expand buttons and the event rows share it (questions 192–195); a row is far larger than a pill, so over a
-  // row the light keeps facing the mouse instead of settling on the diagonal.
+  // fades in within 250px (smoothstep), angle eased at rate 7 and brightness at rate 8 per second. The pills, the detail
+  // sheet's and the image preview's round buttons, the event rows and the detail card share it (questions 193–195,
+  // docs/glass-effects.md); a card is far larger than a pill, so over a card the light keeps facing the mouse instead of
+  // settling on the diagonal. Screens without hover follow the phone's movement instead (below).
   const PROXIMITY = 250;
-  const LIT = '.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-more i, .event-row';
-  const FOLLOWS = '.event-row';
+  const LIT = '.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close, .event-row, .event-detail-sheet';
+  const FOLLOWS = '.event-row, .event-detail-sheet';
   const lit = new Set();
   const visible = new Set();
   const state = new Map();
   let pointer = null;
+  let reading = null;
   let frame = 0;
   let last = 0;
 
@@ -63,8 +66,10 @@
       if (entry.isIntersecting) visible.add(entry.target);
       else visible.delete(entry.target);
     }
-    // An element that scrolls or is drawn into view lights up without waiting for the next pointer move.
-    if (pointer && !reducedMotion.matches) { aim(); request(); }
+    // An element that scrolls or is drawn into view takes the light at once, without waiting for the next move.
+    if (reducedMotion.matches) return;
+    if (pointer) { aim(); request(); }
+    else if (reading) glow();
   });
   const litIn = node => node instanceof Element ? [...(node.matches(LIT) ? [node] : []), ...node.querySelectorAll(LIT)] : [];
   function track(element) {
@@ -87,7 +92,7 @@
     }
   }).observe(document.querySelector('.filter-tags'), { childList: true });
   addEventListener('pointermove', event => {
-    if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
+    if (event.pointerType !== 'mouse' || !hover.matches || reducedMotion.matches) return;
     pointer = { x: event.clientX, y: event.clientY };
     aim();
     request();
@@ -101,6 +106,59 @@
     if (!reducedMotion.matches) return;
     for (const element of lit) element.style.setProperty('--spec', '0');
   });
+
+  // Touch screens have no pointer to follow (docs/glass-effects.md Q2, Q3): moving the phone lights every lit element on
+  // the screen at once, the streaks facing the way it tilts, and a second after it stops they fade. Tilting counts once
+  // its speed, smoothed over 0.1s, passes 15°/s, more than a hand holding the phone still. iOS gives the orientation only
+  // after a tap has asked for it: the first tap asks and still does what it does; a refusal holds for the visit, and a
+  // tap that brought no user activation (the end of a scroll) leaves the asking to the next one.
+  const STILL = 1000, SMOOTH = 100, SPEED = 15, FLIP = 45;
+  const velocity = { x: 0, y: 0 };
+  let facing = 2.4, shaking = false, dimmer = 0;
+  function glow() {
+    for (const element of visible) {
+      const s = state.get(element);
+      s.target = facing;
+      s.near = shaking ? 1 : 0;
+    }
+    request();
+  }
+  function tilted(event) {
+    if (event.beta === null || event.gamma === null || reducedMotion.matches) return;
+    const previous = reading;
+    reading = { x: event.gamma, y: event.beta, time: event.timeStamp };
+    const dt = previous ? reading.time - previous.time : 0;
+    // Held upright or face down, an angle flips sides between two readings; that is not a movement.
+    if (!(dt > 0 && dt < 250) || Math.abs(reading.x - previous.x) > FLIP || Math.abs(reading.y - previous.y) > FLIP) return;
+    const k = 1 - Math.exp(-dt / SMOOTH);
+    velocity.x += ((reading.x - previous.x) * 1000 / dt - velocity.x) * k;
+    velocity.y += ((reading.y - previous.y) * 1000 / dt - velocity.y) * k;
+    if (Math.hypot(velocity.x, velocity.y) < SPEED) return;
+    // ponytail: portrait axes only, so in landscape the streaks face 90° off (they still flash); turn the velocity by
+    // screen.orientation.angle if that shows.
+    facing = Math.atan2(velocity.y, velocity.x);
+    shaking = true;
+    clearTimeout(dimmer);
+    dimmer = setTimeout(() => {
+      shaking = false;
+      glow();
+    }, STILL);
+    glow();
+  }
+  if (!hover.matches && 'DeviceOrientationEvent' in window) {
+    addEventListener('deviceorientation', tilted);
+    const REFUSED = 'glass-motion-refused';
+    let refused = false;
+    try { refused = sessionStorage.getItem(REFUSED) === '1'; } catch {}
+    if (typeof DeviceOrientationEvent.requestPermission === 'function' && !refused) {
+      const ask = () => DeviceOrientationEvent.requestPermission().then(answer => {
+        removeEventListener('touchend', ask, true);
+        if (answer === 'granted') return;
+        try { sessionStorage.setItem(REFUSED, '1'); } catch {}
+      }, () => {});
+      addEventListener('touchend', ask, true);
+    }
+  }
 
   // React Bits Glass Surface refraction (Chromium only, like the original): a per-element SVG displacement map,
   // sized to the element, splits R/G/B at scales -180/-170/-160 and is chained onto the frosted backdrop.

@@ -194,6 +194,9 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   let mouseActiveTarget = 0, time = 0, last, frame = 0;
 
   const animating = () => !reducedMotion.matches && !document.hidden && !canvas.hidden;
+  // An event's detail sheet covers the page (assets/event-detail.js): the terrain holds its last frame meanwhile, which
+  // spares the main thread while the sheet flies in and out (docs/event-browsing.md F42).
+  const covered = () => document.documentElement.classList.contains('is-detail');
   function render(now) {
     frame = 0;
     if (animating()) time += last === undefined ? 0 : (now - last) / 1000;
@@ -227,7 +230,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     g.tMap.value = across.texture;
     g.uDirection.value = [0, 1];
     renderer.render({ scene: blurMesh });
-    if (animating()) frame = requestAnimationFrame(render);
+    if (animating() && !covered()) frame = requestAnimationFrame(render);
   }
   // Bands behind the text on the background, in viewport px: each visible day's heading (with the note of a day without
   // events) eases in from the content above and out towards its first card, or to what follows, over TEXT_FADE times
@@ -248,7 +251,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     return [...bands, [top, top + TEXT_FADE * parseFloat(getComputedStyle(footer).paddingTop), end, end + 1]];
   }
   function requestRender() {
-    if (!frame && !canvas.hidden) frame = requestAnimationFrame(render);
+    if (!frame && !canvas.hidden && !covered()) frame = requestAnimationFrame(render);
   }
 
   function resize() {
@@ -267,6 +270,11 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   addEventListener('scroll', requestRender, { passive: true });
   new ResizeObserver(requestRender).observe(document.body); // Content above the date axis can change height.
   document.addEventListener('visibilitychange', requestRender);
+  // The terrain picks up where it stopped rather than jumping ahead by the time the sheet was open.
+  document.addEventListener('detail-toggle', () => {
+    last = undefined;
+    requestRender();
+  });
   reducedMotion.addEventListener('change', requestRender);
   addEventListener('pointermove', event => {
     if (event.pointerType !== 'mouse') return;

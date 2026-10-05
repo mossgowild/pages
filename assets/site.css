@@ -3,7 +3,7 @@
 @font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("fonts/syne-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 /* Every clickable pill and round button is one --control tall (question 3: 40px) with labels --control-pad from the edge; inset
    circles and icons sit in a --control-inner box 8px from the edge, so they stay concentric. Text links keep their 44px rows. */
-:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:24px;--control:40px;--control-pad:20px;--control-inner:calc(var(--control) - 16px);--font-display:Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
+:root{color-scheme:dark;--bg:#0b0b10;--surface:#13131b;--raised:#1c1a25;--ink:#f7f3ed;--muted:#b0a9ba;--line:#34303f;--gold:#eccb88;--pink:#f3a4cb;--violet:#c0adff;--focus:#f6d795;--radius:24px;--control:40px;--control-pad:20px;--control-inner:calc(var(--control) - 16px);--accordion-ease:cubic-bezier(.215,.61,.355,1);--font-display:Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;--brand-ink:#faf8ff;--brand-pink:#ff269f;--brand-cyan:#13dbff;--brand-yellow:#ffe324;--brand-violet:#7018fb;--glass-tint:rgb(255 255 255/.045);--glass-edge:rgb(255 255 255/.13);--glass-blur:blur(18px) saturate(1.5);--glass-shadow:inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);--glass-pill:rgb(255 255 255/.06);--glass-pill-shadow:inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);--glass-sheen:radial-gradient(120px 40px at 30% 0%,rgb(255 255 255/.14),transparent 70%)}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:100px;overflow-anchor:none}body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}a{color:inherit;text-underline-offset:4px}button,input,select{font:inherit}button,select{cursor:pointer}button,a,input,select,summary{touch-action:manipulation}button{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--focus);outline-offset:5px}a,button{transition:color .18s,background-color .18s,border-color .18s}button:active{filter:brightness(.85)}[hidden]{display:none!important}.wrap{width:min(1480px,100% - 96px);margin-inline:auto}.topography{position:fixed;top:0;left:0;z-index:-1;width:100%;height:100lvh;pointer-events:none}.skip-link{position:fixed;top:8px;left:16px;transform:translateY(-200%);z-index:100;background:var(--gold);color:var(--bg);padding:12px}.skip-link:focus{transform:none}.topbar{position:relative;min-height:72px;padding-block:10px;border-bottom:1px solid transparent;display:grid;grid-template-columns:auto auto;align-content:center;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.06em;font-weight:600;white-space:nowrap}.eyebrow{font-size:11px;letter-spacing:.23em;text-transform:uppercase;font-weight:650;color:var(--gold)}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:24px}.section-heading h2{font-size:30px;line-height:1.3;font-weight:600;margin:9px 0 0;letter-spacing:-.04em}.section-heading p{font-family:var(--font-display);font-size:12px;color:var(--muted);margin:0}.schedule{position:relative;padding:44px 0 64px}.filter-bar,.filter-card,.empty-state{border:1px solid var(--glass-edge);border-radius:var(--radius);background:var(--glass-tint);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur)}.reset-empty{border:0;border-radius:999px;background:var(--glass-pill);box-shadow:var(--glass-pill-shadow);color:var(--gold);min-height:var(--control);padding:0 var(--control-pad);font:600 13px/1 var(--font-display)}.filter-error{color:var(--pink);margin:12px 0 0;font-size:13px}
 /* React Bits Card Nav as the filter bar: a sticky 60px glass bar whose four tinted glass cards open as Card Nav's own
    overlay (filters.js animates it): they float over the list under a page scrim, never change the page height, and
@@ -144,29 +144,33 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
 @media(prefers-reduced-motion:reduce){.filter-burger i{transition:none}}.day-group{margin-top:38px}
 /* Layered depth (assets/scroll-motion.js): the day heading drifts at about 0.9× the scroll; static under reduced motion. */
 .scroll-motion .day-heading{translate:0 var(--heading-y,0px)}.day-heading{display:flex;gap:14px;align-items:center;scroll-margin-top:28px;margin:0 0 20px;font-size:23px;font-weight:550;letter-spacing:-.025em}.day-heading:after{content:"";height:1px;flex:1}.day-heading .day-number{font-family:var(--font-display);font-size:31px;color:var(--gold);font-weight:400}.day-heading small{font-size:11px;letter-spacing:.15em;color:var(--muted);font-weight:400}
-/* React Bits Accordion Gallery, vertical (assets/accordion.js): one open row per day, the others collapsed to an 84px strip
-   with a greyed, dimmed poster. Collapsed rows still list every artist and genre. Original timing 0.6s power3.out, 8° tilt
-   on wide screens, parallax 0.5 drift. Without the script (no .accordion-ready) every row stays open with its details. */
+/* React Bits Accordion Gallery, vertical (assets/accordion.js): each day's first visible row stays open, the others
+   collapsed to an 84px strip with a greyed, dimmed poster; any row opens its event's detail sheet (assets/event-detail.js).
+   Collapsed rows still list every artist and genre and keep the parallax 0.5 drift. Without the
+   script (no .accordion-ready) every row stays open with its details. */
 .event-accordion{display:flex;flex-direction:column;gap:10px}
 /* Rows are the 24px frosted glass of the original cards. The poster fades out by an alpha mask straight into the glass
    (no dark overlay): downward on the open row (fully clear by 70% of the stage, where its text sits), toward the text side on collapsed rows. --open (registered, so it
    interpolates) blends the two masks over the accordion's 0.6s. */
 @property --open{syntax:"<number>";inherits:true;initial-value:1}
-.event-row{--accordion-ease:cubic-bezier(.215,.61,.355,1);--open:1;position:relative;min-width:0;border:1px solid var(--glass-edge);border-radius:var(--radius);background:rgb(19 19 27/.40);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);scroll-margin-top:96px;overflow:hidden;overflow-wrap:anywhere;transform:perspective(1400px) rotateX(var(--tilt,0deg));transition:transform .6s var(--accordion-ease),--open .6s var(--accordion-ease)}
+.event-row{--open:1;position:relative;min-width:0;border:1px solid var(--glass-edge);border-radius:var(--radius);background:rgb(19 19 27/.40);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);scroll-margin-top:96px;overflow:hidden;overflow-wrap:anywhere;transition:--open .6s var(--accordion-ease)}
 .event-row:target{border-color:var(--gold)}
 .event-stage{position:relative;display:flex;align-items:flex-end;min-height:560px;overflow:hidden}
 .event-posters{--fade:calc(1 - var(--open));position:absolute;inset:0;z-index:0;-webkit-mask-image:linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));-webkit-mask-composite:source-in;mask-image:linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));mask-composite:intersect}
 .event-posters > a{display:block;height:100%;text-decoration:none;cursor:zoom-in}
 .event-posters a:focus-visible{outline-offset:-5px}
-.event-posters img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:grayscale(var(--gray,0));transition:filter .6s var(--accordion-ease),translate .6s var(--accordion-ease)}
+.event-posters img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 25%;filter:grayscale(var(--gray,0));transition:filter .6s var(--accordion-ease),translate .6s var(--accordion-ease),opacity .3s ease-out}
 .scroll-motion .event-posters>a>img{transform-origin:top;scale:1.25;translate:0 clamp(-25%,calc(var(--parallax,-20%) + var(--drift,0px)),0%)}
+/* Off-screen rows skip rendering their poster, so its lazy image waits until the row nears the screen instead of taking
+   bandwidth from the hero wall (docs/event-browsing.md Q34). */
+.event-row .event-posters{content-visibility:auto}
 .poster-empty{display:grid;place-items:center;height:100%;padding-bottom:180px;color:var(--muted);font-size:13px}
 .event-summary{position:relative;z-index:2;display:grid;grid-template-columns:110px minmax(0,1fr);align-items:start;gap:10px 24px;width:100%;padding:26px;text-shadow:0 1px 12px rgb(0 0 0/.55)}
 .event-heading{display:contents}
 .event-start{grid-row:1/span 2;margin:0;font:600 26px/1 var(--font-display);letter-spacing:-.01em;color:var(--brand-yellow)}
 .event-start small{display:block;margin-top:8px;font:500 11px/1.4 var(--font-display);letter-spacing:.06em;color:#bbb}
 .event-heading h4{grid-column:2;margin:0;font:600 24px/1.25 var(--font-display);letter-spacing:-.01em;text-wrap:pretty}
-.accordion-ready .event-row.is-active .event-heading h4::before{content:"";display:inline-block;width:3px;height:.9em;margin-right:12px;border-radius:3px;background:var(--brand-pink);box-shadow:0 0 12px color-mix(in srgb,var(--brand-pink) 60%,transparent);vertical-align:-.08em}
+:is(.accordion-ready .event-row.is-active,.event-detail) .event-heading h4::before{content:"";display:inline-block;width:3px;height:.9em;margin-right:12px;border-radius:3px;background:var(--brand-pink);box-shadow:0 0 12px color-mix(in srgb,var(--brand-pink) 60%,transparent);vertical-align:-.08em}
 .event-toggle{display:inline;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;text-shadow:inherit;cursor:pointer}
 .event-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:4px}
 .event-meta{grid-column:2;margin:0;font-size:12px;line-height:1.6;color:#d8cce3}
@@ -176,34 +180,21 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
 .row-genres{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin:0}
 .row-genres span{padding:3px 10px;border:1px solid rgb(255 255 255/.18);border-radius:999px;background:var(--glass-pill);font:500 11px/1.4 var(--font-display);color:#ddd;text-shadow:none}
 .event-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));padding:0;overflow:clip}
-/* Details disclosure: a short brand-pink rule, the section names and a round ± that turns to − when open. One tap
-   opens the lineup table, tickets and venue together (assets/accordion.js). Without the script the line is hidden and
-   the details stay open. */
-.event-more{display:none}
-.accordion-ready .event-more{grid-column:2;justify-self:start;display:flex;align-items:center;gap:14px;min-height:var(--control);margin-top:10px;padding:0;border:0;background:none;color:#f1ecf7;font:600 12px/1 var(--font-display);letter-spacing:.16em;white-space:nowrap;text-shadow:none;cursor:pointer}
-.event-more::before{content:"";flex:0 0 28px;height:1px;background:var(--brand-pink);box-shadow:0 0 8px color-mix(in srgb,var(--brand-pink) 70%,transparent);transition:flex-basis .4s var(--accordion-ease)}
-.event-more i{--spec-base:rgb(255 255 255/.3);position:relative;flex:none;width:var(--control);height:var(--control);border-radius:999px;transition:background-color .3s}
-.event-more i span::before,.event-more i span::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:1.5px;margin:-.75px 0 0 -7.5px;border-radius:1px;background:currentColor;transition:rotate .4s var(--accordion-ease)}
-.event-more i span::after{rotate:90deg}
-.event-more[aria-expanded="true"]::before{flex-basis:44px}
-.event-more[aria-expanded="true"] i{--spec-base:var(--brand-pink);background:color-mix(in srgb,var(--brand-pink) 18%,transparent)}
-.event-more[aria-expanded="true"] i span::after{rotate:0deg}
-@media(hover:hover){.event-more:hover i{--spec-base:#fff}}
-.event-more:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:999px}
-.accordion-ready .event-details{overflow:hidden}
+.accordion-ready .event-row{cursor:pointer}
+.accordion-ready .event-row .event-details{display:none}
 /* Strictly partitioned details (scripts/build_page.py): the lineup on its own row, then one section per kind of 更多信息
    plus the venue, side by side. Sections are told apart by their large titles and whitespace, not by rules. */
 .event-info{display:contents}
 .event-details .event-field{padding:28px 26px 26px}
 .event-details .event-lineup{grid-column:1/-1;padding-top:8px}
-/* Wide screens: with a lineup, the details split into two columns — the lineup on the left (about 60%), the other
+/* Wide screens, in a row (its details show inline without the script): with a lineup, the details split into two columns — the lineup on the left (about 60%), the other
    sections stacked at the top of the right (--columns of them, set by scripts/build_page.py; a last 1fr row takes a
    long lineup's spare height) — so short lineups leave no void. */
 @media screen and (min-width:1101px){
-  .event-details:has(.event-lineup){grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:repeat(var(--columns),auto) 1fr}
-  .event-details:has(.event-lineup) .event-lineup{grid-column:1;grid-row:1/-1;padding-top:28px;padding-right:40px}
-  .event-details:has(.event-lineup) .event-field:not(.event-lineup){grid-column:2;padding-top:28px;padding-bottom:4px}
-  .event-details:has(.event-lineup) .event-field:last-child{padding-bottom:26px}
+  .event-row .event-details:has(.event-lineup){grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);grid-template-rows:repeat(var(--columns),auto) 1fr}
+  .event-row .event-details:has(.event-lineup) .event-lineup{grid-column:1;grid-row:1/-1;padding-top:28px;padding-right:40px}
+  .event-row .event-details:has(.event-lineup) .event-field:not(.event-lineup){grid-column:2;padding-top:28px;padding-bottom:4px}
+  .event-row .event-details:has(.event-lineup) .event-field:last-child{padding-bottom:26px}
 }
 .event-field h5{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:0 0 18px;font:600 13px/1.3 var(--font-display);letter-spacing:.06em;color:#cfc4dc}
 .event-field h5 span{font:700 20px/1 var(--font-display);letter-spacing:.04em;color:#fff}
@@ -212,7 +203,7 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
 .accordion-ready .event-row:not(.is-active) .event-stage{min-height:84px;cursor:pointer}
 .accordion-ready .event-row:not(.is-active) .event-posters img{--gray:.3}
 .accordion-ready .event-row:not(.is-active){--open:0}
-.accordion-ready .event-row:not(.is-active) :is(.event-more,.poster-empty){display:none}
+.accordion-ready .event-row:not(.is-active) .poster-empty{display:none}
 .accordion-ready .event-row:not(.is-active) .event-summary{padding:26px}
 .accordion-ready .event-row:not(.is-active) .event-heading h4{font-size:19px}
 @media screen and (min-width:901px){
@@ -221,6 +212,8 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
   .accordion-ready .event-row:not(.is-active) .row-genres{grid-column:4;grid-row:1/span 3}
 }
 @media screen and (max-width:1100px){.event-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* The detail sheet is a card at most 760px wide on any wider screen: two columns, the lineup across (docs/glass-effects.md F11). */
+@media screen and (min-width:701px){.event-detail .event-details{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media screen and (max-width:700px){
   .event-stage{min-height:520px}
   .event-summary,.accordion-ready .event-row:not(.is-active) .event-summary{grid-template-columns:64px minmax(0,1fr);gap:6px 14px;padding:20px}
@@ -232,28 +225,83 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
   .lineup-caption{flex-basis:100%;margin-left:0}
   .lineup-caption + .lineup-caption::before{content:none}
   .event-details .event-lineup{padding-top:4px}
-  .accordion-ready .event-more{grid-column:1/-1}
 }
-@media(prefers-reduced-motion:reduce){.event-row,.event-posters img,.event-more::before,.event-more i,.event-more i span::before,.event-more i span::after{transition:none}}
-/* Event rows take the pills' light (assets/glass.js) in the logo colours: the same two symmetric 100deg streaks facing
+@media(prefers-reduced-motion:reduce){.event-row,.event-posters img{transition:none}}
+/* Event rows and the detail card take the pills' light (assets/glass.js) in the logo colours: the same two symmetric 100deg streaks facing
    --spec-angle and brightened by --spec (questions 193–195). Each streak keeps the former hover glow's stops, opaque pink at
    the centre, then yellow, cyan and violet a quarter of the half-width apart, fading only over the last quarter. The streak
    window masks the 1px ring. */
-@supports(mask-composite:exclude){.event-row::after{content:"";position:absolute;inset:0;z-index:4;padding:1px;border-radius:calc(var(--radius) - 1px);pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),var(--brand-violet) 12.5deg,var(--brand-cyan) 25deg,var(--brand-yellow) 37.5deg,var(--brand-pink) 50deg,var(--brand-yellow) 62.5deg,var(--brand-cyan) 75deg,var(--brand-violet) 87.5deg 192.5deg,var(--brand-cyan) 205deg,var(--brand-yellow) 217.5deg,var(--brand-pink) 230deg,var(--brand-yellow) 242.5deg,var(--brand-cyan) 255deg,var(--brand-violet) 267.5deg);mask-image:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,rgb(0 0 0/var(--spec,0)) 12.5deg 87.5deg,transparent 100deg 180deg,rgb(0 0 0/var(--spec,0)) 192.5deg 267.5deg,transparent 280deg),linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:border-box,content-box,border-box;mask-composite:intersect,exclude,add}}
+@supports(mask-composite:exclude){.event-row::after,.event-detail-sheet::after{content:"";position:absolute;inset:0;z-index:4;padding:1px;border-radius:calc(var(--radius) - 1px);pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),var(--brand-violet) 12.5deg,var(--brand-cyan) 25deg,var(--brand-yellow) 37.5deg,var(--brand-pink) 50deg,var(--brand-yellow) 62.5deg,var(--brand-cyan) 75deg,var(--brand-violet) 87.5deg 192.5deg,var(--brand-cyan) 205deg,var(--brand-yellow) 217.5deg,var(--brand-pink) 230deg,var(--brand-yellow) 242.5deg,var(--brand-cyan) 255deg,var(--brand-violet) 267.5deg);mask-image:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,rgb(0 0 0/var(--spec,0)) 12.5deg 87.5deg,transparent 100deg 180deg,rgb(0 0 0/var(--spec,0)) 192.5deg 267.5deg,transparent 280deg),linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:border-box,content-box,border-box;mask-composite:intersect,exclude,add}}
 html:has(.poster-preview[open]){overflow:hidden}
 .poster-preview-origin{visibility:hidden}
 .poster-preview{position:fixed;inset:0;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--ink)}
 .poster-preview[open]{display:grid;grid-template-rows:minmax(0,1fr)}
-.poster-preview::backdrop{background:#05050bea;backdrop-filter:blur(12px);animation:preview-backdrop .26s ease-out}
+.poster-preview::backdrop{background:#05050bea;backdrop-filter:blur(12px);opacity:var(--veil,1);animation:preview-backdrop .26s ease-out}
 .poster-preview.is-closing::backdrop{animation:preview-backdrop .22s ease-in reverse forwards}
 .poster-preview-view{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;overflow:hidden;overscroll-behavior:contain;touch-action:none;user-select:none;-webkit-user-select:none;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 .poster-preview-view:focus{outline:none}
 .poster-preview-view.is-keyboard:focus{outline:2px solid var(--focus);outline-offset:-4px}
-.poster-preview-view img{display:block;flex:none;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;cursor:zoom-in;-webkit-user-drag:none;box-shadow:0 16px 64px #0008}
+.poster-preview-view img{display:block;flex:none;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;cursor:default;-webkit-user-drag:none;box-shadow:0 16px 64px #0008;transition:opacity .3s ease-out}
+.poster-preview-view img.is-pending{opacity:0}
 .poster-preview-view.is-zoomed img{cursor:grab}
 .poster-preview-view.is-dragging img{cursor:grabbing}
+/* With a mouse, a toolbar (− ＋ fit) at the bottom and a × at the top right like the detail sheet's (event-browsing Q31–Q33)
+   show while the mouse moves and fade after 2s of rest (assets/poster-preview.js); touch screens never show them. */
+.poster-preview-tools,.poster-preview-close{display:none}
+@media(hover:hover) and (pointer:fine){
+  .poster-preview[open] .poster-preview-tools{display:flex}
+  .poster-preview[open] .poster-preview-close{display:block}
+  .poster-preview-tools,.poster-preview-close{opacity:0;pointer-events:none;transition:opacity .3s ease-out}
+  .poster-preview.has-tools:not(.is-closing) :is(.poster-preview-tools,.poster-preview-close){opacity:1;pointer-events:auto}
+}
+.poster-preview-tools{position:absolute;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 16px));translate:-50% 0;height:calc(var(--control) + 16px);align-items:center;gap:8px;padding:0 7px;border:1px solid var(--glass-edge);border-radius:calc(var(--control)/2 + 8px);background:rgb(10 10 16/.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.poster-preview-button{position:relative;display:grid;place-items:center;width:var(--control);height:var(--control);padding:0;border:0;border-radius:999px;background:rgb(255 255 255/.06);color:#fff;cursor:pointer;--spec-base:rgb(255 255 255/.3)}
+.poster-preview-button svg{display:block}
+.poster-preview-button[aria-disabled="true"]{color:rgb(255 255 255/.32);cursor:default}
+@media(hover:hover){.poster-preview-button:not([aria-disabled="true"]):hover{--spec-base:#fff}}
+.poster-preview-button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 @keyframes preview-backdrop{from{background:#05050b00;backdrop-filter:blur(0)}}
 @media print{.poster-preview[open]{display:none}.poster-preview-origin{visibility:visible}}
+/* Event details (assets/event-detail.js, docs/event-browsing.md Q20–Q22): one page-level dialog, a full-screen sheet on
+   phones and a centred card up to 760px wide elsewhere, holding a copy of the row's poster stage and the row's details.
+   The page behind stays put (scroll locked, scrollbar space kept) and the row or wall poster it came from is hidden
+   until the sheet has shrunk back into it. The sheet is frosted glass over a light veil (docs/glass-effects.md Q1) and,
+   as a card, carries the event rows' light; the round × is a control-size glass button with the pills' specular rim. */
+html.is-detail{overflow:hidden;scrollbar-gutter:stable}
+.event-detail-origin{visibility:hidden}
+.event-detail{position:fixed;inset:0;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;color:var(--ink);overflow:hidden}
+.event-detail::backdrop{background:#05050b80;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:var(--veil,1);animation:preview-backdrop .4s ease-out}
+/* Shrinking back, the sheet is an ordinary layer above the page that lets clicks through (assets/event-detail.js), with
+   its own veil fading out in place of the backdrop. */
+.event-detail.is-leaving{z-index:1000;pointer-events:none}
+.event-detail.is-leaving::before{content:"";position:fixed;inset:0;background:#05050b80;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:var(--veil,1);animation:preview-backdrop .42s ease-in reverse forwards}
+.event-detail-sheet{position:absolute;top:24px;bottom:24px;left:max(24px,calc(50% - 380px));right:max(24px,calc(50% - 380px));display:flex;flex-direction:column;border:1px solid var(--glass-edge);border-radius:var(--radius);background:rgb(19 19 27/.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 30px 80px rgb(0 0 0/.55);overflow:hidden;overflow-wrap:anywhere;transform-origin:50% 0}
+.event-detail.is-flying .event-detail-sheet{transform-origin:50% 50%}
+.event-detail-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;outline:none}
+.event-detail.is-flying .event-detail-scroll{overflow:hidden}
+/* While the sheet flies in, only its poster stage takes part in layout; the details and the × rise in once it lands. */
+.event-detail.is-arriving .event-details{display:none}
+.event-detail.is-arriving .event-detail-close{opacity:0}
+.event-detail .event-stage{min-height:560px}
+/* The text over the poster lets taps through: the whole poster opens the full image (docs/event-browsing.md F35), and
+   it fades while the image is open. */
+.event-detail .event-summary{pointer-events:none;transition:opacity .2s ease-out}
+.event-detail .event-stage.is-previewing .event-summary{opacity:0}
+/* A poster not downloaded yet stays hidden and fades in whole when it arrives (assets/event-detail.js). */
+.event-detail .event-posters.is-pending img{opacity:0}
+:is(.event-detail-close,.poster-preview-close){position:absolute;top:16px;right:16px;z-index:5;width:var(--control);height:var(--control);padding:0;border:0;border-radius:999px;background:rgb(10 10 16/.55);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;cursor:pointer;--spec-base:rgb(255 255 255/.3)}
+:is(.event-detail-close,.poster-preview-close) span::before,:is(.event-detail-close,.poster-preview-close) span::after{content:"";position:absolute;left:50%;top:50%;width:14px;height:1.5px;margin:-.75px 0 0 -7px;border-radius:1px;background:currentColor;rotate:45deg}
+:is(.event-detail-close,.poster-preview-close) span::after{rotate:-45deg}
+@media(hover:hover){:is(.event-detail-close,.poster-preview-close):hover{--spec-base:#fff}}
+:is(.event-detail-close,.poster-preview-close):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+@media screen and (max-width:700px){
+  .event-detail-sheet{inset:0;border:0;border-radius:0;box-shadow:none}
+  .event-detail-sheet::after{display:none}
+  .event-detail .event-stage{min-height:520px}
+  .event-detail-close{top:max(12px,env(safe-area-inset-top));right:12px}
+}
+@media(prefers-reduced-motion:reduce){.event-detail::backdrop{animation:none}}
+@media print{.event-detail{display:none}}
 .event-field{font-size:13px;line-height:1.8}
 .event-field h5{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.08em;margin:0 0 10px}
 .event-location{color:#d8cce3}
@@ -268,9 +316,9 @@ html:has(.poster-preview[open]){overflow:hidden}
 
 /* React Bits Specular Button rim, CSS edition: a 1px masked ring carries the 45% #525252 base stroke and two symmetric
    white streaks (10deg window, 40deg fade) facing --spec-angle, brightened by --spec from assets/glass.js. */
-.filter-toggle,.filter-chip,.family-chip,.picker-trigger,.ms-search,.reset-empty,.filter-tag,.event-more i{position:relative}
-@supports(mask-composite:exclude){.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-more i::after{--spec-light:rgb(255 255 255/calc(var(--spec,0)*.68));--spec-half:rgb(255 255 255/calc(var(--spec,0)*.4));content:"";position:absolute;inset:0;padding:1px;border-radius:999px;pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,var(--spec-half) 25deg,var(--spec-light) 50deg,var(--spec-half) 75deg,transparent 100deg 180deg,var(--spec-half) 205deg,var(--spec-light) 230deg,var(--spec-half) 255deg,transparent 280deg),var(--spec-base,rgb(82 82 82/.45));mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:content-box,border-box;mask-composite:exclude}}
-@media print{.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-more i::after{display:none}}
+.filter-toggle,.filter-chip,.family-chip,.picker-trigger,.ms-search,.reset-empty,.filter-tag{position:relative}
+@supports(mask-composite:exclude){.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-detail-close::after,.poster-preview-close::after,.poster-preview-button::after{--spec-light:rgb(255 255 255/calc(var(--spec,0)*.68));--spec-half:rgb(255 255 255/calc(var(--spec,0)*.4));content:"";position:absolute;inset:0;padding:1px;border-radius:999px;pointer-events:none;background:conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,var(--spec-half) 25deg,var(--spec-light) 50deg,var(--spec-half) 75deg,transparent 100deg 180deg,var(--spec-half) 205deg,var(--spec-light) 230deg,var(--spec-half) 255deg,transparent 280deg),var(--spec-base,rgb(82 82 82/.45));mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-clip:content-box,border-box;mask-composite:exclude}}
+@media print{.filter-toggle::after,.filter-chip::after,.family-chip::after,.picker-trigger::after,.ms-search::after,.reset-empty::after,.filter-tag::after,.event-detail-close::after,.poster-preview-close::after,.poster-preview-button::after{display:none}}
 /* React Bits Shiny Text, default settings: #b5b5b5 text, white shine, 120deg spread, 2s linear sweep from 150% to -50%. */
 @keyframes shiny-text{from{background-position:150% center}to{background-position:-50% center}}
 .empty-state h3{background:linear-gradient(120deg,#b5b5b5 0%,#b5b5b5 35%,#fff 50%,#b5b5b5 65%,#b5b5b5 100%) 150% center/200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shiny-text 2s linear infinite}
@@ -384,4 +432,4 @@ html:has(.poster-preview[open]){overflow:hidden}
 .venue-address{display:block;font-size:13px;line-height:1.7;color:var(--muted)}
 @media print{.artist-table th,.artist-table td,.artist-name,.artist-time,.artist-genres,.ticket-prices li,.price-amount,.info-actions a,.venue-name{color:#111}.artist-table:not(.artist-stage-table) thead{position:static;width:auto;height:auto;clip-path:none}.info-actions a{min-height:0}}
 
-@media print{body{background:#fff;color:#111}.filter-dock,.filter-panel,.filter-scrim,.topography,.event-row::after,.event-more,.action-icon{display:none!important}.scroll-motion .event-posters>a>img{scale:none;translate:none}.topbar{min-height:0;border:0;padding:0 0 24px}.title-lockup{color:#111}.wrap{width:100%}.event-row .event-details[hidden]{display:grid!important}.event-row{break-inside:avoid;transform:none;background:#fff;border-color:#aaa;box-shadow:none}.event-stage{min-height:0!important}.event-summary{text-shadow:none;color:#111}.event-details{background:#fff}.event-posters{display:none}.event-heading h4{font-size:18px}.event-time,.lineup-note,.event-info a,.event-location,.event-field h5,.info-label{color:#333}.site-footer p{color:#444}}
+@media print{body{background:#fff;color:#111}.filter-dock,.filter-panel,.filter-scrim,.topography,.event-row::after,.event-detail,.action-icon{display:none!important}.scroll-motion .event-posters>a>img{scale:none;translate:none}.topbar{min-height:0;border:0;padding:0 0 24px}.title-lockup{color:#111}.wrap{width:100%}.event-row .event-details[hidden]{display:grid!important}.event-row{break-inside:avoid;transform:none;background:#fff;border-color:#aaa;box-shadow:none}.event-stage{min-height:0!important}.event-summary{text-shadow:none;color:#111}.event-details{background:#fff}.event-posters{display:none}.event-heading h4{font-size:18px}.event-time,.lineup-note,.event-info a,.event-location,.event-field h5,.info-label{color:#333}.site-footer p{color:#444}}

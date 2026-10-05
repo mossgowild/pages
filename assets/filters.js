@@ -365,34 +365,12 @@ if (typeof document !== 'undefined') {
     fields.from.value = fields.to.value = '';
     updateVenues();
     apply();
-    if (!quietReset) showResults();
+    showResults();
   });
-  // Resets that lead somewhere else (an anchor, a spotlight card) leave the scrolling to that destination.
-  let quietReset = false;
-  const resetQuietly = () => {
-    quietReset = true;
-    form.reset();
-    quietReset = false;
-  };
   document.getElementById('reset-empty').addEventListener('click', () => {
     form.reset();
     toggle.focus();
   });
-  function revealTarget() {
-    const target = document.getElementById(location.hash.slice(1));
-    if (target && (target.hidden || target.closest('.day-group')?.hidden)) {
-      resetQuietly();
-      target.scrollIntoView();
-    }
-  }
-  // Delegated, so the poster wall's repeated tiles clear the filters like the original links.
-  document.addEventListener('click', event => {
-    const link = event.target.closest('.spotlight-card');
-    if (!link) return;
-    const target = document.querySelector(link.hash);
-    if (target.hidden || target.closest('.day-group').hidden) resetQuietly();
-  });
-  window.addEventListener('hashchange', revealTarget);
   updateVenues();
   apply();
   dock.hidden = false;
@@ -422,5 +400,4 @@ if (typeof document !== 'undefined') {
     }
   });
   setEdge();
-  revealTarget();
 }

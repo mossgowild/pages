@@ -1,7 +1,7 @@
 // Run with: node scripts/check_hero.mjs
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { baseWidth, columnCount, planeHeight, turnedReach, wallLayout, wallZoom } from './hero.mjs';
+import { baseWidth, columnCount, loadOrder, planeHeight, turnedReach, wallLayout, wallZoom } from './hero.mjs';
 
 // Base widths: 270px on desktop and tablet, 200px on phones; above 1440px the wall scales instead of adding columns.
 assert.equal(baseWidth(375), 200);
@@ -60,4 +60,8 @@ for (const count of [total, 3]) {
     column.posters.flatMap((poster, k) => [...Array(column.copies).keys()].filter(copy => column.focusable(k, copy)).map(() => poster)));
   assert.deepEqual(focusable.sort((a, b) => a - b), [...Array(count).keys()], `${count} posters: one focusable copy each`);
 }
-console.log(`OK: ${total} posters; 6 columns from 1440px up (scaled), mixed square tiles, whole-list columns, turned coverage and focus`);
+// The wall shows light posters (Q34); the tiles on screen download first and at high priority, the rest after them.
+assert.equal((html.match(/class="hero-poster[^>]*><img src="assets\/posters\/[^"]+\.thumb\.webp"/g) ?? []).length, total, 'The wall uses the light posters');
+assert.deepEqual(loadOrder([{ shown: false, time: Infinity }, { shown: true, time: 0 }, { shown: false, time: 4 }, { shown: true, time: 0 }, { shown: false, time: 1 }]),
+  [[1, 3], [4, 2, 0]], 'The posters on the stage first, then by how soon they drift in, the ones drifting away last');
+console.log(`OK: ${total} posters; 6 columns from 1440px up (scaled), mixed square tiles, whole-list columns, turned coverage, focus and on-screen posters first`);
