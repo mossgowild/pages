@@ -191,24 +191,16 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   const blurMesh = new Mesh(gl, { geometry: new Triangle(gl), program: blurProgram });
   const u = program.uniforms, g = blurProgram.uniforms;
   const controls = [u.uCtrlA.value, u.uCtrlB.value, u.uCtrlC.value, u.uCtrlD.value];
-  let mouseActiveTarget = 0, time = 0, last, frame = 0, drawnAt, places;
+  let mouseActiveTarget = 0, time = 0, last, frame = 0, places;
 
   const root = document.documentElement;
   const animating = () => !reducedMotion.matches && !document.hidden && !canvas.hidden;
-  // An event's detail sheet (assets/event-detail.js) or the filter panel with its pickers (assets/filters.js) covers the
-  // page: the terrain holds its last frame meanwhile, which spares the main thread while the sheet flies in and out
-  // (docs/event-browsing.md F42) and leaves nothing under the veil to blur again on each frame (docs/motion-performance.md Q5).
-  const covered = () => root.classList.contains('is-detail') || root.classList.contains('is-filtering');
-  // The contours morph slowly: a high refresh rate (120Hz) draws at most every other frame (docs/motion-performance.md Q5).
-  const FRAME = 1000 / 60 - 1;
+  // An event's detail sheet (assets/event-detail.js) covers the page: the terrain holds its last frame meanwhile, which
+  // spares the main thread while the sheet flies in and out (docs/event-browsing.md F42).
+  const covered = () => root.classList.contains('is-detail');
   function render(now) {
     frame = 0;
-    // Until the page's layout has been measured (below) or, on a high refresh rate, between two drawn frames: wait.
-    if (!places || (animating() && drawnAt !== undefined && now - drawnAt < FRAME)) {
-      if (animating() && !covered()) frame = requestAnimationFrame(render);
-      return;
-    }
-    drawnAt = now;
+    if (!places) return; // The first measurement (below) requests the first frame.
     if (animating()) time += last === undefined ? 0 : (now - last) / 1000;
     last = animating() ? now : undefined;
     u.iTime.value = time;
@@ -301,7 +293,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     requestRender();
   }).observe(document.body);
   document.addEventListener('visibilitychange', requestRender);
-  // Uncovered, the terrain picks up where it stopped rather than jumping ahead by the time the sheet or panel was open.
+  // Uncovered, the terrain picks up where it stopped rather than jumping ahead by the time the sheet was open.
   let wasCovered = covered();
   new MutationObserver(() => {
     if (covered() === wasCovered) return;

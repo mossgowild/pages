@@ -236,12 +236,13 @@ def event_row(event, images, genre_families):
     for poster in event['posters']:
         image = images[poster['image']]
         assert image['width'] > 0 and image['height'] > 0
-        # The light version shows first; near the screen, in the detail sheet and in the preview the original takes over
-        # (data-full; scripts/build_posters.py, docs/event-browsing.md).
+        # The light version shows first; near the screen, in the detail sheet and in the preview the full-size version
+        # takes over (data-full: the original, or its same-size WebP; scripts/build_posters.py, docs/event-browsing.md).
+        full = poster_path(image['full'])
         poster_content = (
-            f'<a href="{poster_path(poster["image"])}" aria-haspopup="dialog" aria-label="预览：{escape(poster["alt"], quote=True)}">'
+            f'<a href="{full}" aria-haspopup="dialog" aria-label="预览：{escape(poster["alt"], quote=True)}">'
             f'<img width="{image["width"]}" height="{image["height"]}" src="{poster_path(image["thumbnail"])}"'
-            f' data-full="{poster_path(poster["image"])}" loading="lazy" fetchpriority="low" alt="{escape(poster["alt"], quote=True)}"></a>')
+            f' data-full="{full}" loading="lazy" fetchpriority="low" alt="{escape(poster["alt"], quote=True)}"></a>')
     ident = escape(event['id'], quote=True)
     # Unknown start, venue or genres leave their place empty rather than saying so.
     start = escape(start_label(event)) if event['starts'] else ''

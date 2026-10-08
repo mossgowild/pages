@@ -109,6 +109,19 @@ class Page(HTMLParser):
             self.card = None
 
 
+def webp_size(path):
+    """A WebP's pixel size from its header (lossy VP8, lossless VP8L or extended VP8X)."""
+    data = path.read_bytes()[:30]
+    assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', f'{path}: not a WebP'
+    chunk = data[12:16]
+    if chunk == b'VP8X':
+        return 1 + int.from_bytes(data[24:27], 'little'), 1 + int.from_bytes(data[27:30], 'little')
+    if chunk == b'VP8L':
+        bits = int.from_bytes(data[21:25], 'little')
+        return 1 + (bits & 0x3FFF), 1 + (bits >> 14 & 0x3FFF)
+    return int.from_bytes(data[26:28], 'little') & 0x3FFF, int.from_bytes(data[28:30], 'little') & 0x3FFF
+
+
 def check():
     source = (ROOT / 'index.html').read_text()
     assert source == render(), 'Generated page is stale; run scripts/build_page.py'
@@ -119,10 +132,33 @@ def check():
     manifest = json.loads((ROOT / 'assets/posters/sources.json').read_text())
     # Every poster's light version (scripts/build_posters.py), a WebP beside the original.
     lights = {image['path']: image['thumbnail'] for image in manifest['images']}
+    fulls = {image['path']: image['full'] for image in manifest['images']}
     assert all(light.endswith('.thumb.webp') and (ROOT / light).is_file() for light in lights.values()), 'Run scripts/build_posters.py'
     # And the wall's 400px version, which low-density screens show instead (docs/motion-performance.md).
     smalls = {image['thumbnail']: image['thumbnail_small'] for image in manifest['images']}
     assert all(small.endswith('.thumb-400.webp') and (ROOT / small).is_file() for small in smalls.values()), 'Run scripts/build_posters.py'
+    source = (ROOT / 'index.html').read_text()
+    assert source == render(), 'Generated page is stale; run scripts/build_page.py'
+    data = json.loads((ROOT / 'data/events.json').read_text())
+    events = {event['id']: event for event in data['events']}
+    page = Page()
+    page.feed(source)
+    manifest = json.loads((ROOT / 'assets/posters/sources.json').read_text())
+    # Every poster's light version (scripts/build_posters.py), a WebP beside the original.
+    lights = {image['path']: image['thumbnail'] for image in manifest['images']}
+    fulls = {image['path']: image['full'] for image in manifest['images']}
+    assert all(light.endswith('.thumb.webp') and (ROOT / light).is_file() for light in lights.values()), 'Run scripts/build_posters.py'
+    # And the wall's 400px version, which low-density screens show instead (docs/motion-performance.md).
+    smalls = {image['thumbnail']: image['thumbnail_small'] for image in manifest['images']}
+    assert all(small.endswith('.thumb-400.webp') and (ROOT / small).is_file() for small in smalls.values()), 'Run scripts/build_posters.py'
+    # And the full-size version the page shows: a PNG or JPG original's same-size WebP, or the original itself; the page
+    # no longer links an original that has one (docs/motion-performance.md Q34).
+    for image in manifest['images']:
+        full = image['full']
+        assert (ROOT / full).is_file(), 'Run scripts/build_posters.py'
+        if full != image['path']:
+            assert full.endswith('.full.webp') and webp_size(ROOT / full) == (image['width'], image['height']), f'{full}: same size as the original'
+            assert f'"{image["path"]}"' not in source, f'The page still links {image["path"]}'
     assert not page.stack and page.card is page.field is page.table is page.row is page.cell is None
     visible = re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', source, flags=re.S))
     assert not re.search(r'尚不明确|未知|其它场地|其它时段|其它风格|TBA', visible), 'No unknown or vague placeholders on the page'
@@ -232,14 +268,15 @@ def check():
             if part['type'] == 'mini-program':
                 assert f'data-copy-text="{html.escape(part["code"], quote=True)}"' in source, 'Mini-program codes copy on tap'
         poster = fields['posters']
-        # Rows show the light version and name the original for the screen, the detail sheet and the preview (Q34).
+        # Rows show the light version and name the full-size version for the screen, the detail sheet and the preview
+        # (event-browsing Q34; motion-performance Q34: the original's same-size WebP where it has one).
         originals = [item['image'] for item in event['posters']]
         assert poster['images'] == [lights[original] for original in originals], 'Rows show the light posters'
-        assert poster['originals'] == originals, 'Rows name their original posters (data-full)'
+        assert poster['originals'] == [fulls[original] for original in originals], 'Rows name their full-size posters (data-full)'
         if poster['images']:
             illustrated_cards += 1
             assert not poster['text'].strip(), 'Remove the poster link label strip'
-            assert poster['links'] == originals, 'Poster links must open their original images'
+            assert poster['links'] == [fulls[original] for original in originals], 'Poster links must open their full-size images'
             assert all((ROOT / link).is_file() for link in poster['links']), 'Missing full-size poster'
         else:
             assert not poster['links'], 'Do not repeat event links in the poster area'

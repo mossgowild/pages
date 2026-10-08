@@ -96,9 +96,7 @@ function checkLayout() {
     const style = getComputedStyle(panel);
     // The bar is a full pill (28px on its 56px height, concentric with its 40px buttons) and squares its corners as it docks (× (1 − --dock); question 216).
     const radius = panel === bar ? (control / 2 + 8) * (1 - Number(getComputedStyle(dock).getPropertyValue('--dock'))) : 24;
-    // Under an open detail's veil the bar stops blurring (docs/motion-performance.md F14).
-    const veiled = panel === bar && document.documentElement.classList.contains('is-detail');
-    assert(Math.abs(parseFloat(style.borderTopLeftRadius) - radius) < 0.5 && (veiled || style.backdropFilter.includes('blur')), `${panel.className}: panel must be frosted glass`);
+    assert(Math.abs(parseFloat(style.borderTopLeftRadius) - radius) < 0.5 && style.backdropFilter.includes('blur'), `${panel.className}: panel must be frosted glass`);
   }
   for (const value of document.querySelectorAll('.picker-value')) {
     if (value.getClientRects().length) assert(value.scrollHeight <= value.clientHeight, `${value.textContent}: the picker text must not be cropped`);
@@ -120,11 +118,10 @@ function checkLayout() {
   for (const row of document.querySelectorAll('.event-row')) {
     assert(getComputedStyle(row, '::after').maskImage.startsWith('conic-gradient'), `${row.id}: rows must take the pills' light`);
   }
-  // Glass under a veil stops blurring once the veil covers it, and blurs again when nothing covers the page
-  // (docs/motion-performance.md F14); a divider's stars flow only while it is on the screen (assets/scroll-motion.js).
+  // Rows stay frosted glass, under a veil too (docs/motion-performance.md Q28); a divider's stars flow only while it is on
+  // the screen (assets/scroll-motion.js).
   const blurOf = element => { const style = getComputedStyle(element); return style.backdropFilter || style.webkitBackdropFilter || 'none'; };
-  const covered = document.documentElement.matches('.is-detail, .is-filtering');
-  if (!covered) for (const row of document.querySelectorAll('.event-row')) assert(blurOf(row).includes('blur'), `${row.id}: rows are frosted glass`);
+  for (const row of document.querySelectorAll('.event-row')) assert(blurOf(row).includes('blur'), `${row.id}: rows are frosted glass`);
   if (!reducedMotion) {
     for (const [divider, pseudo] of [['.topbar', '::after'], ['.site-footer', '::before'], ...[...document.querySelectorAll('.day-heading')].map(h => [h, '::after'])]) {
       const element = typeof divider === 'string' ? document.querySelector(divider) : divider;
@@ -137,8 +134,6 @@ function checkLayout() {
   if (!/Firefox/.test(navigator.userAgent) && !(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))) {
     // Search boxes live in the pickers' popovers, outside the panel; only an open one has boxes to check.
     for (const glass of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card, .picker-trigger, .filter-select input') : []), ...document.querySelectorAll('.ms-search'), document.getElementById('empty-state')]) {
-      // The bar under an open detail's veil stops blurring and refracting (docs/motion-performance.md F14).
-      if (glass === bar && document.documentElement.classList.contains('is-detail')) continue;
       if (glass.getClientRects().length) assert(getComputedStyle(glass).backdropFilter.includes('url('), 'Chromium glass must add the refraction filter');
     }
   }
@@ -267,9 +262,6 @@ function checkLayout() {
     assert(getComputedStyle(detail.querySelector('.event-details')).gridTemplateColumns.split(' ').length === (card ? 2 : 1),
       'The detail sheet lays its sections out by its own width');
     assert(getComputedStyle(glass).backdropFilter.includes('blur'), 'The detail sheet is frosted glass');
-    if (!detail.classList.contains('is-leaving')) for (const under of document.querySelectorAll('.event-row, .filter-bar')) {
-      assert(blurOf(under) === 'none', 'Under the detail\'s veil the rows and the filter bar stop blurring');
-    }
     const ring = getComputedStyle(glass, '::after');
     assert(card ? ring.maskImage.startsWith('conic-gradient') : ring.display === 'none', 'Only the detail card carries the event rows\' light');
     const close = detail.querySelector('.event-detail-close').getBoundingClientRect();
