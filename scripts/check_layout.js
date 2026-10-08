@@ -3,15 +3,16 @@ function checkLayout() {
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
   const viewport = document.documentElement.clientWidth;
   assert(document.documentElement.scrollWidth <= viewport, 'Page overflows horizontally');
-  const wordmark = document.querySelector('.title-wordmark').getBoundingClientRect();
-  const region = document.querySelector('.title-region').getBoundingClientRect();
-  const logo = document.querySelector('.title-logo').getBoundingClientRect();
+  // The unbranded preview (docs/unbranded-preview.md Q1–Q2): no title lockup, logo or icons; the update block alone keeps
+  // the header's right edge.
+  assert(!document.querySelector('.title-lockup, .title-logo, link[rel~="icon"], meta[name="description"]') && !document.title,
+    'No title, brand, description or icons in the unbranded preview');
+  const header = document.querySelector('.topbar');
+  const headerBox = header.getBoundingClientRect();
   const updated = document.querySelector('.site-updated').getBoundingClientRect();
-  const brand = document.querySelector('.title-lockup').getBoundingClientRect();
-  assert(Math.abs((updated.top + updated.bottom) - (brand.top + brand.bottom)) < 2,
-    'Header title and update block must be vertically centered');
-  assert(document.querySelector('.topbar').getBoundingClientRect().height <= 76, 'Keep the header compact');
-  assert(Math.abs(brand.height - updated.height) <= 2, 'The title block and the update block must be the same height (question 272)');
+  assert(headerBox.height <= 76, 'Keep the header compact');
+  assert(Math.abs(updated.right - (headerBox.right - parseFloat(getComputedStyle(header).paddingRight))) < 1 && updated.right <= viewport,
+    'The update block stays at the header’s right edge');
   const updateLabel = document.querySelector('.site-updated > span');
   const updateTime = document.querySelector('.site-updated time');
   assert(updateLabel.textContent === '资讯更新' && updateTime.getBoundingClientRect().top >= updateLabel.getBoundingClientRect().bottom,
@@ -19,13 +20,6 @@ function checkLayout() {
   // The label's trailing letter-spacing hangs past the edge, so its last glyph lines up with the time.
   assert(Math.abs(updateLabel.getBoundingClientRect().right - parseFloat(getComputedStyle(updateLabel).letterSpacing) - updateTime.getBoundingClientRect().right) < 1,
     'Right-align both update lines');
-  assert(wordmark.bottom <= region.top && region.right < logo.left, 'The title leads; the byline “region  by logo” sits below it (question 260)');
-  // Both rows skew 12° from their bottom-left corner, so the title's box overhangs on the right by its height × tan 12°.
-  const overhang = wordmark.height * Math.tan(12 * Math.PI / 180);
-  assert(Math.abs(wordmark.left - region.left) < 1 && Math.abs(wordmark.right - overhang - logo.right) < 1,
-    'Title and byline rows must share their left and right edges');
-  assert(updated.left >= Math.max(wordmark.right, region.right) && updated.right <= viewport,
-    'Header update time overlaps the title or leaves the viewport');
   assert(!document.querySelector('.hero-bottom, .top-links, .top-meta, .date-panel, .date-trigger'),
     'Remove the repeated hero footer, header navigation and date drawer');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;

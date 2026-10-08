@@ -346,7 +346,7 @@ html.is-detail:not(:has(.event-detail.is-leaving)) :is(.event-row,.filter-bar),h
 /* “by” is a corner mark at the logo's top left (question 283): its glyph tops sit 2px above the logo's top edge. */
 .title-by{display:inline-block;font:400 7px/1 var(--font-display);letter-spacing:.04em;transform:skewX(-12deg);transform-origin:0 100%;translate:0 -2.6px}
 .title-logo{display:block;flex:none;width:auto;height:12px}
-.site-updated{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.site-updated{grid-column:2;display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
 .site-updated>span{margin-right:-.42em;font-size:11px;line-height:1.4;letter-spacing:.42em;white-space:nowrap}
 .site-updated time{display:flex;align-items:center;gap:8px;font:600 22px/1 var(--font-display);letter-spacing:.06em;white-space:nowrap;color:var(--ink)}
 .site-updated time span:last-child{color:var(--muted)}
