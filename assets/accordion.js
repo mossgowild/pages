@@ -51,7 +51,10 @@
   };
   if (document.readyState === 'complete') watch();
   else addEventListener('load', watch, { once: true });
-  root.classList.add('accordion-ready');
+  // The rows collapse at once when the page becomes ready: no 0.6s --open transition for each of them, which only the
+  // main thread can run (docs/motion-performance.md F10); a later change of a day's first row still eases.
+  root.classList.add('accordion-settling', 'accordion-ready');
   days.forEach(arrange);
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove('accordion-settling')));
   addEventListener('resize', () => days.forEach(arrange));
 })();

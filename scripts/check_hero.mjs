@@ -62,6 +62,8 @@ for (const count of [total, 3]) {
 }
 // The wall shows light posters (Q34); the tiles on screen download first and at high priority, the rest after them.
 assert.equal((html.match(/class="hero-poster[^>]*><img src="assets\/posters\/[^"]+\.thumb\.webp"/g) ?? []).length, total, 'The wall uses the light posters');
+assert.equal((html.match(/class="hero-poster[^>]*><img [^>]*data-small="assets\/posters\/[^"]+\.thumb-400\.webp" data-small-width="\d+"/g) ?? []).length, total,
+  'Low-density screens can show the 400px light versions instead (docs/motion-performance.md)');
 assert.deepEqual(loadOrder([{ shown: false, time: Infinity }, { shown: true, time: 0 }, { shown: false, time: 4 }, { shown: true, time: 0 }, { shown: false, time: 1 }]),
   [[1, 3], [4, 2, 0]], 'The posters on the stage first, then by how soon they drift in, the ones drifting away last');
 console.log(`OK: ${total} posters; 6 columns from 1440px up (scaled), mixed square tiles, whole-list columns, turned coverage, focus and on-screen posters first`);

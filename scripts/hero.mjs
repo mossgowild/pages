@@ -129,7 +129,9 @@ function buildWall(stage, links, layout, span) {
         tile.append(inner);
         // The share of the poster that overflows the square tile, as a percentage of the poster along its pan.
         const pan = ratio < 1 ? (1 - ratio) * 100 : (1 - 1 / ratio) * 100;
-        posters.push({ tile, image, src, column: c, middle: column.middle(k, copy), size: column.heights[k], pan, wide: ratio < 1, still: tile.tabIndex === -1 });
+        // How wide the poster shows in its tile (CSS px): the tile's width, or its height times the ratio when wide.
+        const width = ratio < 1 ? column.tileWidth / ratio : column.tileWidth;
+        posters.push({ tile, image, src, width, column: c, middle: column.middle(k, copy), size: column.heights[k], pan, wide: ratio < 1, still: tile.tabIndex === -1 });
         track.append(tile);
       });
     }
@@ -302,6 +304,9 @@ export function initHero(root) {
       const ahead = velocity > 0 ? y - edge : -y - edge;
       return { shown: false, time: Math.abs(y) < edge ? 0 : ahead > 0 ? ahead / Math.abs(velocity) : Infinity };
     }));
+    // The largest tiles on the stage first: the biggest poster is what the page's largest paint (LCP) waits for
+    // (docs/motion-performance.md F15).
+    first.sort((a, b) => tiles[b].size - tiles[a].size);
     // One download per file: every tile showing that file gets it at once.
     const files = new Map();
     for (const index of [...first, ...rest]) {
@@ -315,9 +320,15 @@ export function initHero(root) {
     const next = () => {
       const file = queue.shift();
       if (!file) return;
+      // One light version for all the file's tiles, so each poster downloads once: the 400px one when it covers the widest
+      // of them on the screen (the plane shows a tile at about PROJECTION × zoom its CSS size), else the 720px one. Every
+      // column loops the whole list, so this picks the small one on low-density screens up to 1440px wide.
+      const need = Math.max(...file.tiles.map(tile => tile.width)) * PROJECTION * zoom * devicePixelRatio;
+      const { small, smallWidth } = file.tiles[0].image.dataset;
+      const pick = small && Number(smallWidth) >= need ? small : null;
       for (const { image, src } of file.tiles) {
         image.fetchPriority = file.priority;
-        image.src = src;
+        image.src = pick ?? src;
       }
       file.tiles[0].image.decode().catch(() => {}).then(() => {
         file.arrived();

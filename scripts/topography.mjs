@@ -191,14 +191,24 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   const blurMesh = new Mesh(gl, { geometry: new Triangle(gl), program: blurProgram });
   const u = program.uniforms, g = blurProgram.uniforms;
   const controls = [u.uCtrlA.value, u.uCtrlB.value, u.uCtrlC.value, u.uCtrlD.value];
-  let mouseActiveTarget = 0, time = 0, last, frame = 0;
+  let mouseActiveTarget = 0, time = 0, last, frame = 0, drawnAt, places;
 
+  const root = document.documentElement;
   const animating = () => !reducedMotion.matches && !document.hidden && !canvas.hidden;
-  // An event's detail sheet covers the page (assets/event-detail.js): the terrain holds its last frame meanwhile, which
-  // spares the main thread while the sheet flies in and out (docs/event-browsing.md F42).
-  const covered = () => document.documentElement.classList.contains('is-detail');
+  // An event's detail sheet (assets/event-detail.js) or the filter panel with its pickers (assets/filters.js) covers the
+  // page: the terrain holds its last frame meanwhile, which spares the main thread while the sheet flies in and out
+  // (docs/event-browsing.md F42) and leaves nothing under the veil to blur again on each frame (docs/motion-performance.md Q5).
+  const covered = () => root.classList.contains('is-detail') || root.classList.contains('is-filtering');
+  // The contours morph slowly: a high refresh rate (120Hz) draws at most every other frame (docs/motion-performance.md Q5).
+  const FRAME = 1000 / 60 - 1;
   function render(now) {
     frame = 0;
+    // Until the page's layout has been measured (below) or, on a high refresh rate, between two drawn frames: wait.
+    if (!places || (animating() && drawnAt !== undefined && now - drawnAt < FRAME)) {
+      if (animating() && !covered()) frame = requestAnimationFrame(render);
+      return;
+    }
+    drawnAt = now;
     if (animating()) time += last === undefined ? 0 : (now - last) / 1000;
     last = animating() ? now : undefined;
     u.iTime.value = time;
@@ -211,13 +221,13 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     u.uSpan.value = TERRAIN_SPAN * renderer.dpr;
     u.uScroll.value = reducedMotion.matches ? 0 : scrollY * SCROLL_DEPTH * renderer.dpr; // GL y points up: features rise.
     // Glass edges in page px, shifted by the scroll and scaled to the canvas: each reel fade spans the blank margin
-    // plus the same length into the text beside it.
-    const reelTop = reel.getBoundingClientRect().top, gap = reel.offsetHeight * REEL_GAP;
-    // The blur ends where the filter bar rests before it sticks: the sentinel plus the dock's height in the flow.
-    const reelBottom = reelTop + reel.offsetHeight, barBottom = sentinel.getBoundingClientRect().bottom + dock.offsetHeight;
+    // plus the same length into the text beside it. The blur ends where the filter bar rests before it sticks.
+    const y = scrollY;
+    const reelTop = places.reelTop - y, gap = places.reelHeight * REEL_GAP;
+    const reelBottom = reelTop + places.reelHeight, barBottom = places.barBottom - y;
     g.uGlassReel.value = [reelTop - gap, reelTop + gap, reelBottom - gap, reelBottom + gap].map(value => value * renderer.dpr);
     g.uGlassEnd.value = [barBottom, barBottom + GLASS_TAIL].map(value => value * renderer.dpr);
-    g.uBandCount.value = textBands(barBottom).reduce((count, band) => {
+    g.uBandCount.value = textBands(y).reduce((count, band) => {
       if (count === MAX_BANDS || band[3] < 0 || band[0] > renderer.height) return count;
       g.uBands.value[count] = band.map(value => value * renderer.dpr);
       return count + 1;
@@ -232,49 +242,73 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     renderer.render({ scene: blurMesh });
     if (animating() && !covered()) frame = requestAnimationFrame(render);
   }
+  // What the glass needs, in page px, measured when the layout changes rather than on every frame (docs/motion-performance.md
+  // F4), from a ResizeObserver, whose callbacks run once the layout is done, so measuring forces none: the reel, the filter bar's resting bottom (the sentinel plus the dock's height in the flow), each visible day with
+  // the content around it, and the footer. A day heading drifts with the scroll (assets/scroll-motion.js), so its place is
+  // kept without the drift and the drift is added back each frame.
+  function measure() {
+    const y = scrollY, drifting = root.classList.contains('scroll-motion');
+    const top = element => element.getBoundingClientRect().top + y, bottom = element => element.getBoundingClientRect().bottom + y;
+    const barBottom = bottom(sentinel) + dock.offsetHeight;
+    const groups = [...document.querySelectorAll('.day-group:not([hidden])')];
+    const days = groups.map((day, i) => {
+      const heading = day.querySelector('.day-heading'), empty = day.querySelector('.empty-day'), cards = day.querySelector('.event-accordion');
+      const drift = drifting ? parseFloat(heading.style.getPropertyValue('--heading-y')) || 0 : 0;
+      return {
+        heading, drifts: !empty, top: top(heading) - drift, bottom: empty ? bottom(empty) : bottom(heading) - drift,
+        above: i ? bottom(groups[i - 1]) : barBottom, below: top(cards ?? groups[i + 1] ?? footer),
+      };
+    });
+    return { reelTop: top(reel), reelHeight: reel.offsetHeight, barBottom, days, footerTop: top(footer),
+      footerPad: parseFloat(getComputedStyle(footer).paddingTop) };
+  }
   // Bands behind the text on the background, in viewport px: each visible day's heading (with the note of a day without
   // events) eases in from the content above and out towards its first card, or to what follows, over TEXT_FADE times
   // the gap between; the footer eases in from its divider over TEXT_FADE times its top padding and stays full to the
   // page's end.
-  function textBands(barBottom) {
-    const days = [...document.querySelectorAll('.day-group:not([hidden])')];
-    const bands = days.map((day, i) => {
-      const heading = day.querySelector('.day-heading'), cards = day.querySelector('.event-accordion');
-      const text = heading.getBoundingClientRect(), last = (day.querySelector('.empty-day') ?? heading).getBoundingClientRect();
-      const above = i ? days[i - 1].getBoundingClientRect().bottom : barBottom;
-      const below = (cards ?? days[i + 1] ?? footer).getBoundingClientRect().top;
-      const fadeIn = Math.max(TEXT_FADE * (text.top - above), 1), fadeOut = Math.max(TEXT_FADE * (below - last.bottom), 1);
-      return [text.top - fadeIn, text.top, last.bottom, last.bottom + fadeOut];
+  function textBands(y) {
+    const drifting = root.classList.contains('scroll-motion');
+    const bands = places.days.map(day => {
+      const drift = drifting ? parseFloat(day.heading.style.getPropertyValue('--heading-y')) || 0 : 0;
+      const top = day.top + drift - y, bottom = day.bottom + (day.drifts ? drift : 0) - y;
+      const fadeIn = Math.max(TEXT_FADE * (top - (day.above - y)), 1), fadeOut = Math.max(TEXT_FADE * (day.below - y - bottom), 1);
+      return [top - fadeIn, top, bottom, bottom + fadeOut];
     });
-    const top = footer.getBoundingClientRect().top;
+    const top = places.footerTop - y;
     const end = renderer.height + 2; // Past the canvas: full to the bottom of the screen.
-    return [...bands, [top, top + TEXT_FADE * parseFloat(getComputedStyle(footer).paddingTop), end, end + 1]];
+    return [...bands, [top, top + TEXT_FADE * places.footerPad, end, end + 1]];
   }
   function requestRender() {
     if (!frame && !canvas.hidden && !covered()) frame = requestAnimationFrame(render);
   }
 
-  function resize() {
-    canvas.style.width = canvas.style.height = ''; // ogl writes pixel sizes inline; let the stylesheet decide.
-    const { width, height } = canvas.getBoundingClientRect();
+  // The canvas takes its size from the stylesheet; a ResizeObserver reports it once laid out, so sizing forces no layout.
+  canvas.style.width = canvas.style.height = ''; // The renderer wrote its default 300 × 150 inline.
+  new ResizeObserver(([{ contentRect: { width, height } }]) => {
     if (width !== renderer.width || height !== renderer.height) {
       renderer.setSize(width, height);
+      canvas.style.width = canvas.style.height = ''; // ogl writes pixel sizes inline; the stylesheet keeps deciding.
       drawn.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       across.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
       u.iResolution.value = g.uResolution.value = [gl.drawingBufferWidth, gl.drawingBufferHeight];
     }
     requestRender();
-  }
-  resize();
-  addEventListener('resize', resize);
+  }).observe(canvas);
   addEventListener('scroll', requestRender, { passive: true });
-  new ResizeObserver(requestRender).observe(document.body); // Content above the date axis can change height.
+  // The first layout and every change of the page's size (the window, filters, the accordion, fonts): measure again.
+  new ResizeObserver(() => {
+    places = measure();
+    requestRender();
+  }).observe(document.body);
   document.addEventListener('visibilitychange', requestRender);
-  // The terrain picks up where it stopped rather than jumping ahead by the time the sheet was open.
-  document.addEventListener('detail-toggle', () => {
+  // Uncovered, the terrain picks up where it stopped rather than jumping ahead by the time the sheet or panel was open.
+  let wasCovered = covered();
+  new MutationObserver(() => {
+    if (covered() === wasCovered) return;
+    wasCovered = covered();
     last = undefined;
     requestRender();
-  });
+  }).observe(root, { attributes: true, attributeFilter: ['class'] });
   reducedMotion.addEventListener('change', requestRender);
   addEventListener('pointermove', event => {
     if (event.pointerType !== 'mouse') return;

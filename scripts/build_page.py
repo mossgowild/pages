@@ -187,6 +187,13 @@ def info_sections(info):
     return html, len(present)
 
 
+def small_light(image):
+    """The wall's 400px light version and its pixel width (scripts/build_posters.py scales the short side, never up):
+    assets/hero.js shows it instead of the 720px one where it covers the tile on the screen (docs/motion-performance.md)."""
+    width, height = image['width'], image['height']
+    return poster_path(image['thumbnail_small']), round(width * min(1, 400 / min(width, height)))
+
+
 def poster_path(value):
     assert value.startswith('assets/posters/') and '..' not in Path(value).parts
     assert (ROOT / value).is_file(), f'Missing poster: {value}'
@@ -357,12 +364,13 @@ def render():
     for index, event in enumerate(featured):
         poster = event['posters'][0]
         image = images[poster['image']]
+        small, small_width = small_light(image)
         # Each poster opens its event's details (assets/event-detail.js, docs/event-browsing.md Q24); without the script it
         # links to the event's row.
         cards.append(f'<li><a class="hero-poster spotlight-card" href="#{escape(event["id"])}" draggable="false"'
                      f' aria-label="{escape(event["name"], quote=True)} · 阵容与购票">'
                      f'<img src="{poster_path(image["thumbnail"])}" width="{image["width"]}" height="{image["height"]}"'
-                     f' loading="lazy" decoding="async" draggable="false"'
+                     f' data-small="{small}" data-small-width="{small_width}" loading="lazy" decoding="async" draggable="false"'
                      f' alt="{escape(poster["alt"], quote=True)}"></a></li>')
     title, publisher = data['title'], data['publisher']
     values = {
@@ -378,6 +386,8 @@ def render():
         'family_chips': ''.join(family_chip(index, name, family_members[name]) for index, name in enumerate(genre_order['families'])),
         'genre_options': ''.join(option(genre, genre) for genre in genre_order['genres']),
         'hero_posters': ''.join(cards),
+        # Inlined so it does not block the first render as a second stylesheet (docs/motion-performance.md).
+        'hero_css': (ROOT / 'assets/hero.css').read_text().strip(),
     }
     output = (ROOT / 'templates/index.html').read_text()
     for key, value in values.items():

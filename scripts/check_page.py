@@ -120,6 +120,9 @@ def check():
     # Every poster's light version (scripts/build_posters.py), a WebP beside the original.
     lights = {image['path']: image['thumbnail'] for image in manifest['images']}
     assert all(light.endswith('.thumb.webp') and (ROOT / light).is_file() for light in lights.values()), 'Run scripts/build_posters.py'
+    # And the wall's 400px version, which low-density screens show instead (docs/motion-performance.md).
+    smalls = {image['thumbnail']: image['thumbnail_small'] for image in manifest['images']}
+    assert all(small.endswith('.thumb-400.webp') and (ROOT / small).is_file() for small in smalls.values()), 'Run scripts/build_posters.py'
     assert not page.stack and page.card is page.field is page.table is page.row is page.cell is None
     visible = re.sub(r'<[^>]+>', ' ', re.sub(r'<(script|style)[^>]*>.*?</\1>', ' ', source, flags=re.S))
     assert not re.search(r'尚不明确|未知|其它场地|其它时段|其它风格|TBA', visible), 'No unknown or vague placeholders on the page'
@@ -247,6 +250,12 @@ def check():
         assert src in lights.values(), f'Not a light poster: {src}'
         image_data = (ROOT / src).read_bytes()
         assert image_data.startswith((b'\xff\xd8\xff', b'\x89PNG', b'GIF8', b'RIFF')), src
+    # Every wall poster names its 400px version; the wall's styles are inlined, and its script runs before the terrain's
+    # so its posters start downloading first (docs/motion-performance.md).
+    reel = re.findall(r'class="hero-poster[^>]*><img src="([^"]+)"[^>]* data-small="([^"]+)" data-small-width="(\d+)"', source)
+    assert len(reel) == len(data['featured']) and all(smalls[light] == small for light, small, _ in reel), 'Wall posters name their 400px versions'
+    assert 'assets/hero.css' not in source and '.drift-wall' in source.split('</head>')[0], 'The wall styles are inlined'
+    assert source.index('src="assets/hero.js"') < source.index('src="assets/topography.js"'), 'The wall script runs before the terrain'
     assert not re.search(r'wxid_|@chatroom|localhost|file://|/Users/', source)
     print(f'OK: {len(events)} event rows, {len(page.tables)} artist tables, '
           f'{illustrated_cards} illustrated rows, {len(page.images)} image elements, '

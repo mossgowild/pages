@@ -181,6 +181,8 @@ button.dr-day:focus-visible::before{box-shadow:0 0 0 2px var(--focus)}
 .row-genres span{padding:3px 10px;border:1px solid rgb(255 255 255/.18);border-radius:999px;background:var(--glass-pill);font:500 11px/1.4 var(--font-display);color:#ddd;text-shadow:none}
 .event-details{position:relative;z-index:2;display:grid;grid-template-columns:repeat(var(--columns,4),minmax(0,1fr));padding:0;overflow:clip}
 .accordion-ready .event-row{cursor:pointer}
+/* The first arrangement collapses the rows without easing (assets/accordion.js). */
+.accordion-settling .event-row,.accordion-settling .event-row *{transition:none}
 .accordion-ready .event-row .event-details{display:none}
 /* Strictly partitioned details (scripts/build_page.py): the lineup on its own row, then one section per kind of 更多信息
    plus the venue, side by side. Sections are told apart by their large titles and whitespace, not by rules. */
@@ -260,7 +262,8 @@ html:has(.poster-preview[open]){overflow:hidden}
 .poster-preview-button[aria-disabled="true"]{color:rgb(255 255 255/.32);cursor:default}
 @media(hover:hover){.poster-preview-button:not([aria-disabled="true"]):hover{--spec-base:#fff}}
 .poster-preview-button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
-@keyframes preview-backdrop{from{background:#05050b00;backdrop-filter:blur(0)}}
+/* Veils fade in and out at their full blur: only their opacity changes, which the compositor runs (docs/motion-performance.md Q5). */
+@keyframes preview-backdrop{from{opacity:0}}
 @media print{.poster-preview[open]{display:none}.poster-preview-origin{visibility:visible}}
 /* Event details (assets/event-detail.js, docs/event-browsing.md Q20–Q22): one page-level dialog, a full-screen sheet on
    phones and a centred card up to 760px wide elsewhere, holding a copy of the row's poster stage and the row's details.
@@ -277,6 +280,10 @@ html.is-detail{overflow:hidden;scrollbar-gutter:stable}
 .event-detail.is-leaving::before{content:"";position:fixed;inset:0;background:#05050b80;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:var(--veil,1);animation:preview-backdrop .42s ease-in reverse forwards}
 .event-detail-sheet{position:absolute;top:24px;bottom:24px;left:max(24px,calc(50% - 380px));right:max(24px,calc(50% - 380px));display:flex;flex-direction:column;border:1px solid var(--glass-edge);border-radius:var(--radius);background:rgb(19 19 27/.5);-webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 30px 80px rgb(0 0 0/.55);overflow:hidden;overflow-wrap:anywhere;transform-origin:50% 0}
 .event-detail.is-flying .event-detail-sheet{transform-origin:50% 50%}
+/* Under a veil the page's glass is lost in its blur anyway: 0.2s after the veil comes (once it covers) the rows, and
+   under a detail the filter bar, stop blurring, and they blur again as soon as the veil starts to leave, so nothing
+   under it is blurred anew on every frame of a flight or a panel (docs/motion-performance.md F14). */
+html.is-detail:not(:has(.event-detail.is-leaving)) :is(.event-row,.filter-bar),html.is-filtering .event-row{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;transition:--open .6s var(--accordion-ease),-webkit-backdrop-filter 0s .2s,backdrop-filter 0s .2s}
 .event-detail-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;outline:none}
 .event-detail.is-flying .event-detail-scroll{overflow:hidden}
 /* While the sheet flies in, only its poster stage takes part in layout; the details and the × rise in once it lands. */
@@ -355,6 +362,8 @@ html.is-detail{overflow:hidden;scrollbar-gutter:stable}
 .topbar::after{bottom:-1px}
 .site-footer::before{top:-1px}
 .topbar::after,.site-footer::before,.day-heading:after{--divider-base:linear-gradient(90deg,transparent,rgb(255 255 255/.26) 8%,rgb(255 255 255/.26) 92%,transparent);--divider-star:color-mix(in srgb,var(--brand-pink) calc((1 - var(--star))*70%),transparent);background:radial-gradient(circle,var(--divider-star),transparent 10%) calc(125% - var(--star)*150%) 0/300% 100% no-repeat,radial-gradient(circle,var(--divider-star),transparent 10%) calc(25% + var(--star)*150%) 0/300% 100% no-repeat,var(--divider-base);animation:divider-star 6s linear infinite alternate}
+/* A divider off the screen pauses its stars (assets/scroll-motion.js marks it): the custom property only animates on the main thread. */
+.topbar.is-offscreen::after,.site-footer.is-offscreen::before,.day-heading.is-offscreen:after{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.topbar::after,.site-footer::before,.day-heading:after{background:var(--divider-base)}}
 @media print{.topbar::after{display:none}.site-footer::before,.day-heading:after{background:#aaa;animation:none}}
 @media(max-width:700px){.title-wordmark{font-size:20px}.site-updated{gap:5px}.site-updated time{gap:6px;font-size:20px;letter-spacing:.02em}.site-updated time span:first-child::after{margin-left:6px}}
