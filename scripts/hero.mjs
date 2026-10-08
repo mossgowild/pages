@@ -1,7 +1,7 @@
 // Poster wall adapted from React Bits Drift Wall (MIT + Commons Clause, see assets/react-bits.LICENSE.txt).
 
 // Drift Wall defaults, except tiles without dimming or the dark tile overlay (hero-mobile questions 5 and 7; the mask
-// lives in assets/hero.css), square tiles of mixed sizes (questions 11–12 and Q14): column widths cycle through WIDTHS
+// lives in src/styles/hero.css), square tiles of mixed sizes (questions 11–12 and Q14): column widths cycle through WIDTHS
 // times the base width, the whole wall turns ROTATE degrees in the screen plane (Q14), and each poster pans inside its
 // tile as the tile drifts down the stage (Q14 and the L1 changes): uncropped at the tile's width (a landscape poster at its
 // height), it shows its top (left) edge at the top of the stage and its bottom (right) edge at the bottom, so one pass
@@ -121,7 +121,7 @@ function buildWall(stage, links, layout, span) {
         const original = links[poster].querySelector('img'), src = original.getAttribute('src');
         const image = document.createElement('img');
         for (const { name, value } of original.attributes) if (name !== 'src' && name !== 'loading') image.setAttribute(name, value);
-        // Height over width; assets/hero.css sizes the uncropped poster from it while motion is allowed.
+        // Height over width; src/styles/hero.css sizes the uncropped poster from it while motion is allowed.
         const ratio = Number(image.getAttribute('height')) / Number(image.getAttribute('width'));
         image.style.setProperty('--ratio', ratio);
         image.classList.toggle('is-wide', ratio < 1);
@@ -287,7 +287,7 @@ export function initHero(root) {
   // holds still until the files on the stage have arrived (at most 8s), so it never drifts blank tiles in (Q36).
   const load = () => {
     const tiles = posters, box = stage.getBoundingClientRect();
-    // On the stage: overlapping it inside the edge fade (assets/hero.css fades the outer 12% of its height).
+    // On the stage: overlapping it inside the edge fade (src/styles/hero.css fades the outer 12% of its height).
     const inset = { left: box.left + box.width * 0.1, right: box.right - box.width * 0.1, top: box.top + box.height * 0.12, bottom: box.bottom - box.height * 0.12 };
     const shown = tiles.map(({ tile }) => {
       const rect = tile.getBoundingClientRect();

@@ -88,7 +88,7 @@
     return stage;
   }
 
-  // How a wall poster shows its image right now (assets/hero.css, scripts/hero.mjs): uncropped across the square tile and
+  // How a wall poster shows its image right now (src/styles/hero.css, scripts/hero.mjs): uncropped across the square tile and
   // panned along its length. As an object-position it is the same view of the poster in the sheet's stage.
   function panOf(origin) {
     const image = origin.querySelector('img');

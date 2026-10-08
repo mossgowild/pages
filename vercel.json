@@ -1,7 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "installCommand": "",
-  "buildCommand": "mkdir -p public && cp index.html public/ && cp -R assets public/",
-  "outputDirectory": "public"
+  "installCommand": "bun install",
+  "buildCommand": "bun run build"
 }

@@ -13,11 +13,8 @@ assert.equal(columnCount(768), 5);
 assert.equal(columnCount(1440), 6, 'Six columns at the 1440px reference (question 12)');
 assert.equal(columnCount(1920 / wallZoom(1920)), 6, 'Wider screens keep the 1440px composition');
 
-// The real posters as the built page lists them.
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const listed = html.match(/class="hero-poster/g).length;
+// The real posters (test/page.test.tsx checks that the page lists every featured one with its light versions).
 const total = JSON.parse(readFileSync(new URL('../data/events.json', import.meta.url))).featured.length;
-assert.equal(listed, total, 'Every featured poster enters the wall');
 const widths = [1.3, 0.85, 1.15, 0.75, 1.4, 0.95, 1.1, 0.8];
 
 for (const [screen, stage] of [[375, 534], [768, 788], [1440, 788], [1920, 788], [2560, 788]]) {
@@ -60,10 +57,7 @@ for (const count of [total, 3]) {
     column.posters.flatMap((poster, k) => [...Array(column.copies).keys()].filter(copy => column.focusable(k, copy)).map(() => poster)));
   assert.deepEqual(focusable.sort((a, b) => a - b), [...Array(count).keys()], `${count} posters: one focusable copy each`);
 }
-// The wall shows light posters (Q34); the tiles on screen download first and at high priority, the rest after them.
-assert.equal((html.match(/class="hero-poster[^>]*><img src="assets\/posters\/[^"]+\.thumb\.webp"/g) ?? []).length, total, 'The wall uses the light posters');
-assert.equal((html.match(/class="hero-poster[^>]*><img [^>]*data-small="assets\/posters\/[^"]+\.thumb-400\.webp" data-small-width="\d+"/g) ?? []).length, total,
-  'Low-density screens can show the 400px light versions instead (docs/motion-performance.md)');
+// The tiles on screen download first and at high priority, the rest after them (Q34).
 assert.deepEqual(loadOrder([{ shown: false, time: Infinity }, { shown: true, time: 0 }, { shown: false, time: 4 }, { shown: true, time: 0 }, { shown: false, time: 1 }]),
   [[1, 3], [4, 2, 0]], 'The posters on the stage first, then by how soon they drift in, the ones drifting away last');
 console.log(`OK: ${total} posters; 6 columns from 1440px up (scaled), mixed square tiles, whole-list columns, turned coverage, focus and on-screen posters first`);

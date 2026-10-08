@@ -1,4 +1,4 @@
-// Run with: node scripts/check_preview.js
+// Run with: node scripts/check_preview.cjs
 // The full image preview (assets/poster-preview.js, docs/event-browsing.md Q25, Q27–Q36) against a small stand-in DOM
 // with a manual clock: opening from the detail sheet's poster (alignment with the stage's crop, its fade, the light then
 // the original image, the fitted size, the back button), the gestures (pull and pinch to close, inertia, stretching past
@@ -133,7 +133,7 @@ class Element {
   dialog.querySelector = selector => ({ '.poster-preview-view': view, '.poster-preview-tools': tools, '.poster-preview-close': closer }[selector] ?? null);
   dialog.showModal = () => { dialog.open = true; };
   dialog.close = () => { dialog.open = false; };
-  vm.runInNewContext(fs.readFileSync(new URL('../assets/poster-preview.js', `file://${__filename}`), 'utf8'), {
+  vm.runInNewContext(fs.readFileSync(new URL('../public/assets/poster-preview.js', `file://${__filename}`), 'utf8'), {
     document, window, history, URL,
     matchMedia: query => query.includes('reduced-motion') ? reduced : fine,
     getComputedStyle: node => ({ clipPath: 'inset(0%)', paddingLeft: '16', paddingRight: '16', paddingTop: '16', paddingBottom: '16',
@@ -428,10 +428,6 @@ class Element {
   assert(!dialog.classes.has('has-tools'));
   key('Enter'); await settle();
 
-  const html = fs.readFileSync(new URL('../templates/index.html', `file://${__filename}`), 'utf8');
-  assert(/class="poster-preview-tools" role="toolbar"/.test(html), 'The mouse toolbar is in the page');
-  for (const [zoom, label] of [['out', '缩小'], ['in', '放大'], ['fit', '复位']]) assert(html.includes(`data-zoom="${zoom}" aria-label="${label}"`));
-  assert(html.includes('class="poster-preview-close" aria-label="关闭预览"'));
-  assert(html.includes('aria-describedby="poster-preview-help"') && !html.includes('单击退出'), 'The help text no longer promises closing on a tap');
+  // The toolbar, × and help text in the page itself: test/page.test.tsx.
   console.log('OK: opening aligned with the stage crop, light then original image, fitted size, pinch, pan, stretch and spring back, inertia, eased zoom steps and limits, double and single tap, pull, pinch and flick to close, wheel, keys, toolbar and its idle fade, back, × and reduced motion');
 })().catch(error => { console.error(error); process.exitCode = 1; });

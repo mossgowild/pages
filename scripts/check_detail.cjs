@@ -1,4 +1,4 @@
-// Run with: node scripts/check_detail.js
+// Run with: node scripts/check_detail.cjs
 // The event detail sheet's routing (assets/event-detail.js, docs/event-browsing.md Q20–Q25) against a small stand-in DOM:
 // what opens it, the #event-id address and the back button, every way to close it, focus, reduced motion, and which
 // version of the poster flies (the light one until the original has downloaded, docs/event-browsing.md Q34).
@@ -157,7 +157,7 @@ function row(id, top, { active = false } = {}) {
     replaceState(state, _, url) { entries.push(['replace', url]); this.state = state; location.hash = url.includes('#') ? url.slice(url.indexOf('#')) : ''; },
     back() { entries.push(['back']); this.state = null; location.hash = ''; }
   };
-  const load = () => vm.runInNewContext(fs.readFileSync(new URL('../assets/event-detail.js', `file://${__filename}`), 'utf8'), {
+  const load = () => vm.runInNewContext(fs.readFileSync(new URL('../public/assets/event-detail.js', `file://${__filename}`), 'utf8'), {
     document, history, location, matchMedia: () => reduced, innerWidth: 1440, innerHeight: 900,
     getComputedStyle: node => ({ borderTopLeftRadius: '24px', getPropertyValue: name => name === '--wall-turn' && node === tile ? '15deg' : '' }),
     addEventListener: (type, fn) => window.addEventListener(type, fn), Event: class { constructor(type) { this.type = type; } }, setTimeout, URL

@@ -1,4 +1,4 @@
-// Run with: node scripts/check_filters.js
+// Run with: node scripts/check_filters.cjs
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -6,7 +6,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const root = path.resolve(__dirname, '..');
 const context = vm.createContext({});
-vm.runInContext(fs.readFileSync(path.join(root, 'assets/filters.js'), 'utf8'), context);
+vm.runInContext(fs.readFileSync(path.join(root, 'public/assets/filters.js'), 'utf8'), context);
 const data = JSON.parse(fs.readFileSync(path.join(root, 'data/events.json'), 'utf8'));
 const events = data.events.map(event => ({ ...event,
   families: Object.entries(data.genre_families)
