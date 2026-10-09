@@ -1,4 +1,6 @@
-// Full-page contour background adapted from React Bits Topography (MIT + Commons Clause, see assets/react-bits.LICENSE.txt).
+// Full-page contour background adapted from React Bits Topography (MIT + Commons Clause, see
+// public/assets/react-bits.LICENSE.txt). It runs as its own script before React hydrates (docs/site-rewrite.md Q20) and
+// draws on the canvas Page.tsx renders.
 import { Mesh, Program, RenderTarget, Renderer, Triangle } from 'ogl';
 
 const vertex = `#version 300 es
@@ -127,21 +129,24 @@ void main() {
 
 const CTRL_INDICES = [[1, -2, 3, -4], [9, -8, 7, -6], [5, 2, 5, -5], [-1, -3, 8, 9]];
 const SPEED = 0.35, MORPH_AMOUNT = 3, MORPH_SPEED = 0.05;
-const REEL_GAP = (1 - 0.7) / 2; // Blank share above and below the posters (CARD_HEIGHT 0.7 in scripts/hero.mjs).
+const REEL_GAP = (1 - 0.7) / 2; // Blank share above and below the posters on the stage.
 const GLASS_TAIL = 224; // 14rem fade below the filter bar's resting place.
 const GLASS_SIGMA = 6; // CSS px, like blur(6px).
 const TEXT_FADE = 4; // Text bands ease across 4× the gap beside them, mostly under the neighbouring cards (question 211).
 const TERRAIN_SPAN = 1140; // CSS px per terrain unit: on a 1440 × 900 window each shape keeps the area React Bits gives it (question 220).
 const SCROLL_DEPTH = 0.15; // The contours move at 0.15× the page scroll.
 
-function hexToRgb(hex) {
-  const [r, g, b] = hex.trim().match(/[\da-f]{2}/gi).map(value => parseInt(value, 16) / 255);
+function hexToRgb(hex: string): [number, number, number] {
+  const [r, g, b] = hex.trim().match(/[\da-f]{2}/gi)!.map(value => parseInt(value, 16) / 255);
   return [r, g, b];
 }
 
-export function initTopography(canvas, reel, sentinel, dock, footer) {
+type Day = { dayTop: number; drifts: boolean; top: number; bottom: number; above: number; below: number };
+type Places = { reelTop: number; reelHeight: number; barBottom: number; days: Day[]; footerTop: number; footerPad: number };
+
+export function initTopography(canvas: HTMLCanvasElement, reel: HTMLElement, sentinel: HTMLElement, dock: HTMLElement, footer: HTMLElement) {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  const unavailable = reason => {
+  const unavailable = (reason: string) => {
     canvas.hidden = true;
     console.warn(`Decorative topography unavailable (${reason}); event content remains accessible.`);
   };
@@ -190,15 +195,15 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   const mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
   const blurMesh = new Mesh(gl, { geometry: new Triangle(gl), program: blurProgram });
   const u = program.uniforms, g = blurProgram.uniforms;
-  const controls = [u.uCtrlA.value, u.uCtrlB.value, u.uCtrlC.value, u.uCtrlD.value];
-  let mouseActiveTarget = 0, time = 0, last, frame = 0, places;
+  const controls: number[][] = [u.uCtrlA.value, u.uCtrlB.value, u.uCtrlC.value, u.uCtrlD.value];
+  let mouseActiveTarget = 0, time = 0, last: number | undefined, frame = 0, places: Places | undefined;
 
   const root = document.documentElement;
   const animating = () => !reducedMotion.matches && !document.hidden && !canvas.hidden;
   // An event's detail sheet (src/components/EventDetail.tsx) covers the page: the terrain holds its last frame meanwhile, which
   // spares the main thread while the sheet flies in and out (docs/event-browsing.md F42).
   const covered = () => root.classList.contains('is-detail');
-  function render(now) {
+  function render(now: number) {
     frame = 0;
     if (!places) return; // The first measurement (below) requests the first frame.
     if (animating()) time += last === undefined ? 0 : (now - last) / 1000;
@@ -234,20 +239,27 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     renderer.render({ scene: blurMesh });
     if (animating() && !covered()) frame = requestAnimationFrame(render);
   }
+  // A day heading's drift with its day's top at `top` in the viewport: 0.1 of the day top's distance above the middle of
+  // the screen, from 26px up to 10px down, where motion is allowed and the browser runs the CSS that moves it.
+  const drifting = matchMedia('(prefers-reduced-motion: no-preference)');
+  const scrollDriven = CSS.supports('animation-timeline: view()');
+  let view = innerHeight;
+  const headingDrift = (top: number) => drifting.matches && scrollDriven ? Math.min(10, Math.max(-26, 0.1 * (view / 2 - top))) : 0;
   // What the glass needs, in page px, measured when the layout changes rather than on every frame (docs/motion-performance.md
   // F4), from a ResizeObserver, whose callbacks run once the layout is done, so measuring forces none: the reel, the filter bar's resting bottom (the sentinel plus the dock's height in the flow), each visible day with
-  // the content around it, and the footer. A day heading drifts with the scroll (assets/scroll-motion.js), so its place is
-  // kept without the drift and the drift is added back each frame.
-  function measure() {
-    const y = scrollY, drifting = root.classList.contains('scroll-motion');
-    const top = element => element.getBoundingClientRect().top + y, bottom = element => element.getBoundingClientRect().bottom + y;
+  // the content around it, and the footer. A day heading drifts with the scroll (heading-drift in src/styles/app.css), so
+  // its place is kept without the drift and the drift, worked out from its day's place, is added back each frame.
+  function measure(): Places {
+    const y = scrollY;
+    view = innerHeight;
+    const top = (element: Element) => element.getBoundingClientRect().top + y, bottom = (element: Element) => element.getBoundingClientRect().bottom + y;
     const barBottom = bottom(sentinel) + dock.offsetHeight;
     const groups = [...document.querySelectorAll('.day-group:not([hidden])')];
     const days = groups.map((day, i) => {
-      const heading = day.querySelector('.day-heading'), empty = day.querySelector('.empty-day'), cards = day.querySelector('.event-accordion');
-      const drift = drifting ? parseFloat(heading.style.getPropertyValue('--heading-y')) || 0 : 0;
+      const heading = day.querySelector('.day-heading')!, empty = day.querySelector('.empty-day'), cards = day.querySelector('.event-accordion');
+      const dayTop = top(day), drift = headingDrift(dayTop - y);
       return {
-        heading, drifts: !empty, top: top(heading) - drift, bottom: empty ? bottom(empty) : bottom(heading) - drift,
+        dayTop, drifts: !empty, top: top(heading) - drift, bottom: empty ? bottom(empty) : bottom(heading) - drift,
         above: i ? bottom(groups[i - 1]) : barBottom, below: top(cards ?? groups[i + 1] ?? footer),
       };
     });
@@ -258,17 +270,16 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   // events) eases in from the content above and out towards its first card, or to what follows, over TEXT_FADE times
   // the gap between; the footer eases in from its divider over TEXT_FADE times its top padding and stays full to the
   // page's end.
-  function textBands(y) {
-    const drifting = root.classList.contains('scroll-motion');
-    const bands = places.days.map(day => {
-      const drift = drifting ? parseFloat(day.heading.style.getPropertyValue('--heading-y')) || 0 : 0;
+  function textBands(y: number): number[][] {
+    const bands = places!.days.map(day => {
+      const drift = headingDrift(day.dayTop - y);
       const top = day.top + drift - y, bottom = day.bottom + (day.drifts ? drift : 0) - y;
       const fadeIn = Math.max(TEXT_FADE * (top - (day.above - y)), 1), fadeOut = Math.max(TEXT_FADE * (day.below - y - bottom), 1);
       return [top - fadeIn, top, bottom, bottom + fadeOut];
     });
-    const top = places.footerTop - y;
+    const top = places!.footerTop - y;
     const end = renderer.height + 2; // Past the canvas: full to the bottom of the screen.
-    return [...bands, [top, top + TEXT_FADE * places.footerPad, end, end + 1]];
+    return [...bands, [top, top + TEXT_FADE * places!.footerPad, end, end + 1]];
   }
   function requestRender() {
     if (!frame && !canvas.hidden && !covered()) frame = requestAnimationFrame(render);
@@ -287,6 +298,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     requestRender();
   }).observe(canvas);
   addEventListener('scroll', requestRender, { passive: true });
+  addEventListener('resize', () => { view = innerHeight; requestRender(); });
   // The first layout and every change of the page's size (the window, filters, the accordion, fonts): measure again.
   new ResizeObserver(() => {
     places = measure();
@@ -302,7 +314,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
     requestRender();
   }).observe(root, { attributes: true, attributeFilter: ['class'] });
   reducedMotion.addEventListener('change', requestRender);
-  addEventListener('pointermove', event => {
+  addEventListener('pointermove', (event: PointerEvent) => {
     if (event.pointerType !== 'mouse') return;
     const box = canvas.getBoundingClientRect();
     mouseTarget[0] = (event.clientX - box.left) / box.width;
@@ -317,11 +329,9 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
   });
 }
 
-if (typeof document !== 'undefined') {
-  const start = () => initTopography(document.querySelector('.topography'), document.querySelector('.hero-stage'),
-    document.querySelector('.filter-sentinel'), document.querySelector('.filter-dock'), document.querySelector('.site-footer'));
-  // The brand colour tokens and the canvas size come from site.css. On a first visit iOS Safari can run this deferred
-  // script while those tokens still resolve empty, even with the stylesheet object present, so wait for `load`.
-  if (getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim()) start();
-  else addEventListener('load', start, { once: true });
-}
+const start = () => initTopography(document.querySelector('.topography')!, document.querySelector('.hero-stage')!,
+  document.querySelector('.filter-sentinel')!, document.querySelector('.filter-dock')!, document.querySelector('.site-footer')!);
+// The brand colour tokens and the canvas size come from the stylesheet. On a first visit iOS Safari can run this deferred
+// script while those tokens still resolve empty, even with the stylesheet object present, so wait for `load`.
+if (getComputedStyle(document.documentElement).getPropertyValue('--brand-pink').trim()) start();
+else addEventListener('load', start, { once: true });

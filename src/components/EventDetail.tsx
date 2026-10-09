@@ -44,7 +44,7 @@ function sourceOf(origin: HTMLElement): Box | null {
   return onScreen(box) ? { left: x - side / 2, top: y - side / 2, width: side, height: side, radius: 14 * side / inner.offsetWidth, turn, open: false } : null
 }
 
-// How a wall poster shows its image right now (src/styles/hero.css, scripts/hero.mjs): uncropped across the square tile
+// How a wall poster shows its image right now (src/styles/hero.css, src/client/hero.ts): uncropped across the square tile
 // and panned along its length. As an object-position it is the same view of the poster in the sheet's stage.
 function panOf(origin: HTMLElement) {
   const image = origin.querySelector('img')!
@@ -63,10 +63,10 @@ const unfaded = { maskSize: '100% 1000%, 100% 100%', webkitMaskSize: '100% 1000%
 // clicks through (is-leaving), with a veil of its own fading out in place of the backdrop.
 const DIALOG = 'event-detail fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) overflow-hidden backdrop:sheet-veil backdrop:[animation:preview-backdrop_.4s_ease-out] motion-reduce:backdrop:[animation:none] [&.is-leaving]:z-1000 [&.is-leaving]:pointer-events-none [&.is-leaving]:before:sheet-veil [&.is-leaving]:before:fixed [&.is-leaving]:before:inset-0 [&.is-leaving]:before:[animation:preview-backdrop_.42s_ease-in_reverse_forwards] print:hidden!'
 // The sheet: frosted glass (docs/glass-effects.md Q1), a centred card up to 760px wide with the event rows' light (the ::after
-// in legacy.css), full screen on phones. While it flies it scales about its centre.
-const SHEET = 'event-detail-sheet absolute top-[24px] bottom-[24px] left-[max(24px,calc(50%_-_380px))] right-[max(24px,calc(50%_-_380px))] flex flex-col [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.5)] [-webkit-backdrop-filter:blur(28px)_saturate(1.5)] [backdrop-filter:blur(28px)_saturate(1.5)] [box-shadow:0_30px_80px_rgb(0_0_0/.55)] overflow-hidden wrap-anywhere [transform-origin:50%_0] [.is-flying_&]:[transform-origin:50%_50%] screen-to-700:inset-0 screen-to-700:[border:0] screen-to-700:rounded-none screen-to-700:[box-shadow:none]'
-// The round × of the sheet and the preview: a control-size glass button with the pills' specular rim (legacy.css).
-export const CLOSE_BUTTON = 'absolute top-[16px] right-[16px] z-5 w-(--control) h-(--control) p-0 [border:0] rounded-[999px] [background:rgb(10_10_16/.55)] [-webkit-backdrop-filter:blur(12px)] [backdrop-filter:blur(12px)] text-white cursor-pointer [--spec-base:rgb(255_255_255/.3)] hover:[--spec-base:#fff] focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:3px] close-cross'
+// event-light, app.css), full screen on phones. While it flies it scales about its centre.
+const SHEET = 'event-detail-sheet event-light screen-to-700:after:hidden absolute top-[24px] bottom-[24px] left-[max(24px,calc(50%_-_380px))] right-[max(24px,calc(50%_-_380px))] flex flex-col [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.5)] [-webkit-backdrop-filter:blur(28px)_saturate(1.5)] [backdrop-filter:blur(28px)_saturate(1.5)] [box-shadow:0_30px_80px_rgb(0_0_0/.55)] overflow-hidden wrap-anywhere [transform-origin:50%_0] [.is-flying_&]:[transform-origin:50%_50%] screen-to-700:inset-0 screen-to-700:[border:0] screen-to-700:rounded-none screen-to-700:[box-shadow:none]'
+// The round × of the sheet and the preview: a control-size glass button with the pills' specular rim (app.css).
+export const CLOSE_BUTTON = 'specular-rim press absolute top-[16px] right-[16px] z-5 w-(--control) h-(--control) p-0 [border:0] rounded-[999px] [background:rgb(10_10_16/.55)] [-webkit-backdrop-filter:blur(12px)] [backdrop-filter:blur(12px)] text-white cursor-pointer [--spec-base:rgb(255_255_255/.3)] hover:[--spec-base:#fff] focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:3px] close-cross'
 
 export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(function EventDetail({ events }, api) {
   const dialog = useRef<HTMLDialogElement>(null)

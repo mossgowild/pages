@@ -3,12 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "bun test && vite build",
+    "dev": "bun run build:client && vite dev",
+    "build": "bun test && bun run build:client && vite build",
     "posters": "bun scripts/build-posters.ts",
     "test": "bun test",
-    "build:hero": "bun build scripts/hero.mjs --target browser --format iife --minify --outfile public/assets/hero.js",
-    "build:topography": "bun build scripts/topography.mjs --target browser --format iife --minify --outfile public/assets/topography.js",
+    "build:client": "bun build src/client/hero.ts src/client/topography.ts --target browser --format iife --minify --outdir public/assets",
     "check:browser": "bun scripts/check-browser.ts"
   },
   "dependencies": {

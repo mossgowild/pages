@@ -32,13 +32,15 @@ function checkLayout() {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   assert(getComputedStyle(document.querySelector('.schedule'), '::before').content === 'none',
     'No divider between the poster wall and the schedule (hero-mobile question 8)');
-  for (const [selector, pseudo, edge] of [['.topbar', '::after', 'borderBottomColor'],
-    ['.site-footer', '::before', 'borderTopColor'], ['.day-heading', '::after']]) {
+  // The header, each day heading and the footer carry a Star Border divider (Divider.tsx): a 1px line in place of a border,
+  // whose two stars flow unless motion is reduced.
+  for (const [selector, edge] of [['.topbar', 'borderBottomColor'], ['.site-footer', 'borderTopColor'], ['.day-heading']]) {
     const host = document.querySelector(selector);
-    const line = getComputedStyle(host, pseudo);
-    assert(line.height === '1px', `${selector}: divider must be a 1px line`);
+    const line = host.querySelector(':scope > .divider');
+    assert(line && line.getBoundingClientRect().height === 1, `${selector}: divider must be a 1px line`);
     assert(!edge || getComputedStyle(host)[edge] === 'rgba(0, 0, 0, 0)', `${selector}: divider replaces the border`);
-    assert(reducedMotion ? !line.backgroundImage.includes('radial-gradient') : line.animationName === 'divider-star',
+    const stars = [...line.children].map(star => getComputedStyle(star));
+    assert(stars.length === 2 && stars.every(star => reducedMotion ? star.display === 'none' : star.animationName.startsWith('star-movement')),
       `${selector}: divider stars must flow unless motion is reduced`);
   }
   const nav = document.getElementById('filters');
@@ -114,21 +116,21 @@ function checkLayout() {
     if (pill.getClientRects().length) assert(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2, `${pill.className || pill.id}: control must be a pill`);
   }
   for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close')) {
-    assert(getComputedStyle(pill, '::after').backgroundImage.includes('conic-gradient'), 'Pills must carry the specular rim');
+    const rim = getComputedStyle(pill, '::after');
+    assert(rim.content !== 'none' && rim.maskComposite.includes('exclude'), 'Pills must carry the specular rim');
   }
   for (const row of document.querySelectorAll('.event-row')) {
     assert(getComputedStyle(row, '::after').maskImage.startsWith('conic-gradient'), `${row.id}: rows must take the pills' light`);
   }
   // Rows stay frosted glass, under a veil too (docs/motion-performance.md Q28); a divider's stars flow only while it is on
-  // the screen (assets/scroll-motion.js).
+  // the screen (Divider.tsx).
   const blurOf = element => { const style = getComputedStyle(element); return style.backdropFilter || style.webkitBackdropFilter || 'none'; };
   for (const row of document.querySelectorAll('.event-row')) assert(blurOf(row).includes('blur'), `${row.id}: rows are frosted glass`);
   if (!reducedMotion) {
-    for (const [divider, pseudo] of [['.topbar', '::after'], ['.site-footer', '::before'], ...[...document.querySelectorAll('.day-heading')].map(h => [h, '::after'])]) {
-      const element = typeof divider === 'string' ? document.querySelector(divider) : divider;
-      const box = element.getBoundingClientRect(), off = box.bottom < 0 || box.top > innerHeight || !element.getClientRects().length;
+    for (const divider of document.querySelectorAll('.divider')) {
+      const box = divider.getBoundingClientRect(), off = box.bottom < 0 || box.top > innerHeight || !divider.getClientRects().length;
       if (Math.abs(box.top) < 2 || Math.abs(box.bottom - innerHeight) < 2) continue;
-      assert(element.classList.contains('is-offscreen') === off && getComputedStyle(element, pseudo).animationPlayState === (off ? 'paused' : 'running'),
+      assert(divider.classList.contains('is-offscreen') === off && [...divider.children].every(star => getComputedStyle(star).animationPlayState === (off ? 'paused' : 'running')),
         'Divider stars flow on the screen and pause off it');
     }
   }

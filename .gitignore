@@ -5,3 +5,6 @@ node_modules/
 .nitro/
 .tanstack/
 .vercel/
+# The hero wall and the terrain, built from src/client by bun run build:client.
+public/assets/hero.js
+public/assets/topography.js

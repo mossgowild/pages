@@ -1,21 +1,75 @@
-/* Tailwind without its preflight reset while legacy.css still styles the page; components move their styles
-   here one by one and legacy.css goes away by the end of the rewrite (docs/site-rewrite.md L1–L3). */
-@layer theme, legacy, utilities;
+/* The site's styles: Tailwind's theme and utilities (no preflight: the base below is the site's own), the design tokens in
+   the theme, the fonts and element defaults, then each component's recipes; components carry their utilities
+   (docs/site-rewrite.md Q6). The hero wall's own stylesheet is inlined in the head as components (__root.tsx). */
+@layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme);
-/* The site's stylesheet from before the rewrite, below the utilities so a component's utilities win over the rules it
-   replaces; components take their rules out of it as they move to utilities. */
-@import "./legacy.css" layer(legacy);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "..";
 
-/* The design tokens still live on :root in legacy.css; the theme names them for utilities. */
+@font-face{font-family:"Guide Title";font-style:normal;font-weight:900;font-display:swap;src:url("/assets/fonts/noto-sans-sc-title-900.woff2") format("woff2")}
+@font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("/assets/fonts/syne-latin-ext.woff2") format("woff2");unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:Syne;font-style:normal;font-weight:400 800;font-display:swap;src:url("/assets/fonts/syne-latin.woff2") format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* Design tokens. --ease-card is GSAP power3.out (quartic out), the ease of React Bits Card Nav and Accordion Gallery
+   (docs/site-rewrite.md Q10), as a linear() curve within 0.002 of it. Every clickable pill and round button is one
+   --control tall (question 3: 40px) with labels --control-pad from the edge; inset circles and icons sit in a
+   --control-inner box 8px from the edge, so they stay concentric. Text links keep their 44px rows. */
+@theme static {
+  --bg: #0b0b10;
+  --ink: #f7f3ed;
+  --muted: #b0a9ba;
+  --gold: #eccb88;
+  --pink: #f3a4cb;
+  --violet: #c0adff;
+  --focus: #f6d795;
+  --radius: 24px;
+  --control: 40px;
+  --control-pad: 20px;
+  --control-inner: calc(var(--control) - 16px);
+  --ease-card: linear(0, 0.1268, 0.2412, 0.3439, 0.4358, 0.5177, 0.5904, 0.6545, 0.7108, 0.7599, 0.8025, 0.8391, 0.8704, 0.8969, 0.9191, 0.9375, 0.9526, 0.9647, 0.9744, 0.9819, 0.9877, 0.9919, 0.9949, 0.997, 0.9984, 0.9992, 0.9997, 0.9999, 1, 1, 1);
+  --font-display: Syne,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;
+  --brand-ink: #faf8ff;
+  --brand-pink: #ff269f;
+  --brand-cyan: #13dbff;
+  --brand-yellow: #ffe324;
+  --brand-violet: #7018fb;
+  --glass-tint: rgb(255 255 255/.045);
+  --glass-edge: rgb(255 255 255/.13);
+  --glass-blur: blur(18px) saturate(1.5);
+  --glass-shadow: inset 0 1px 0 rgb(255 255 255/.14),inset 0 -1px 0 rgb(255 255 255/.04),0 12px 40px rgb(0 0 0/.35);
+  --glass-pill: rgb(255 255 255/.06);
+  --glass-pill-shadow: inset 0 1px 0 rgb(255 255 255/.16),inset 0 0 0 1px rgb(255 255 255/.08);
+}
+/* The brand colours and the card radius as utilities' names. */
 @theme inline {
   --color-brand-pink: var(--brand-pink);
   --color-brand-yellow: var(--brand-yellow);
   --color-brand-cyan: var(--brand-cyan);
   --color-brand-violet: var(--brand-violet);
   --radius-panel: var(--radius);
-  --font-display: var(--font-display);
+}
+
+@layer base {
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 100px; overflow-anchor: none; }
+  body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--ink); font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; }
+  a { color: inherit; text-underline-offset: 4px; }
+  button, input, select { font: inherit; }
+  button, select { cursor: pointer; }
+  button, a, input, select, summary { touch-action: manipulation; }
+  button { color: inherit; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 5px; }
+  a, button { transition: color .18s, background-color .18s, border-color .18s; }
+  button:active { filter: brightness(.85); }
+  [hidden] { display: none !important; }
+  /* Reduced motion drops every transition and animation, except the wall's poster lift, which keeps the original's
+     0.42s (docs/site-rewrite.md Q27). */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    :where(*:not(.drift-wall__inner, .drift-wall__tile img)), *::before, *::after { transition: none !important; animation: none !important; }
+  }
+  @media print { body { background: #fff; color: #111; } }
 }
 
 /* The site's screen-only breakpoints (print keeps the wide layout), widest first so the narrower ones win; the plain
@@ -26,11 +80,11 @@
 @custom-variant screen-to-768 (@media screen and (max-width: 768px));
 @custom-variant screen-from-701 (@media screen and (min-width: 701px));
 @custom-variant screen-to-700 (@media screen and (max-width: 700px));
-/* Page states set by scripts: the accordion (the rows' collapsed state applies only with the script) and the scroll
-   parallax (assets/scroll-motion.js). */
+/* Page states: the accordion (the rows' collapsed state applies only with the script) and the scroll depth, which runs
+   where motion is allowed and the browser has scroll-driven animations (Safari 26, Chrome 115; docs/site-rewrite.md Q31). */
 @custom-variant scripted (.accordion-ready &);
 @custom-variant collapsed (.accordion-ready .event-row:not(.is-active) &);
-@custom-variant scroll-motion (.scroll-motion &);
+@custom-variant scroll-motion { @media (prefers-reduced-motion: no-preference) { @supports (animation-timeline: view()) { @slot; } } }
 /* A mouse or trackpad (the preview's toolbar and × show only there). */
 @custom-variant mouse (@media (hover: hover) and (pointer: fine));
 
@@ -153,6 +207,32 @@ html.is-filtering { overflow: hidden; scrollbar-gutter: stable; }
 /* A venue or mini-program code that shares or copies on tap brightens its place name under the mouse once it works. */
 @custom-variant copy-hover { @media (hover: hover) { .copy-target:not(:disabled):hover & { @slot; } } }
 
+/* ---------- Scroll depth (EventRow.tsx, Page.tsx) ---------- */
+/* Layered depth on the compositor, scroll-driven (docs/site-rewrite.md Q31): a row's cover, 1.25× from its top edge, moves
+   from -20% of its frame as the frame enters at the bottom to 0 as it leaves at the top (the frame's view timeline, inset 0
+   rather than the page's scroll padding), plus
+   the accordion's --drift, the two clamped to the 25% overhang so the cover always fills the frame. The clamp is kept at
+   every tenth of the way (a kink between two steps is off by at most half a percent of the frame); --drift eases over the
+   accordion's 0.6s when the rows change. */
+@property --drift { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@keyframes poster-parallax {
+  0% { translate: 0 clamp(-25%, calc(var(--drift) - 20%), 0%); }
+  10% { translate: 0 clamp(-25%, calc(var(--drift) - 18%), 0%); }
+  20% { translate: 0 clamp(-25%, calc(var(--drift) - 16%), 0%); }
+  30% { translate: 0 clamp(-25%, calc(var(--drift) - 14%), 0%); }
+  40% { translate: 0 clamp(-25%, calc(var(--drift) - 12%), 0%); }
+  50% { translate: 0 clamp(-25%, calc(var(--drift) - 10%), 0%); }
+  60% { translate: 0 clamp(-25%, calc(var(--drift) - 8%), 0%); }
+  70% { translate: 0 clamp(-25%, calc(var(--drift) - 6%), 0%); }
+  80% { translate: 0 clamp(-25%, calc(var(--drift) - 4%), 0%); }
+  90% { translate: 0 clamp(-25%, calc(var(--drift) - 2%), 0%); }
+  100% { translate: 0 clamp(-25%, var(--drift), 0%); }
+}
+/* A day heading moves at 0.9× the scroll while its day passes the middle of the screen: over the 360px of scroll from its
+   day's top 260px below the middle to 100px above it, from 26px up to 10px down, so it never meets the rows (the day's
+   view timeline, its end inset to half the screen less 260px). */
+@keyframes heading-drift { from { translate: 0 -26px; } to { translate: 0 10px; } }
+
 /* ---------- Detail sheet and full-image preview (EventDetail.tsx, PosterPreview.tsx) ---------- */
 /* The page behind stays put (scroll locked, scrollbar space kept), and the row or wall poster the sheet came from, or the
    sheet poster the preview came from, is hidden until it has shrunk back into it. */
@@ -185,3 +265,61 @@ html:has(.poster-preview[open]) { overflow: hidden; }
   }
   & span::after { rotate: -45deg; }
 }
+
+/* ---------- Lights and presses (src/lib/glass.ts) ---------- */
+/* React Bits Specular Button rim, CSS edition, on the pills and round buttons: a ring about 1.4px wide astride the edge,
+   like the original's line and base stroke, carries the 45% #525252 base (--spec-base) and the two streaks that
+   src/lib/glass.ts writes into --spec-rim. */
+@utility specular-rim {
+  @supports (mask-composite: exclude) {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -.7px;
+      padding: 1.4px;
+      border-radius: 999px;
+      pointer-events: none;
+      background: var(--spec-rim, linear-gradient(#0000, #0000)), var(--spec-base, rgb(82 82 82/.45));
+      mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+      mask-clip: content-box, border-box;
+      mask-composite: exclude;
+    }
+  }
+  @media print { &::after { display: none; } }
+}
+/* Event rows and the detail card take the light in the logo colours (questions 193–195): two symmetric 100deg streaks
+   facing --spec-angle and brightened by --spec, opaque pink at the centre, then yellow, cyan and violet a quarter of the
+   half-width apart, fading only over the last quarter. The streak window masks the 1px ring. */
+@utility event-light {
+  @supports (mask-composite: exclude) {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 4;
+      padding: 1px;
+      border-radius: calc(var(--radius) - 1px);
+      pointer-events: none;
+      background: conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),var(--brand-violet) 12.5deg,var(--brand-cyan) 25deg,var(--brand-yellow) 37.5deg,var(--brand-pink) 50deg,var(--brand-yellow) 62.5deg,var(--brand-cyan) 75deg,var(--brand-violet) 87.5deg 192.5deg,var(--brand-cyan) 205deg,var(--brand-yellow) 217.5deg,var(--brand-pink) 230deg,var(--brand-yellow) 242.5deg,var(--brand-cyan) 255deg,var(--brand-violet) 267.5deg);
+      mask-image: conic-gradient(from calc(var(--spec-angle,0deg) - 50deg),transparent,rgb(0 0 0/var(--spec,0)) 12.5deg 87.5deg,transparent 100deg 180deg,rgb(0 0 0/var(--spec,0)) 192.5deg 267.5deg,transparent 280deg),linear-gradient(#000 0 0),linear-gradient(#000 0 0);
+      mask-clip: border-box, content-box, border-box;
+      mask-composite: intersect, exclude, add;
+    }
+  }
+  @media print { &::after { display: none; } }
+}
+/* Pills and round buttons press in like the original Specular Button, to 0.97 over 150ms (docs/site-rewrite.md Q25),
+   instead of the buttons' darkening; button pills keep the buttons' colour fades, label chips only scale. */
+@utility press {
+  transition: color .18s, background-color .18s, border-color .18s, scale .15s cubic-bezier(.4, 0, .2, 1);
+  &:active { scale: .97; filter: none; }
+}
+@utility press-chip {
+  transition: scale .15s cubic-bezier(.4, 0, .2, 1);
+  &:active { scale: .97; }
+}
+
+/* ---------- Dividers (Divider.tsx) ---------- */
+/* React Bits Star Border's stars: across the line and out of it, fading as they go. */
+@keyframes star-movement-bottom { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(-100%, 0); opacity: 0; } }
+@keyframes star-movement-top { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(100%, 0); opacity: 0; } }

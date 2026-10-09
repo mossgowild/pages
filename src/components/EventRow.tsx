@@ -293,11 +293,15 @@ function ArtistSummary({ artists }: { artists: Artist[] }) {
 const BAR = 'w-[3px] h-[26px] mr-3 rounded-[3px] bg-brand-pink align-[calc(.37em-13px)] shadow-[0_0_12px_color-mix(in_srgb,var(--brand-pink)_60%,transparent)]'
 
 // The stage is 560px (520px on phones) open and an 84px strip collapsed; printed, it shrinks to the text.
-const STAGE = 'event-stage relative flex items-end min-h-[560px] overflow-hidden screen-to-700:min-h-[520px] collapsed:min-h-[84px] collapsed:cursor-pointer print:min-h-0!'
-// The poster fills the stage at its upper middle; collapsed it greys a little, and with the scroll parallax it is 1.25×
-// from its top edge and moves within the spare quarter (assets/scroll-motion.js, plus the accordion's --drift). A sheet
-// poster not downloaded yet stays hidden and fades in whole when it arrives (EventDetail.tsx).
-const POSTER = 'block w-full h-full object-cover [object-position:center_25%] [filter:grayscale(var(--gray,0))] [transition:filter_.6s_var(--ease-card),translate_.6s_var(--ease-card),opacity_.3s_ease-out] scroll-motion:origin-top scroll-motion:[scale:1.25] scroll-motion:[translate:0_clamp(-25%,calc(var(--parallax,-20%)_+_var(--drift,0px)),0%)] collapsed:[--gray:.3] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] [.is-pending_&]:opacity-0'
+const STAGE = 'event-stage relative flex items-end min-h-[560px] overflow-clip screen-to-700:min-h-[520px] collapsed:min-h-[84px] collapsed:cursor-pointer print:min-h-0!'
+// The poster fills the stage at its upper middle; collapsed it greys a little, and with the scroll depth it is 1.25× from
+// its top edge and moves within the spare quarter (app.css). A sheet poster not downloaded yet stays hidden and fades in
+// whole when it arrives (EventDetail.tsx).
+const POSTER = 'block w-full h-full object-cover [object-position:center_25%] [filter:grayscale(var(--gray,0))] [transition:filter_.6s_var(--ease-card),translate_.6s_var(--ease-card),opacity_.3s_ease-out,--drift_.6s_var(--ease-card)] scroll-motion:origin-top scroll-motion:[scale:1.25] collapsed:[--gray:.3] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] print:scroll-motion:[animation-name:none] [.is-pending_&]:opacity-0'
+// In a row the cover runs its frame's scroll timeline (poster-parallax in app.css); in the detail sheet it rests where a
+// cover entering the screen starts.
+const ROW_PARALLAX = 'scroll-motion:[animation-name:poster-parallax] scroll-motion:[animation-timing-function:linear] scroll-motion:[animation-fill-mode:both] scroll-motion:[animation-timeline:--poster]'
+const SHEET_PARALLAX = 'scroll-motion:[translate:0_clamp(-25%,calc(var(--drift)_-_20%),0%)]'
 // The text over the poster's faded part: the start time and city in a column of their own, then the name, venue and
 // time, notes, artists and genres; collapsed rows on wider screens spread over four columns.
 const SUMMARY = 'event-summary relative z-2 grid grid-cols-[110px_minmax(0,1fr)] [align-items:start] [gap:10px_24px] w-full p-[26px] [text-shadow:0_1px_12px_rgb(0_0_0/.55)] screen-from-901:collapsed:grid-cols-[110px_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,.9fr)] screen-to-700:grid-cols-[64px_minmax(0,1fr)] screen-to-700:[gap:6px_14px] screen-to-700:p-5 print:[text-shadow:none] print:text-[#111]'
@@ -335,12 +339,12 @@ export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?:
       <div className={STAGE} ref={ref}>
         {/* Off-screen rows skip rendering their poster, so its lazy image waits until the row nears the screen instead of
             taking bandwidth from the hero wall (docs/event-browsing.md Q34). */}
-        <div className={`event-posters poster-fade absolute inset-0 z-0 print:hidden ${sheet ? '' : '[content-visibility:auto]'}`} data-field="posters">
+        <div className={`event-posters poster-fade absolute inset-0 z-0 print:hidden ${sheet ? '' : '[content-visibility:auto] scroll-motion:[view-timeline-name:--poster] scroll-motion:[view-timeline-inset:0]'}`} data-field="posters">
           {/* The light version shows first; near the screen, in the detail sheet and in the preview the full-size version
               takes over (data-full: the original's same-size WebP where it has one; docs/event-browsing.md Q34). */}
           {poster
             ? <a className="block h-full no-underline cursor-zoom-in focus-visible:[outline-offset:-5px]" href={poster.full} aria-haspopup="dialog" aria-label={`预览：${poster.alt}`}>
-                <img className={POSTER} width={poster.width} height={poster.height} src={poster.thumbnail} data-full={poster.full}
+                <img className={`${POSTER} ${sheet ? SHEET_PARALLAX : ROW_PARALLAX}`} width={poster.width} height={poster.height} src={poster.thumbnail} data-full={poster.full}
                   srcSet={sheet?.full ? poster.full : undefined} loading={sheet ? 'eager' : 'lazy'} fetchPriority={sheet ? 'high' : 'low'} alt={poster.alt} />
               </a>
             : <div className="poster-empty grid place-items-center h-full pb-[180px] text-(--muted) text-[13px] collapsed:hidden">暂无图片</div>}
@@ -418,7 +422,7 @@ export function EventDetails({ event, inRow }: { event: EventView; inRow?: boole
 
 // Rows are the 24px frosted glass of the original cards; with the script, collapsed rows (not .is-active) blend their
 // poster mask toward the text side over the accordion's 0.6s (--open, poster-fade in app.css).
-const ROW = 'event-row [--open:1] relative min-w-0 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-hidden wrap-anywhere [transition:--open_.6s_var(--ease-card)] target:[border-color:var(--gold)] scripted:cursor-pointer scripted:not-[.is-active]:[--open:0] motion-reduce:[transition:none] print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
+const ROW = 'event-row event-light [--open:1] relative min-w-0 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-clip wrap-anywhere [transition:--open_.6s_var(--ease-card)] target:[border-color:var(--gold)] scripted:cursor-pointer scripted:not-[.is-active]:[--open:0] motion-reduce:[transition:none] print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
 
 // The list row. With the script the whole row opens its event's details (a link or button of its own keeps its
 // behaviour; the poster is no link of its own there), and its poster swaps the light version for the full-size one once

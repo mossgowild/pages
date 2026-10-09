@@ -12,7 +12,7 @@
 /* With scripting the wall replaces the reel, which stays unrendered so its lazy posters never download (docs/event-browsing.md Q34). */
 @media(scripting:enabled){.hero-reel{display:none}}
 /* React Bits Drift Wall styles with its defaults, except tiles without dimming or the dark tile overlay (column widths and
-   square tile heights, the turn and the poster parallax are set by scripts/hero.mjs, hero-mobile questions 11–12 and Q14),
+   square tile heights, the turn and the poster parallax are set by src/client/hero.ts, hero-mobile questions 11–12 and Q14),
    and its elliptical edge fade with 12% fades at the top and bottom instead of its fade towards the top
    (hero-mobile questions 5, 7 and 8): the middle stays opaque and the wall never ends in a hard edge. */
 .drift-wall{position:absolute;inset:0;overflow:hidden;perspective:1200px;perspective-origin:50% 50%;
@@ -28,11 +28,11 @@
 .drift-wall__col{position:relative;transform-style:preserve-3d}
 .drift-wall__track{display:flex;flex-direction:column;will-change:transform;transform-style:preserve-3d}
 .drift-wall__tile{position:relative;display:block;flex:none;width:100%;outline:none;transform-style:preserve-3d}
-.drift-wall__inner{position:absolute;inset:9px;display:block;overflow:hidden;border-radius:14px;background:#0b0b12;pointer-events:none;
+.drift-wall__inner{position:absolute;inset:9px;display:block;overflow:hidden;border-radius:14px;background:#0b0b12;pointer-events:none;transform:translateZ(0);
   transition:transform .42s cubic-bezier(.22,1,.36,1),box-shadow .42s cubic-bezier(.22,1,.36,1)}
 .drift-wall__tile img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92);transition:filter .42s cubic-bezier(.22,1,.36,1);user-select:none;-webkit-user-drag:none}
 .drift-wall__tile.is-active .drift-wall__inner,.drift-wall__tile:focus-visible .drift-wall__inner{transform:translateZ(64px);box-shadow:0 24px 60px -18px rgb(0 0 0/.7)}
-/* While motion is allowed the poster is uncropped: as wide as the tile (a landscape poster as tall), so scripts/hero.mjs
+/* While motion is allowed the poster is uncropped: as wide as the tile (a landscape poster as tall), so src/client/hero.ts
    can pan it across the whole poster; still, it is cropped to the square tile. */
 @media(prefers-reduced-motion:no-preference){
   .drift-wall__tile img{height:calc(var(--ratio)*100%)}
@@ -42,6 +42,7 @@
 /* The original's ring on the lifted poster replaces the site outline, which would frame the unlifted tile. */
 .drift-wall .drift-wall__tile:focus-visible{outline:none}
 .drift-wall__tile:focus-visible .drift-wall__inner{box-shadow:0 24px 60px -18px rgb(0 0 0/.7),0 0 0 2px rgb(255 255 255/.9)}
+/* Reduced motion stills the wall; a poster still lifts over the original's 0.42s (docs/site-rewrite.md Q27). */
 @media(prefers-reduced-motion:reduce){.drift-wall__plane,.drift-wall__track{will-change:auto}}
 @media(max-width:700px){
   .hero{padding-top:24px}

@@ -10,9 +10,9 @@ import { CALENDAR, CHEVRON, PickerTrigger, rangeText } from './Pickers'
 // Every pill and round button is one control tall (--control, 40px) with 13px Syne labels (control-scale questions 1–6).
 const PILL_TEXT = '[font:600_13px/1.2_var(--font-display)]'
 // Tags are drawn by the effect below, so their classes live here too.
-const TAG = 'filter-tag inline-flex items-center gap-2 min-h-(--control) [padding:0_8px_0_var(--control-pad)] [border:0] rounded-[999px] [background:color-mix(in_srgb,var(--brand-pink)_16%,transparent)] [--spec-base:color-mix(in_srgb,var(--brand-pink)_70%,transparent)] text-white [font:600_13px/1_var(--font-display)] whitespace-nowrap cursor-pointer'
+const TAG = 'filter-tag relative specular-rim press inline-flex items-center gap-2 min-h-(--control) [padding:0_8px_0_var(--control-pad)] [border:0] rounded-[999px] [background:color-mix(in_srgb,var(--brand-pink)_16%,transparent)] [--spec-base:color-mix(in_srgb,var(--brand-pink)_70%,transparent)] text-white [font:600_13px/1_var(--font-display)] whitespace-nowrap cursor-pointer'
 const TAG_CLOSE = 'grid place-items-center size-(--control-inner) rounded-[50%] [background:var(--brand-pink)] text-[12px]/none'
-const CHIP = 'filter-chip inline-flex rounded-[999px] touch-manipulation'
+const CHIP = 'filter-chip relative specular-rim press-chip inline-flex rounded-[999px] touch-manipulation'
 const CHIP_INPUT = 'peer absolute inset-0 w-full h-full m-0 opacity-0 cursor-pointer'
 const CHIP_LABEL = `inline-flex items-center min-h-(--control) [padding:0_var(--control-pad)] [border:1px_solid_rgb(255_255_255/.22)] rounded-[999px] [background:var(--glass-pill)] text-[#eee] ${PILL_TEXT} whitespace-nowrap peer-checked:border-white peer-checked:[background:#fff] peer-checked:text-[#120f17] peer-focus-visible:[outline:2px_solid_var(--focus)] peer-focus-visible:outline-offset-2`
 const BAR = 'filter-bar filter-bar-look group/bar flex items-center gap-2 h-[calc(var(--control)_+_16px)]'
@@ -23,10 +23,10 @@ const CHIPS = 'filter-chips flex flex-wrap gap-1.5 clear-both'
 // Split family chip (question 176): the name is 全部 X (white when chosen); the round button inside its right end opens the
 // sub-genres, its touch area still 44px; with only some of them chosen the rim turns brand pink and the button shows their
 // number.
-const FAMILY = 'family-chip group/family inline-flex items-stretch min-h-(--control) rounded-[999px] [background:var(--glass-pill)] [box-shadow:inset_0_0_0_1px_rgb(255_255_255/.22)] text-[#eee] touch-manipulation has-[input:checked]:[background:#fff] has-[input:checked]:[box-shadow:inset_0_0_0_1px_#fff] has-[input:checked]:text-[#120f17] [&.is-partial]:[--spec-base:var(--brand-pink)] [&.is-partial]:[box-shadow:inset_0_0_0_1px_var(--brand-pink)]'
+const FAMILY = 'family-chip relative specular-rim press-chip group/family inline-flex items-stretch min-h-(--control) rounded-[999px] [background:var(--glass-pill)] [box-shadow:inset_0_0_0_1px_rgb(255_255_255/.22)] text-[#eee] touch-manipulation has-[input:checked]:[background:#fff] has-[input:checked]:[box-shadow:inset_0_0_0_1px_#fff] has-[input:checked]:text-[#120f17] [&.is-partial]:[--spec-base:var(--brand-pink)] [&.is-partial]:[box-shadow:inset_0_0_0_1px_var(--brand-pink)]'
 const FAMILY_ALL = 'family-all relative flex'
 const FAMILY_LABEL = `flex items-center [padding:0_4px_0_var(--control-pad)] ${PILL_TEXT} whitespace-nowrap peer-focus-visible:[outline:2px_solid_var(--focus)] peer-focus-visible:-outline-offset-2 peer-focus-visible:[border-radius:999px_0_0_999px]`
-const FAMILY_MORE = 'family-more grid place-items-center w-(--control) p-0 [border:0] [border-radius:0_999px_999px_0] [background:none] text-inherit cursor-pointer focus-visible:[outline:none] before:content-[""] before:[grid-area:1/1] before:size-(--control-inner) before:rounded-[50%] before:[background:rgb(255_255_255/.12)] before:[transition:background-color_.18s] hover:before:[background:rgb(255_255_255/.2)] focus-visible:before:[box-shadow:0_0_0_2px_var(--focus)] group-has-[input:checked]/family:before:[background:rgb(18_15_23/.08)] group-[.is-partial]/family:before:[background:var(--brand-pink)] [&>*]:[grid-area:1/1] [&>*]:relative [&_svg]:size-[13px] [&_svg]:[transition:transform_.2s] aria-expanded:[&_svg]:[transform:rotate(180deg)] group-[.is-partial]/family:[&_svg]:hidden'
+const FAMILY_MORE = 'family-more active:[filter:none] grid place-items-center w-(--control) p-0 [border:0] [border-radius:0_999px_999px_0] [background:none] text-inherit cursor-pointer focus-visible:[outline:none] before:content-[""] before:[grid-area:1/1] before:size-(--control-inner) before:rounded-[50%] before:[background:rgb(255_255_255/.12)] before:[transition:background-color_.18s] hover:before:[background:rgb(255_255_255/.2)] focus-visible:before:[box-shadow:0_0_0_2px_var(--focus)] group-has-[input:checked]/family:before:[background:rgb(18_15_23/.08)] group-[.is-partial]/family:before:[background:var(--brand-pink)] [&>*]:[grid-area:1/1] [&>*]:relative [&_svg]:size-[13px] [&_svg]:[transition:transform_.2s] aria-expanded:[&_svg]:[transform:rotate(180deg)] group-[.is-partial]/family:[&_svg]:hidden'
 
 export type Tag = { key: string; label: string; remove: (filters: Filters) => Filters }
 export type PickerState = { open: string | null; shown: string | null; toggle: (id: string) => void; triggers: RefObject<Map<string, HTMLElement>> }
@@ -173,7 +173,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
   // fading in where it lands, while its neighbours glide to their new places; a leaving tag lifts out of the row where it
   // stood and shrinks back to 0.8 as it fades (0.3s power2.inOut), and the others glide into the gap. Entering and
   // gliding take 0.4s power3.out. The strip is drawn here rather than by React so that a leaving tag can stay in place
-  // until it has folded away; glass.js lights the tags as they come.
+  // until it has folded away; src/lib/glass.ts lights the tags as they come.
   useIsomorphicLayoutEffect(() => {
     const strip = tagList.current!
     const edge = strip.parentElement!
@@ -345,9 +345,9 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
   return (
     <>
       <span ref={sentinel} className="filter-sentinel block h-px mt-[11px]" aria-hidden="true" />
-      <div ref={dock} className="filter-dock sticky top-0 z-20 pt-3 [--bleed:calc(var(--edge,0px)*var(--dock))] [translate:0_calc(-12px*var(--dock))] [transition:--dock_.4s_var(--ease-card)] [&.is-stuck]:[--dock:1]" hidden={!hydrated}>
+      <div ref={dock} className="filter-dock print:hidden! sticky top-0 z-20 pt-3 [--bleed:calc(var(--edge,0px)*var(--dock))] [translate:0_calc(-12px*var(--dock))] [transition:--dock_.4s_var(--ease-card)] [&.is-stuck]:[--dock:1]" hidden={!hydrated}>
         <div ref={bar} className={BAR + (expanded ? ' is-open' : '')}>
-          <button ref={toggle} type="button" className="filter-toggle inline-flex flex-none items-center gap-2.5 min-h-(--control) [padding:0_var(--control-pad)_0_13px] [border:0] rounded-[999px] [background:none] text-(--ink) [font:700_13px/1_var(--font-display)] cursor-pointer" aria-expanded={expanded} aria-controls="filters" onClick={() => setOpen(!open.current)}>
+          <button ref={toggle} type="button" className="filter-toggle relative specular-rim press inline-flex flex-none items-center gap-2.5 min-h-(--control) [padding:0_var(--control-pad)_0_13px] [border:0] rounded-[999px] [background:none] text-(--ink) [font:700_13px/1_var(--font-display)] cursor-pointer" aria-expanded={expanded} aria-controls="filters" onClick={() => setOpen(!open.current)}>
             <span className="filter-burger flex flex-col gap-[3.5px] w-[14px]" aria-hidden="true">
               <i className="h-[1.5px] rounded-[1px] bg-current [transition:transform_.3s_linear] motion-reduce:[transition:none] group-[.is-open]/bar:[transform:translateY(2.5px)_rotate(45deg)]" />
               <i className="h-[1.5px] rounded-[1px] bg-current [transition:transform_.3s_linear] motion-reduce:[transition:none] group-[.is-open]/bar:[transform:translateY(-2.5px)_rotate(-45deg)]" />
@@ -363,7 +363,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
             <span className="sr-only" id="result-summary">{summary}</span>
           </p>
         </div>
-        <form ref={panel} id="filters" className="filter-panel more-below scrollbar-none absolute top-full -left-4 -right-4 grid grid-cols-[1fr_2fr_1.2fr_1fr] screen-to-768:grid-cols-[minmax(0,1fr)] [align-items:start] gap-2 m-0 [padding:8px_16px_calc(24px_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain" hidden={!shown} aria-label="筛选活动"
+        <form ref={panel} id="filters" className="filter-panel print:hidden! more-below scrollbar-none absolute top-full -left-4 -right-4 grid grid-cols-[1fr_2fr_1.2fr_1fr] screen-to-768:grid-cols-[minmax(0,1fr)] [align-items:start] gap-2 m-0 [padding:8px_16px_calc(24px_+_env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain" hidden={!shown} aria-label="筛选活动"
           onSubmit={event => event.preventDefault()}
           onReset={event => {
             event.preventDefault()
@@ -441,7 +441,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
           </fieldset>
         </form>
       </div>
-      <div ref={scrim} className="filter-scrim fixed inset-0 z-[19] [background:rgb(5_5_11/.55)] [-webkit-backdrop-filter:blur(4px)] [backdrop-filter:blur(4px)]" hidden={!shown} />
+      <div ref={scrim} className="filter-scrim print:hidden! fixed inset-0 z-[19] [background:rgb(5_5_11/.55)] [-webkit-backdrop-filter:blur(4px)] [backdrop-filter:blur(4px)]" hidden={!shown} />
     </>
   )
 }

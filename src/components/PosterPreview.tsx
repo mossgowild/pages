@@ -21,8 +21,8 @@ const VIEW = 'poster-preview-view flex items-center justify-center min-w-0 min-h
 // show them.
 const MOUSE_ONLY = 'hidden mouse:opacity-0 mouse:pointer-events-none mouse:[transition:opacity_.3s_ease-out] mouse:[.poster-preview.has-tools:not(.is-closing)_&]:opacity-100 mouse:[.poster-preview.has-tools:not(.is-closing)_&]:pointer-events-auto'
 const TOOLS = `poster-preview-tools ${MOUSE_ONLY} mouse:[.poster-preview[open]_&]:flex absolute left-[50%] bottom-[max(24px,calc(env(safe-area-inset-bottom)_+_16px))] [translate:-50%_0] h-[calc(var(--control)_+_16px)] items-center gap-2 [padding:0_7px] [border:1px_solid_var(--glass-edge)] rounded-[calc(var(--control)/2_+_8px)] [background:rgb(10_10_16/.55)] [-webkit-backdrop-filter:blur(12px)] [backdrop-filter:blur(12px)]`
-// A control-size round button with the pills' specular rim (legacy.css); at a zoom limit it greys out.
-const BUTTON = 'poster-preview-button relative grid place-items-center w-(--control) h-(--control) p-0 [border:0] rounded-[999px] [background:rgb(255_255_255/.06)] text-white cursor-pointer [--spec-base:rgb(255_255_255/.3)] [&_svg]:block aria-disabled:text-[rgb(255_255_255/.32)] aria-disabled:cursor-default hover:not-aria-disabled:[--spec-base:#fff] focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:3px]'
+// A control-size round button with the pills' specular rim (app.css); at a zoom limit it greys out.
+const BUTTON = 'poster-preview-button specular-rim press relative grid place-items-center w-(--control) h-(--control) p-0 [border:0] rounded-[999px] [background:rgb(255_255_255/.06)] text-white cursor-pointer [--spec-base:rgb(255_255_255/.3)] [&_svg]:block aria-disabled:text-[rgb(255_255_255/.32)] aria-disabled:cursor-default hover:not-aria-disabled:[--spec-base:#fff] focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:3px]'
 
 export function PosterPreview() {
   const root = useRef<HTMLDialogElement>(null)
