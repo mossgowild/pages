@@ -4,7 +4,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import type { Filters } from '../lib/filters'
 import type { Guide } from '../lib/guide'
-import { EASE, IN_OUT, reducedMotion, useHydrated, useIsomorphicLayoutEffect } from '../lib/motion'
+import { eased, IN_OUT, reducedMotion, useHydrated, useIsomorphicLayoutEffect } from '../lib/motion'
 import { CALENDAR, CHEVRON, PickerTrigger, rangeText } from './Pickers'
 
 // Every pill and round button is one control tall (--control, 40px) with 13px Syne labels (control-scale questions 1–6).
@@ -130,20 +130,20 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
   }
 
   // React Bits Card Nav: the panel grows over 0.4s (power3.out) while the page scrim fades in, and the cards rise 50px
-  // and fade in 0.08s apart, starting 0.1s before the growth ends; closing plays the same timeline backwards.
+  // and fade in 0.08s apart, starting 0.1s before the growth ends; closing plays the same timeline backwards. Written so
+  // that Safari runs the scrim and the cards off the main thread (eased); the growth is layout, on the main thread.
   function playNav(opening: boolean) {
     navAnimations.current.forEach(animation => animation.cancel())
     navAnimations.current = []
     if (reducedMotion()) return Promise.resolve()
     const cards = [...panel.current!.querySelectorAll<HTMLElement>('.filter-card')]
     const height = panel.current!.getBoundingClientRect().height
-    const timing = (delay: number) => ({ duration: 400, easing: EASE, fill: opening ? 'backwards' as const : 'forwards' as const,
-      direction: opening ? 'normal' as const : 'reverse' as const, delay })
+    const timing = (delay: number) => ({ delay, leaving: !opening })
     const lead = opening ? 0 : 300 + (cards.length - 1) * 80
     navAnimations.current = [
-      panel.current!.animate([{ height: '0px' }, { height: `${height}px` }], timing(lead)),
-      scrim.current!.animate([{ opacity: 0 }, { opacity: 1 }], timing(lead)),
-      ...cards.map((card, index) => card.animate([{ transform: 'translateY(50px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      eased(panel.current!, progress => ({ height: `${height * progress}px` }), timing(lead)),
+      eased(scrim.current!, progress => ({ opacity: progress }), timing(lead)),
+      ...cards.map((card, index) => eased(card, progress => ({ transform: `translateY(${50 * (1 - progress)}px)`, opacity: progress }),
         timing(opening ? 300 + index * 80 : (cards.length - 1 - index) * 80))),
     ]
     return Promise.all(navAnimations.current.map(animation => animation.finished)).then(() => {}, () => {})
@@ -172,8 +172,9 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
   // The condition tags (questions 189, 199–200). They never clip: a new tag appears at full size, growing from 0.8 and
   // fading in where it lands, while its neighbours glide to their new places; a leaving tag lifts out of the row where it
   // stood and shrinks back to 0.8 as it fades (0.3s power2.inOut), and the others glide into the gap. Entering and
-  // gliding take 0.4s power3.out. The strip is drawn here rather than by React so that a leaving tag can stay in place
-  // until it has folded away; src/lib/glass.ts lights the tags as they come.
+  // gliding take 0.4s power3.out, written so that Safari runs them off the main thread (eased), as they come while the
+  // list redraws. The strip is drawn here rather than by React so that a leaving tag can stay in place until it has
+  // folded away; src/lib/glass.ts lights the tags as they come.
   useIsomorphicLayoutEffect(() => {
     const strip = tagList.current!
     const edge = strip.parentElement!
@@ -181,7 +182,6 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
       edge.classList.toggle('has-before', strip.scrollLeft > 1)
       edge.classList.toggle('has-after', strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 1)
     }
-    const motion = { duration: 400, easing: EASE }
     const lis = () => [...strip.children] as (HTMLLIElement & { tag?: Tag })[]
     const make = (tag: Tag) => {
       const li = document.createElement('li') as HTMLLIElement & { tag?: Tag }
@@ -239,13 +239,13 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
     if (animate) {
       for (const li of wanted) {
         if (entering.includes(li)) {
-          li.animate([{ opacity: 0, transform: 'scale(.8)' }, { opacity: 1, transform: 'scale(1)' }], motion).finished.then(markEdges, () => {})
+          eased(li, progress => ({ opacity: progress, transform: `scale(${0.8 + 0.2 * progress})` })).finished.then(markEdges, () => {})
           continue
         }
         li.getAnimations().filter(animation => (animation.effect as KeyframeEffect).getKeyframes().some(frame => String(frame.transform ?? '').startsWith('translateX')))
           .forEach(animation => animation.cancel())
         const dx = was.get(li)! - li.getBoundingClientRect().left
-        if (Math.abs(dx) > 0.5) li.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], motion).finished.then(markEdges, () => {})
+        if (Math.abs(dx) > 0.5) eased(li, progress => ({ transform: `translateX(${dx * (1 - progress)}px)` })).finished.then(markEdges, () => {})
       }
       strip.scrollLeft = scroll
     }

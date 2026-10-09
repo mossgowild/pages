@@ -7,7 +7,7 @@
 // A sheet let go past the drag threshold leaves from where it was dropped. Reduced motion shows and hides at once.
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react'
 import { shortDate } from '../lib/filters'
-import { EASE, OUT, reducedMotion } from '../lib/motion'
+import { eased, OUT, reducedMotion } from '../lib/motion'
 
 const narrow = () => matchMedia('(max-width: 768px)').matches
 const icon = (path: ReactNode) => (
@@ -90,21 +90,21 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
     element.style.setProperty('--picker-room', `${Math.max(160, innerHeight - box.bottom - 24)}px`)
   }
 
-  // The Card Nav timeline over the parts in view (the title row and 完成 only show on phones). Closing plays it
-  // backwards: the parts leave last one first, then the sheet and the veil.
+  // The Card Nav timeline over the parts in view (the title row and 完成 only show on phones), written so that Safari
+  // runs it off the main thread (eased; the wide screens' wipe is a clip, which stays on the main thread). Closing plays
+  // it backwards: the parts leave last one first, then the sheet and the veil.
   function play(closingNow: boolean) {
     const element = pop.current!
     const parts = [element.querySelector('.picker-head'), element.querySelector('.picker-body'), element.querySelector('.picker-done')]
       .filter((part): part is HTMLElement => Boolean(part?.getClientRects().length))
-    const timing = (delay: number) => ({ duration: 400, easing: EASE, delay, fill: closingNow ? 'forwards' as const : 'backwards' as const,
-      direction: closingNow ? 'reverse' as const : 'normal' as const })
+    const timing = (delay: number) => ({ delay, leaving: closingNow })
     const lead = closingNow ? 300 + (parts.length - 1) * 80 : 0
-    const away = narrow() ? [{ transform: 'translateY(100%)' }, { transform: 'none' }]
-      : [{ clipPath: 'inset(0 0 100% 0 round 24px)' }, { clipPath: 'inset(0 round 24px)' }]
+    const away = narrow() ? (progress: number) => ({ transform: `translateY(${100 * (1 - progress)}%)` })
+      : (progress: number) => ({ clipPath: `inset(0 0 ${100 * (1 - progress)}% 0 round 24px)` })
     return [
-      sheet.current!.animate(away, timing(lead)),
-      veil.current!.animate([{ opacity: 0 }, { opacity: 1 }], timing(lead)),
-      ...parts.map((part, index) => part.animate([{ transform: 'translateY(50px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
+      eased(sheet.current!, away, timing(lead)),
+      eased(veil.current!, progress => ({ opacity: progress }), timing(lead)),
+      ...parts.map((part, index) => eased(part, progress => ({ transform: `translateY(${50 * (1 - progress)}px)`, opacity: progress }),
         timing(closingNow ? (parts.length - 1 - index) * 80 : 300 + index * 80))),
     ]
   }
@@ -134,11 +134,13 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       closing.current = true
       element.classList.add('is-closing')
       // A dropped sheet runs the sheet's part of the timeline backwards from where it was let go.
-      const back = { duration: 400, easing: EASE, fill: 'forwards' as const, direction: 'reverse' as const }
-      motion.current = from
-        ? [sheet.current!.animate([{ transform: 'translateY(100%)' }, { transform: `translateY(${from}px)` }], back),
-          veil.current!.animate([{ opacity: 0 }, { opacity: 1 - from / sheet.current!.offsetHeight }], back)]
-        : play(true)
+      if (from) {
+        const height = sheet.current!.offsetHeight
+        motion.current = [
+          eased(sheet.current!, progress => ({ transform: `translateY(${from * progress + height * (1 - progress)}px)` }), { leaving: true }),
+          eased(veil.current!, progress => ({ opacity: progress * (1 - from / height) }), { leaving: true }),
+        ]
+      } else motion.current = play(true)
       Promise.all(motion.current.map(animation => animation.finished)).then(finish, () => {})
     }
   }, [open])
