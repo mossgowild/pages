@@ -97,9 +97,10 @@ test('the page structure', () => {
   expect(html).not.toContain('单击退出')
 })
 
-test('the wall script runs before the terrain, and every script exists', () => {
+// The scripts are built from src/client into public/assets by bun run build:client, after the tests.
+test('the wall script runs before the terrain, and every script has its source', () => {
   expect(SCRIPTS.indexOf('hero')).toBeLessThan(SCRIPTS.indexOf('topography'))
-  for (const name of SCRIPTS) expect(exists(`assets/${name}.js`)).toBe(true)
+  for (const name of SCRIPTS) expect(Bun.file(new URL(`../src/client/${name}.ts`, import.meta.url)).size).toBeGreaterThan(0)
 })
 
 test('every event has a row with its known information', () => {
