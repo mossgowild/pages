@@ -9,27 +9,56 @@ updated: 2026-10-10
 
 ## 问答
 
-### 请求：小类里拿掉与大类同名的一行
+### 请求：重新设计筛选无结果时的空状态
 
-> 2026-10-10：“C 从小类拿掉”（回答“小类里与大类同名的那一行要不要改？”，见结论区“风格小类里排第一的是大类本身”）
+> 2026-10-10：“这一块的风格ui要对齐单日无活动时的那种”（附图：筛选无结果时的玻璃卡片“这组条件下暂无活动”）
+
+> 2026-10-10：“不对齐了，重新设计空状态，看看reactbits，https://www.designmd.co/catalog”
+
+> 2026-10-10：“去这里找找最好的空状态https://bestdesignsonx.com”
 
 ### 已查明事实
 
 | # | 事实 | 来源 |
 | --- | --- | --- |
-| F22 | 每个风格大类的小类弹层，列的是 `genre_families` 里这一类的全部成员，按本期场数从多到少排（AGENTS.md：只列小类、不设“全部”行）；七个大类都把大类名本身也列为成员（如 Techno 类里有“Techno”），因为有的活动只标了大类名、没有更细的小类 | `src/lib/guide.server.ts`（`members … sort((a, b) => count(b) - count(a))`）；`data/events.json` 的 `genre_families` |
-| F23 | 同名成员的场数在五类里最多，所以排第一：Techno 11 场（其中 9 场没有更细的 Techno 小类）、House 9（9）、Bass 9（3）、Trance 5（4）、Experimental 3（2）；Hard Dance 里 Hardstyle 3 场排第一、Hard Dance 1 场，Open Format 里 Hip-Hop 5 场排第一、Open Format 2 场 | `data/events.json` 统计 |
-| F24 | 筛选结果是对的：点大类胶囊（“全部 Techno”）筛出这一类全部 22 场；在弹层里只勾“Techno”这一行，只筛出标了 Techno 的 11 场，不含只标 Hard Techno 等小类的场次。容易误会的是这一行与大类同名，看起来像“全部 Techno” | `src/lib/filters.ts`；`src/components/Page.tsx` |
-| F25 | 小类弹层的选择规则（第 176、179 题）：点大类胶囊选“全部 X”；整类选中时弹层显示全部小类已勾选，取消其中一项变成其余小类的部分选择；逐个勾满全部小类则回到整类。勾“小类”筛的是标了这个小类的场次，整类筛的是这一类任一成员的场次（含只标大类名的） | `src/components/Page.tsx` 的 `toggleMember`；`src/lib/filters.ts` |
-| F26 | 拿掉同名行后各类剩下的小类：Techno 7 个、House 9、Trance 4、Bass 12、Hard Dance 只剩 Hardstyle 1 个、Experimental 4、Open Format 18；只标大类名、没有本类其他小类的场次：Techno 9、House 9、Trance 4、Bass 3、Experimental 2、Open Format 1、Hard Dance 0（这些场次只能靠大类胶囊选到） | `data/events.json` 统计 |
-| F27 | 用到成员列表的检查：`test/browser/layout.js` 核对弹层行数等于胶囊的 `data-members`；`scripts/check-browser.ts` 在 Techno 弹层里勾第一行、再勾满其余行来验证“勾满回到整类”；页面上没有保存筛选条件（不读地址或本地存储），不涉及旧状态 | `test/browser/layout.js`；`scripts/check-browser.ts`；`grep localStorage src` |
+| F28 | 筛选无结果时的空状态是一张 24px 圆角磨砂玻璃卡片（上下 64px 内距）：标题“这组条件下暂无活动”（24px，React Bits Shiny Text 流光）、说明“试试其他日期、城市或音乐风格，发现更多现场。”、金色字的玻璃胶囊“清空筛选，查看全部活动”（AGENTS.md 第五节、第 189 题前后定下） | `src/components/Page.tsx` 的 `EMPTY`、`RESET`；`src/components/ShinyText.tsx`；AGENTS.md |
+| F29 | 某天没有活动时，日期标题下只有一行字“当日暂无活动信息。”：13px、灰色（`--muted`）、带直接压在地形上的柔和深色描边，没有卡片、标题或按钮 | `src/components/Page.tsx` 的 `DayGroup`（`empty-day`） |
+| F30 | 空状态只在选了条件后出现，这时吸顶工具栏里一定有“清空”按钮，所以空状态里的“清空筛选”与它重复；检查脚本里核对空状态是磨砂玻璃、标题有流光，并点“清空筛选”回到全部活动 | `src/components/FilterDock.tsx`；`test/browser/layout.js`；`scripts/check-browser.ts` |
+| F31 | 候选（澳门＋House 筛出 0 场，直接改页面截图）：A 只留一行“这组条件下暂无活动。”，与单日无活动同样大小、颜色与描边；B 同一行后面跟品牌粉文字“清空筛选”；C 一行字下面保留原来的“清空筛选，查看全部活动”胶囊。截图里文字后面的模糊带是地形按原来卡片的位置算的，正式改动后会按新位置重算 | [候选截图](event-filters/empty-candidates.jpg)；草稿目录 `empty/candidates.ts` |
+| F32 | 第二轮候选（澳门＋House，直接改页面截图）：真实的单日无活动是日期标题（金色 Syne 大字日期、小字星期与场数、Star Border 分割线）下面一行灰字，地形在标题与这行字后面加了模糊；D 把空状态换成一个同样结构的“0 场”分组；E 把每个日期分组照常列出、每天写“当日暂无活动信息。”。截图里 D、E 的字后面还没有模糊带，正式改动会按日期分组的规则加上 | [第二轮截图](event-filters/empty-round2.jpg)；草稿目录 `empty/round2.ts`；`src/client/topography.ts` 的 `measure`、`textBands` |
+| F33 | DesignMD 目录（designmd.co/catalog）是各品牌的 DESIGN.md 设计令牌集，公开部分 12 个（Netflix、Vercel、Perplexity 等，深色与带动效的可筛选），单页只有颜色、字体与间距令牌，没有空状态的样式；同站的 Taste Skill 说明点出 AI 默认做法的问题：居中、安全、像模板的内容块，建议层级分明、必要时不对称、留白有意图、动效克制有目的。现在的空状态正是居中的玻璃卡片 | https://www.designmd.co/catalog ；https://www.designmd.co/d/netflix ；https://www.designmd.co/taste-skill （内置浏览器） |
+| F34 | React Bits 里适合空状态的文字效果：Fuzzy Text（原版演示就是“404”：画到画布上，每一行随机左右错开，默认抖动强度 0.18、悬停 0.5、幅度 30px、60 帧，有渐变参数）；Glitch Text（纯 CSS，文字上叠两层切片，左右偏 10px、带红青影，循环剪裁动画）；Decrypted Text（字符乱码后逐个显出，用在中文上效果不明显）。站里已用 Shiny Text | `DavidHDev/react-bits` 的 `FuzzyText.jsx`、`GlitchText.jsx`／`.css`、`DecryptedText.jsx` |
+| F35 | React Bits 候选（澳门＋House，直接改页面截图，桌面与手机）：都去掉玻璃卡片、改为左对齐（手机上下排）——左边一个 Syne 大“0”，右边标题、说明与详情区同款的“清空筛选，查看全部活动 ↗”文字链接，文字带地形描边。F 白色 Fuzzy Text、G 品牌四色 Fuzzy Text、H Glitch Text。Fuzzy Text 每帧在画布上重画（只在空状态显示时），Glitch Text 是 CSS 动画；减少动态效果时都可以静止 | [React Bits 候选截图](event-filters/empty-reactbits.jpg)；草稿目录 `empty/proto.js`、`empty/proto.ts` |
+| F36 | Best Designs on X 的“Empty States”合集（18 条，看了其中 14 张图）：几乎都是一个小的单色细线插图或图标（层叠的面、文件柜、带圆环的放大镜、发光小球），一句短标题，一两行灰色说明，一个小的主按钮（常配一个次要按钮）；深色的几张把内容左对齐放在留白里（如“Projects”空状态：线条图标、标题、说明、两个胶囊按钮）；也有把淡化的占位内容（头像、列表）铺在后面、文字叠在上面的写法；没有大面积卡片或大号流光标题 | https://bestdesignsonx.com/search/Empty+States/ （内置浏览器） |
+| F37 | 第三轮候选（澳门＋House，直接改页面截图，桌面与手机）：J 层叠卡片线条图标＋左对齐的标题、说明与“清空筛选”“调整条件”两个胶囊；K 细边圆环里的放大镜（带一点品牌粉）＋居中的标题、说明与“清空筛选”；L 三条与活动行同款的磨砂玻璃空行逐条变淡，标题、说明与“清空筛选”叠在中间。都沿用站内的 40px 胶囊、Syne 13px 按钮字与地形描边 | [第三轮截图](event-filters/empty-round3.jpg)；草稿目录 `empty/proto2.js`、`empty/proto2.ts` |
+| F38 | 第四轮候选（澳门＋House，直接改页面截图，桌面与手机），都不用卡片、左对齐、按站内的 Syne 大字与细线排：R 条件算式（“这组条件”小标签，Syne 600 大字“澳门 × House”与品牌粉“= 0 场”，细线下面一行说明与两个胶囊）；T 刊物式清单（详情区的英文大字＋中文标签写法“NO MATCH 暂无活动”，右栏把每个条件排成一行细线、行尾粉色 ×，末行“清空全部条件 ↗”）；U 空心大字（品牌四色描边的空心 Syne “0”，旁边小字“0 场 · 澳门 · House”、标题、说明与两个胶囊）。R、U 的条件文字取自工具栏的已选标签 | [第四轮截图](event-filters/empty-round4.jpg)；草稿目录 `empty/proto3.js`、`empty/proto3.ts` |
+| F39 | 英文大字加中文小标签的标题现在用在活动详情的各区：TIMETABLE／LINEUP 时间表／阵容、TICKETS 票务、DETAILS 活动详情、ENTRY 入场须知、VENUE 地点（英文 Syne 700 20px 白色，中文 11px 灰色，基线对齐）；“全部活动”标题是 30px（手机 26px）的中文半粗体；筛选面板四张卡片的标题是只有中文的 Syne 700 20px（城市、风格、时段 · 场地、日期范围） | `src/components/EventRow.tsx` 的 `DetailSection`、`INFO_SECTIONS`；`src/components/Page.tsx`；`src/components/FilterDock.tsx` 的 `LEGEND` |
+
+![无结果候选：现在、A、B、C](event-filters/empty-candidates.jpg)
+
+![第二轮：真实的单日无活动、D、E](event-filters/empty-round2.jpg)
+
+![React Bits 候选：现在、F、G、H](event-filters/empty-reactbits.jpg)
+
+![第三轮：现在、J、K、L](event-filters/empty-round3.jpg)
+
+![第四轮：现在、R、T、U](event-filters/empty-round4.jpg)
 
 ### 问答
 
 | # | 问题 | 答复 | 影响 |
 | --- | --- | --- | --- |
-| Q10 | 拿掉同名行后，勾满弹层里的小类算什么（F25、F26）：A 勾满就是整类——照现在“逐个勾满回到整类”，筛出这一类全部场次，也包括只标大类名的（如 Techno 勾满 7 个小类得到全部 22 场，比勾的 13 场多出只标 Techno 的 9 场）；整类时取消一项，剩下的小类不再包括只标大类名的场次；Hard Dance 只剩 Hardstyle 一个小类，勾它就等于整类。B 勾满仍是部分选择——只有点大类胶囊才是整类，弹层勾满显示“7 项”、筛 13 场；整类时打开弹层仍全部勾选，取消一项变成其余小类。推荐 A：保留已定的“勾满回到整类”（第 176、179 题），胶囊的“全部”与弹层的勾选始终一致；只标大类名的场次本来就属于这一类 | “A 勾满即整类”（2026-10-10 提问工具） | 弹层只列与大类不同名的小类；勾满它们回到整类（含只标大类名的场次），整类时取消一项变成其余小类 |
-| Q11 | 怎么分层（Q10）：A 一层——`src/lib/guide.server.ts` 给每个大类算出不含同名成员的小类列表，`src/components/Page.tsx` 的小类弹层与“勾满回到整类”改用它，`src/components/FilterDock.tsx` 胶囊上的小类数与没有小类时隐藏箭头跟着改；`test/browser/layout.js`、`scripts/check-browser.ts` 按新列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明，一次验收；B 两层——L1 只改弹层不列同名行，L2 再改检查与说明。推荐 A：改动集中、规则不变，合在一起才能验收 | “A 一层”（2026-10-10 提问工具） | 一层：弹层、规则、检查与说明一起改，一次验收 |
+| Q12 | 无结果时改成哪种（F28–F31，见候选截图）：A 只留一行字——“这组条件下暂无活动。”，和“当日暂无活动信息。”同样大小、颜色与描边，去掉卡片、流光标题、说明与按钮，清空用工具栏的“清空”；B 一行字加文字链接——同一行后面跟品牌粉“清空筛选”；C 一行字加原来的胶囊按钮——字下面保留“清空筛选，查看全部活动”。推荐 A：与单日无活动完全一致，工具栏的“清空”一直在，不重复 | “这个样式不符合整体啊”（2026-10-10 提问工具） | 没有选 A–C；补出像日期分组那样的候选，与真实的单日无活动并排再问（Q13） |
+| Q13 | 哪种更符合整体（F29、F32，见第二轮截图，左上是真实的单日无活动）：A 只留一行字“这组条件下暂无活动。”（同第一轮 A）；D 一个“0 场”分组——像日期分组一样，金色大字“0”、小字“场 / 这组条件”与分割线，下面一行“这组条件下暂无活动。”；E 照常列出日期分组——每天的标题写“0 场”，下面各自“当日暂无活动信息。”（没选日期时列出全部 7 天）。推荐 D：与日期分组的标题、分割线和描边文字一致，又只占一组的位置；E 最像单日无活动，但没选日期时是 7 行重复的字。也可以直接说想要的样子 | “还是不符合，整体设计”（2026-10-10 提问工具） | A、D、E 都不合适；先问清“整体设计”指什么（Q14） |
+| Q14 | “对齐单日无活动、符合整体设计”具体指什么（F28–F32）：一、两处都改成玻璃卡片——单日无活动也做成与活动行同款的 24px 磨砂玻璃（像一条收起的活动行），筛选无结果用同一种卡片；二、保留现在的玻璃卡片，只把里面换成单日无活动的写法（一行灰字，去掉流光大标题、说明与胶囊）；三、都不是——请描述或截图指出哪里不对 | “不对齐了，重新设计空状态，看看reactbits，https://www.designmd.co/catalog”（2026-10-10 提问工具） | 不再对齐单日无活动，重新设计空状态：参考 React Bits 与 DesignMD 目录出候选（Q15）；Q12、Q13 的候选不再适用 |
+| Q15 | 空状态用哪种（F33–F35，见 React Bits 候选截图）：F Fuzzy Text 白色——左边一个按原版默认参数抖动的大“0”，右边（手机在下面）标题“这组条件下暂无活动”、一行说明和详情区同款的文字链接“清空筛选，查看全部活动 ↗”，不用卡片；G 同一布局，“0”用原版的渐变参数填品牌四色；H 同一布局，“0”换成 Glitch Text（原版的切片动画，红青影改成品牌粉、青）。推荐 F：左对齐、不再是居中模板卡片（F33），抖动的“0”有现场感又不抢颜色，品牌色留给结果数与链接箭头 | “都不好看”（2026-10-10 提问工具） | F、G、H 都不用；“大‘0’加左对齐文字”这个方向放弃，先请你从 React Bits 里定方向（Q16） |
+| Q16 | 从 React Bits 里选哪个方向做空状态（F34）：Circular Text——一圈文字绕着中心慢转，像一张在转的唱片，中间放“这组条件下暂无活动”（https://reactbits.dev/text-animations/circular-text）；Orb——一团品牌色的发光球体在文字后面缓缓流动（https://reactbits.dev/backgrounds/orb）；Pixel Card 或 Dot Grid——像素格或点阵的卡片，手指或鼠标划过时亮起（https://reactbits.dev/components/pixel-card 、https://reactbits.dev/backgrounds/dot-grid）；也可以写你在 React Bits 上看中的组件名。推荐 Circular Text：转动的唱片与音乐现场贴合，手机上不靠悬停也有动静，选定后照原版移植、给桌面与手机截图 | “去这里找找最好的空状态https://bestdesignsonx.com”（2026-10-10 提问工具） | 不限 React Bits，参考 Best Designs on X 的“Empty States”合集出候选（Q17） |
+| Q17 | 空状态用哪种（F36、F37，见第三轮截图）：J 线条图标＋左对齐——一个层叠卡片的细线图标，下面标题、一行说明，按钮“清空筛选”（白底）与“调整条件”（打开筛选面板，玻璃胶囊），不用卡片；K 圆环图标＋居中——细边圆环里一个放大镜（带一点品牌粉），下面标题、说明与“清空筛选”；L 淡出的空行——三条与活动行同款的磨砂玻璃空行逐条变淡，标题、说明与“清空筛选”叠在中间。推荐 L：直接用清单自己的行样式表达“这里本该有活动”，与整页的玻璃与地形最一致；J、K 是合集里最常见的图标式写法 | “还是不行，我要的是设计感，布局，高级感设计”（2026-10-10 提问工具） | J、K、L 都不用；改从版式与字体入手，做刊物感的排版（Q18） |
+| Q18 | 空状态用哪种（F38，见第四轮截图）：R 条件算式——小字“这组条件”，大号 Syne 把当前条件写成“澳门 × House”，下一行品牌粉“= 0 场”，细线下面左边一行说明、右边“调整条件”“清空筛选”；T 刊物式清单——照详情区的写法，左边英文大字“NO MATCH”加中文小标签与一段说明，右边每个条件一行细线、行尾可点的粉色 ×，末行“清空全部条件 ↗”；U 空心大字——一个品牌四色描边的空心“0”，旁边一行小字“0 场 · 澳门 · House”、标题、说明与两个按钮。推荐 R：把“这组条件”直接排成主角，大字、留白与细线的刊物感最强，又说明了为什么是 0 场；T 的英文“NO MATCH”是新文案，要你认可 | “T可以，如果这样的话，那么全部活动哪里也要对齐标题，也就是英语加中文，这一套标题用在了很多地方”（2026-10-10 提问工具） | 空状态用 T（英文“NO MATCH”加中文“暂无活动”，条件逐行细线、可逐个移除，末行“清空全部条件 ↗”）；“全部活动”标题也改成英文加中文的同一套写法（Q19–Q21） |
+| Q19 | “全部活动”配哪个英文（F39）：A “EVENTS”——单个词，与 TICKETS、VENUE 同类；B “ALL EVENTS”——与中文逐字对应；C “PARTIES”——更贴近派对现场。推荐 A：最短，与详情区那套英文标题的口吻一致 | “A EVENTS”（2026-10-10 提问工具） | 清单标题为“EVENTS 全部活动” |
+| Q20 | 这套英文加中文的标题还要用到哪（F39）：A 只改“全部活动”与空状态；B 连筛选面板四张卡片的标题也改（如 CITY 城市、GENRE 风格、TIME · VENUE 时段 · 场地、DATES 日期范围）。推荐 A：先把清单与空状态对齐，卡片标题要不要改等看过效果再定 | “B 筛选卡片也改”（2026-10-10 提问工具） | 筛选面板四张卡片的标题也改成英文加中文：CITY 城市、GENRE 风格、TIME · VENUE 时段 · 场地、DATES 日期范围 |
+| Q21 | “全部活动”标题属于活动清单（活动浏览的文档），这次怎么记：A 并进这次的空状态任务，一起改、一起验收，记在筛选文档；B 另作一件，记在活动浏览文档。推荐 A：两处是同一套标题写法，一起看才知道层级对不对 | “A 并进空状态任务”（2026-10-10 提问工具） | 清单标题与卡片标题并进本任务，记在本文档，一起验收 |
+| Q22 | 怎么分层（Q18–Q21）：A 一层——空状态改成 T、清单标题改“EVENTS 全部活动”、四张筛选卡片标题改成英文加中文，一起验收；B 两层——L1 空状态 T，L2 清单与卡片标题统一。推荐 A：三处是同一套标题，放在一起才看得出层级；改动都在 `Page.tsx`、`FilterDock.tsx` 与 `EventRow.tsx` 的标题写法上 | “A 一层”（2026-10-10 提问工具） | 一层：空状态、清单标题与卡片标题一起改、一起验收 |
 
 ### 以往：筛选面板打开后触屏滚动穿透（2026-10-09）
 
@@ -112,7 +141,34 @@ updated: 2026-10-10
 
 - 学习：无合格候选：本次是对现有数据与排序的解释，没有新的纠正或可复用的做法
 
+### 以往：小类里拿掉与大类同名的一行（2026-10-10）
+
+> 2026-10-10：“C 从小类拿掉”（回答“小类里与大类同名的那一行要不要改？”，见结论区“风格小类里排第一的是大类本身”）
+
+### 已查明事实
+
+| # | 事实 | 来源 |
+| --- | --- | --- |
+| F22 | 每个风格大类的小类弹层，列的是 `genre_families` 里这一类的全部成员，按本期场数从多到少排（AGENTS.md：只列小类、不设“全部”行）；七个大类都把大类名本身也列为成员（如 Techno 类里有“Techno”），因为有的活动只标了大类名、没有更细的小类 | `src/lib/guide.server.ts`（`members … sort((a, b) => count(b) - count(a))`）；`data/events.json` 的 `genre_families` |
+| F23 | 同名成员的场数在五类里最多，所以排第一：Techno 11 场（其中 9 场没有更细的 Techno 小类）、House 9（9）、Bass 9（3）、Trance 5（4）、Experimental 3（2）；Hard Dance 里 Hardstyle 3 场排第一、Hard Dance 1 场，Open Format 里 Hip-Hop 5 场排第一、Open Format 2 场 | `data/events.json` 统计 |
+| F24 | 筛选结果是对的：点大类胶囊（“全部 Techno”）筛出这一类全部 22 场；在弹层里只勾“Techno”这一行，只筛出标了 Techno 的 11 场，不含只标 Hard Techno 等小类的场次。容易误会的是这一行与大类同名，看起来像“全部 Techno” | `src/lib/filters.ts`；`src/components/Page.tsx` |
+| F25 | 小类弹层的选择规则（第 176、179 题）：点大类胶囊选“全部 X”；整类选中时弹层显示全部小类已勾选，取消其中一项变成其余小类的部分选择；逐个勾满全部小类则回到整类。勾“小类”筛的是标了这个小类的场次，整类筛的是这一类任一成员的场次（含只标大类名的） | `src/components/Page.tsx` 的 `toggleMember`；`src/lib/filters.ts` |
+| F26 | 拿掉同名行后各类剩下的小类：Techno 7 个、House 9、Trance 4、Bass 12、Hard Dance 只剩 Hardstyle 1 个、Experimental 4、Open Format 18；只标大类名、没有本类其他小类的场次：Techno 9、House 9、Trance 4、Bass 3、Experimental 2、Open Format 1、Hard Dance 0（这些场次只能靠大类胶囊选到） | `data/events.json` 统计 |
+| F27 | 用到成员列表的检查：`test/browser/layout.js` 核对弹层行数等于胶囊的 `data-members`；`scripts/check-browser.ts` 在 Techno 弹层里勾第一行、再勾满其余行来验证“勾满回到整类”；页面上没有保存筛选条件（不读地址或本地存储），不涉及旧状态 | `test/browser/layout.js`；`scripts/check-browser.ts`；`grep localStorage src` |
+
+### 问答
+
+| # | 问题 | 答复 | 影响 |
+| --- | --- | --- | --- |
+| Q10 | 拿掉同名行后，勾满弹层里的小类算什么（F25、F26）：A 勾满就是整类——照现在“逐个勾满回到整类”，筛出这一类全部场次，也包括只标大类名的（如 Techno 勾满 7 个小类得到全部 22 场，比勾的 13 场多出只标 Techno 的 9 场）；整类时取消一项，剩下的小类不再包括只标大类名的场次；Hard Dance 只剩 Hardstyle 一个小类，勾它就等于整类。B 勾满仍是部分选择——只有点大类胶囊才是整类，弹层勾满显示“7 项”、筛 13 场；整类时打开弹层仍全部勾选，取消一项变成其余小类。推荐 A：保留已定的“勾满回到整类”（第 176、179 题），胶囊的“全部”与弹层的勾选始终一致；只标大类名的场次本来就属于这一类 | “A 勾满即整类”（2026-10-10 提问工具） | 弹层只列与大类不同名的小类；勾满它们回到整类（含只标大类名的场次），整类时取消一项变成其余小类 |
+| Q11 | 怎么分层（Q10）：A 一层——`src/lib/guide.server.ts` 给每个大类算出不含同名成员的小类列表，`src/components/Page.tsx` 的小类弹层与“勾满回到整类”改用它，`src/components/FilterDock.tsx` 胶囊上的小类数与没有小类时隐藏箭头跟着改；`test/browser/layout.js`、`scripts/check-browser.ts` 按新列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明，一次验收；B 两层——L1 只改弹层不列同名行，L2 再改检查与说明。推荐 A：改动集中、规则不变，合在一起才能验收 | “A 一层”（2026-10-10 提问工具） | 一层：弹层、规则、检查与说明一起改，一次验收 |
+
 ## 结论
+
+### 标题与空状态
+
+- 标题写法（Q18–Q21）：全站的区块标题统一为英文大字（Syne 700，白色）加中文小标签（灰色，基线对齐），英文在前、加 `lang="en"`：清单“EVENTS 全部活动”（英文 30px、手机 26px），筛选卡片“CITY 城市”“GENRE 风格”“TIME · VENUE 时段 · 场地”“DATES 日期范围”（英文 20px），活动详情各区照旧（TICKETS 票务等，20px），空状态“NO MATCH 暂无活动”。
+- 空状态（Q18，第四轮 T）：不用卡片，直接压在地形上（文字描边），宽屏两栏、手机一栏：左栏“NO MATCH 暂无活动”（英文 44px、手机 30px）与一段说明“这组条件下没有活动。去掉一个条件，或换个日期、城市与音乐风格。”；右栏是详情区同款的刊物式清单——每个已选条件一行（灰色小字类别“城市／风格／时段／场地／日期”＋条件名），行尾是 24px 品牌粉圆形 ×，点按移除这一个条件，行与行之间是渐隐细线；末行“清空全部条件 ↗”（详情链接同款），点按清空。条件与工具栏的已选标签一致；去掉 Shiny Text 流光标题。
 
 ### 风格小类
 
@@ -156,35 +212,49 @@ flowchart TD
 
 ## 记录
 
-### 本任务：小类里拿掉与大类同名的一行
+### 以往：重新设计筛选无结果时的空状态（2026-10-10）
 
 - 确认：“确认”（2026-10-10 提问工具）
-- 学习：无合格候选：同名行的来由与决定已写进结论区与 AGENTS.md，没有别的纠正或可复用的做法
+- 学习：L1 已写入 pages-site-visual-choices；验收没有新的反馈，没有别的合格候选
 
 #### 目标与范围
 
-- 目标：风格小类弹层不再列与大类同名的一行，勾满其余小类即整类（Q10）。
-- 不做：不改 `data/events.json` 的风格标注与 `genre_families`；不给只标大类名的场次补小类；不改筛选的匹配逻辑（整类仍按全部成员匹配）。
-- 须遵守：Q10、Q11；第 176、179 题的选择规则；AGENTS.md 第五节的筛选契约。
+- 目标：筛选无结果时改成刊物式的“NO MATCH 暂无活动”（Q18 的 T），清单与筛选卡片的标题统一成英文加中文（Q19–Q21）。
+- 不做：不改活动详情各区已有的标题；不改筛选的匹配逻辑与工具栏；不加新依赖。
+- 须遵守：Q18–Q22；AGENTS.md 第五节的控件令牌（×小圆 24px、链接 44px 点按高度）、“内容即操作”与无脚本可用；本站技能 `pages-site-visual-choices`。
 
 #### 层
 
-1. L1 小类弹层不列同名行
-  - 内容：`src/lib/guide.server.ts`：每个大类在 `members`（用于匹配）之外给出不含同名成员的小类列表（按场数排序）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”都改用小类列表；`src/components/FilterDock.tsx`：胶囊的部分选择数与 `data-members` 按小类列表，没有小类时不显示箭头；`test/browser/layout.js`、`scripts/check-browser.ts` 按小类列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明弹层不列与大类同名的成员
-  - 验收：七个大类的弹层第一行都不再是大类名；Techno 勾满 7 个小类回到“全部 Techno”（22 场），整类时取消一项得到其余小类；Hard Dance 弹层只有 Hardstyle，勾上即整类；给你看弹层截图
-  - 验证：`bun run build`（含新测试）、`bun run check:browser`、`bunx tsc --noEmit`、`git diff --check`；内置浏览器打开 Techno、Hard Dance 弹层截图
-  - 依据：Q10、Q11、F22–F27
+1. L1 刊物式空状态与英文加中文标题
+  - 内容：新增 `src/components/SectionTitle.tsx`（英文大字＋中文小标签，供清单、筛选卡片、空状态与详情各区共用，详情区的 `DetailSection` 改用它）；`src/components/Page.tsx`：清单标题改为“EVENTS 全部活动”，空状态改成两栏刊物式（标题、说明、每个已选条件一行可移除、“清空全部条件 ↗”），去掉 `ShinyText`；`src/components/FilterDock.tsx`：四张卡片的 `legend` 改成 CITY 城市、GENRE 风格、TIME · VENUE 时段 · 场地、DATES 日期范围；删去不再用的 `src/components/ShinyText.tsx` 与 `src/styles/app.css` 里的 Shiny Text 样式；`test/browser/layout.js`：空状态不再是玻璃、不再有流光，核对条件行与工具栏标签一致；`scripts/check-browser.ts`：在空状态里点一行的 × 只移除那个条件，“清空全部条件”回到全部活动；AGENTS.md 第五节的空状态与标题写法改写
+  - 验收：筛选无结果时显示“NO MATCH 暂无活动”、说明与逐行条件，点 × 移除那一个、点“清空全部条件”回到全部；清单标题“EVENTS 全部活动”，四张卡片标题英文加中文；桌面与手机截图给你看
+  - 验证：`bun run build`、`bun run check:browser`（含新检查）、`bunx tsc --noEmit`、`git diff --check`；无头 Chrome 1440、390 宽截图（空状态、清单标题、打开的筛选面板）
+  - 依据：Q18–Q22、F28、F30、F36–F39
 
 #### 交付
 
 - 操作：无（改动留在工作区）
 
-### L1 小类弹层不列同名行（已完成）
+#### 残余风险
 
-- 改动：`src/lib/guide.server.ts`：大类给页面的不再是全部成员，而是 `subgenres`——去掉与大类同名的成员、按场数排序（匹配活动仍按 `data/events.json` 的全部成员）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”、清除都改用 `subgenres`；`src/components/FilterDock.tsx`：胶囊的部分选择数、勾整类时清掉的小类与 `data-subgenres` 用 `subgenres`，没有小类时不显示箭头；`test/browser/layout.js` 核对弹层行就是 `subgenres`、没有与大类同名的行、没有小类时箭头隐藏；`scripts/check-browser.ts` 断言 Techno 弹层没有“Techno”一行；`test/page.test.tsx` 断言七个弹层都不列同名行；AGENTS.md 第五节写明
-- 验证：`bun run build`（19 项测试通过）、`bun run check:browser`（全部通过）、`bunx tsc --noEmit`、`git diff --check` 通过；无头 Chrome（390 宽）：七类弹层的行都不含大类名（Hard Dance 只有 Hardstyle）；Techno 逐个勾满 7 个小类后“全部 Techno”勾上、显示 22 场；整类时取消第一项变成其余 6 个小类、8 场；Hard Dance 勾 Hardstyle 即整类；看过 Techno 与 Hard Dance 弹层截图
-- 学习：无合格候选：这层没有新的纠正或可复用的做法
-- 验收：“接受并提交”（2026-10-10 提问工具）
+- “NO MATCH”比上面的“EVENTS”字更大（照第四轮 T 的样子），两者的大小关系看过截图后可能要调。
+
+### L1 刊物式空状态与英文加中文标题（已完成）
+
+- 改动：新增 `src/components/SectionTitle.tsx`（英文 Syne 700 白色大字＋中文灰色小标签，基线对齐，英文带 `lang="en"`），活动详情各区（`DetailSection`）、清单标题“EVENTS 全部活动”（英文 30px、手机 26px）与筛选卡片的四个标题（CITY 城市、GENRE 风格、TIME · VENUE 时段 · 场地、DATES 日期范围，英文 20px）都用它；`src/components/Page.tsx` 的空状态改成两栏刊物式（不用卡片、文字描边）：左栏“NO MATCH 暂无活动”（英文 44px、手机 30px）与说明，右栏每个已选条件一行（类别＋条件名，整行是按钮，点按只移除这一个条件，行尾 24px 品牌粉 ×），末行“清空全部条件 ↗”沿用详情链接的样式；删去 `src/components/ShinyText.tsx` 与 `src/styles/app.css` 里的 Shiny Text，`src/lib/glass.ts` 不再给空状态加玻璃与折射；`test/browser/layout.js`、`scripts/check-browser.ts` 与 AGENTS.md 第五节同步改写。
+- 验证：
+  - `bun run build`（20 项测试）、`bun run check:browser`（四个宽度、筛选、点遮罩、活动详情、原图预览、地图菜单）、`bunx tsc --noEmit`、`git diff --check` 都通过。
+  - 新检查：空状态不是玻璃、条件行与工具栏标签逐个一致、每行至少 44px 高；在空状态里点日期那一行，只剩 Techno 一个条件、结果回来；再选回无结果，点“清空全部条件”回到全部 57 场。
+  - 无头 Chrome（GPU）1440 与 390 宽截图：清单标题、打开的筛选面板、空状态（深圳＋Techno＋10/6）。第一版截图里条件行带着浏览器默认的灰色按钮底，已去掉。
+
+![1440 宽：EVENTS 全部活动与 NO MATCH 空状态](event-filters/l1-desktop-empty.jpg)
+
+![390 宽：空状态一栏](event-filters/l1-phone-empty.jpg)
+
+![1440 宽：筛选卡片的英文加中文标题](event-filters/l1-desktop-panel.jpg)
+
+- 学习：写入：pages-site-visual-choices（区块标题统一英文加中文；要“设计感、高级感”时先从排版与布局、真实内容出发，空状态四轮的取舍）
+- 验收：“接受并提交”
 
 ### 以往：底部弹层卡顿、点击穿透与标签条滚动（2026-10-09）
 
@@ -275,3 +345,33 @@ flowchart TD
 - 验收：“接受并提交”（2026-10-10 提问工具）
 
 ![结果数滚动的停帧](event-filters/count-frames.png)
+
+### 以往：小类里拿掉与大类同名的一行（2026-10-10）
+
+- 确认：“确认”（2026-10-10 提问工具）
+- 学习：无合格候选：同名行的来由与决定已写进结论区与 AGENTS.md，没有别的纠正或可复用的做法
+
+#### 目标与范围
+
+- 目标：风格小类弹层不再列与大类同名的一行，勾满其余小类即整类（Q10）。
+- 不做：不改 `data/events.json` 的风格标注与 `genre_families`；不给只标大类名的场次补小类；不改筛选的匹配逻辑（整类仍按全部成员匹配）。
+- 须遵守：Q10、Q11；第 176、179 题的选择规则；AGENTS.md 第五节的筛选契约。
+
+#### 层
+
+1. L1 小类弹层不列同名行
+  - 内容：`src/lib/guide.server.ts`：每个大类在 `members`（用于匹配）之外给出不含同名成员的小类列表（按场数排序）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”都改用小类列表；`src/components/FilterDock.tsx`：胶囊的部分选择数与 `data-members` 按小类列表，没有小类时不显示箭头；`test/browser/layout.js`、`scripts/check-browser.ts` 按小类列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明弹层不列与大类同名的成员
+  - 验收：七个大类的弹层第一行都不再是大类名；Techno 勾满 7 个小类回到“全部 Techno”（22 场），整类时取消一项得到其余小类；Hard Dance 弹层只有 Hardstyle，勾上即整类；给你看弹层截图
+  - 验证：`bun run build`（含新测试）、`bun run check:browser`、`bunx tsc --noEmit`、`git diff --check`；内置浏览器打开 Techno、Hard Dance 弹层截图
+  - 依据：Q10、Q11、F22–F27
+
+#### 交付
+
+- 操作：无（改动留在工作区）
+
+### L1 小类弹层不列同名行（已完成）
+
+- 改动：`src/lib/guide.server.ts`：大类给页面的不再是全部成员，而是 `subgenres`——去掉与大类同名的成员、按场数排序（匹配活动仍按 `data/events.json` 的全部成员）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”、清除都改用 `subgenres`；`src/components/FilterDock.tsx`：胶囊的部分选择数、勾整类时清掉的小类与 `data-subgenres` 用 `subgenres`，没有小类时不显示箭头；`test/browser/layout.js` 核对弹层行就是 `subgenres`、没有与大类同名的行、没有小类时箭头隐藏；`scripts/check-browser.ts` 断言 Techno 弹层没有“Techno”一行；`test/page.test.tsx` 断言七个弹层都不列同名行；AGENTS.md 第五节写明
+- 验证：`bun run build`（19 项测试通过）、`bun run check:browser`（全部通过）、`bunx tsc --noEmit`、`git diff --check` 通过；无头 Chrome（390 宽）：七类弹层的行都不含大类名（Hard Dance 只有 Hardstyle）；Techno 逐个勾满 7 个小类后“全部 Techno”勾上、显示 22 场；整类时取消第一项变成其余 6 个小类、8 场；Hard Dance 勾 Hardstyle 即整类；看过 Techno 与 Hard Dance 弹层截图
+- 学习：无合格候选：这层没有新的纠正或可复用的做法
+- 验收：“接受并提交”（2026-10-10 提问工具）

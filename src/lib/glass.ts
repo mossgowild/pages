@@ -10,7 +10,7 @@
 // the detail card keep their brand-coloured streaks facing the mouse (questions 193–195, docs/glass-effects.md), steered
 // by --spec-angle and --spec. Screens without hover follow the phone's movement instead (below).
 const PROXIMITY = 250
-const LIT = '.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close, .event-row, .event-detail-sheet'
+const LIT = '.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close, .event-row, .event-detail-sheet'
 const FOLLOWS = '.event-row, .event-detail-sheet'
 
 type Light = { angle: number; bright: number; target: number; near: number; follows: boolean; width: number; height: number }
@@ -247,7 +247,7 @@ function refract() {
   }
   const channel = (scale: number, matrix: string, name: string) => `<feDisplacementMap in="SourceGraphic" in2="map" scale="${scale}" xChannelSelector="R" yChannelSelector="G" result="d${name}"/>`
     + `<feColorMatrix in="d${name}" type="matrix" values="${matrix}" result="${name}"/>`
-  const refracted = [...document.querySelectorAll<HTMLElement>('.filter-bar, .filter-card, .empty-state, .picker-trigger, .ms-search, .filter-select input, .reset-empty')]
+  const refracted = [...document.querySelectorAll<HTMLElement>('.filter-bar, .filter-card, .picker-trigger, .ms-search, .filter-select input')]
   const images = new Map<Element, SVGFEImageElement>()
   refracted.forEach((element, index) => {
     const id = `glass-refraction-${index}`
@@ -265,7 +265,7 @@ function refract() {
       + '<feBlend in="red" in2="green" mode="screen" result="rg"/><feBlend in="rg" in2="blue" mode="screen"/>'
     defs.append(filter)
     images.set(element, filter.querySelector('feImage')!)
-    const frost = element.matches('.filter-bar, .filter-card, .empty-state') ? 'blur(18px) ' : ''
+    const frost = element.matches('.filter-bar, .filter-card') ? 'blur(18px) ' : ''
     element.style.backdropFilter = `${frost}url(#${id}) saturate(1)`
   })
   const resized = new ResizeObserver(entries => {

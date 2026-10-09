@@ -88,28 +88,6 @@
 /* A mouse or trackpad (the preview's toolbar and × show only there). */
 @custom-variant mouse (@media (hover: hover) and (pointer: fine));
 
-/* React Bits Shiny Text (ShinyText.tsx): the original's stops around the shine centre --shine (a percentage of the
-   gradient line), from #b5b5b5 to white at the smoothstep of 0, .2 … 1, blended with gamma 2.2; the centre runs from
-   122% to -22% (its extent past each end) on the original's cosine ease. */
-@property --shine { syntax: "<number>"; inherits: false; initial-value: 122; }
-@keyframes shiny-text { from { --shine: 122; } to { --shine: -22; } }
-.shiny-text {
-  display: inline-block;
-  color: transparent;
-  background-image: linear-gradient(120deg, #b5b5b5 0%,
-    #b5b5b5 calc((var(--shine) - 20) * 1%), #bebebe calc((var(--shine) - 16.8) * 1%), #d3d3d3 calc((var(--shine) - 13.6) * 1%),
-    #e8e8e8 calc((var(--shine) - 10.4) * 1%), #f9f9f9 calc((var(--shine) - 7.2) * 1%), #fff calc((var(--shine) - 4) * 1%),
-    #fff calc((var(--shine) + 4) * 1%), #f9f9f9 calc((var(--shine) + 7.2) * 1%), #e8e8e8 calc((var(--shine) + 10.4) * 1%),
-    #d3d3d3 calc((var(--shine) + 13.6) * 1%), #bebebe calc((var(--shine) + 16.8) * 1%), #b5b5b5 calc((var(--shine) + 20) * 1%),
-    #b5b5b5 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shiny-text 2s linear(0, 0.0062, 0.0245, 0.0545, 0.0955, 0.1464, 0.2061, 0.273, 0.3455, 0.4218, 0.5, 0.5782, 0.6545, 0.727, 0.7939, 0.8536, 0.9045, 0.9455, 0.9755, 0.9938, 1) infinite;
-}
-.shiny-text.is-away { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .shiny-text { animation: none; background-image: linear-gradient(#b5b5b5, #b5b5b5); } }
-@media print { .shiny-text { background: none; color: #111; } }
-
 /* ---------- Filter toolbar (FilterDock.tsx) ---------- */
 /* React Bits Card Nav as the filter bar: a sticky 56px glass bar whose four tinted glass cards open as Card Nav's own
    overlay: they float over the list under a page scrim, never change the page height, and scroll inside when taller

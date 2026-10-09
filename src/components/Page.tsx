@@ -8,12 +8,12 @@ import { startGlass } from '../lib/glass'
 import type { EventView, Guide } from '../lib/guide'
 import { useIsomorphicLayoutEffect } from '../lib/motion'
 import { EventDetail, type DetailApi } from './EventDetail'
-import { EventRow } from './EventRow'
-import { FilterDock, tagsOf, type PickerState } from './FilterDock'
+import { EventRow, LINK } from './EventRow'
+import { FilterDock, TAG_CLOSE, tagsOf, type PickerState } from './FilterDock'
 import { Divider } from './Divider'
 import { DateRange, MultiList, PickerPop, rangeText, type Row } from './Pickers'
 import { PosterPreview } from './PosterPreview'
-import { ShinyText } from './ShinyText'
+import { SectionTitle } from './SectionTitle'
 
 // The horizontal logo inline in the header byline, 12px tall in the lockup's colour (currentColor).
 const LOGO = logo.trim().replace('<svg ', '<svg class="title-logo block flex-none w-auto h-3" aria-hidden="true" focusable="false" ')
@@ -52,9 +52,12 @@ const TEXT_SHADOW = '[text-shadow:0_1px_10px_rgb(6_4_12/.9),0_0_2px_rgb(6_4_12/.
 // 0.9× the scroll on its day's view timeline (heading-drift in app.css).
 const DAY = 'day-group mt-[38px] max-[701px]:mt-[29px] scroll-motion:[view-timeline-name:--day] scroll-motion:[view-timeline-inset:0_calc(50%_-_260px)]'
 const DAY_HEADING = `day-heading flex gap-[14px] items-center scroll-mt-[28px] [margin:0_0_20px] text-[23px] font-[550] tracking-[-.025em] ${TEXT_SHADOW} scroll-motion:[animation-name:heading-drift] scroll-motion:[animation-timing-function:linear] scroll-motion:[animation-fill-mode:both] scroll-motion:[animation-timeline:--day] scroll-motion:[animation-range:cover_0px_cover_360px] max-[701px]:text-[20px] screen-to-700:flex-wrap screen-to-700:[gap:8px_12px]`
-// No results: a glass card with Shiny Text and a pill back to the whole list.
-const EMPTY = 'empty-state [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:var(--glass-tint)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] text-center [padding:64px_20px] mt-[26px] print:[border-color:#aaa] print:[background:#fff] print:[box-shadow:none] print:[-webkit-backdrop-filter:none] print:[backdrop-filter:none]'
-const RESET = 'reset-empty relative specular-rim press [border:0] rounded-[999px] [background:var(--glass-pill)] [box-shadow:var(--glass-pill-shadow)] text-(--gold) min-h-(--control) [padding:0_var(--control-pad)] [font:600_13px/1_var(--font-display)]'
+// No results, set straight on the terrain like the details' ledger (docs/event-filters.md Q18): NO MATCH and a line of
+// advice on the left; on the right one hairline row per chosen condition, the whole row removing it, and 清空全部条件.
+// One column on phones.
+const EMPTY = `empty-state grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-16 mt-12 ${TEXT_SHADOW} max-[701px]:grid-cols-1 max-[701px]:gap-6 max-[701px]:mt-8`
+const CONDITION = 'empty-condition relative flex w-full items-center justify-between gap-3 min-h-[52px] [padding:8px_0] [border:0] [background:none] text-left text-[#f1ecf7] [font:600_15px/1.4_var(--font-display)] cursor-pointer before:ledger-line hover:text-white'
+const KINDS: Record<string, string> = { city: '城市', family: '风格', genre: '风格', period: '时段', venue: '场地', to: '日期' }
 
 // React Bits Accordion Gallery, vertical, as a day's list (docs/event-browsing.md Q20–Q25): the first visible row stays
 // open with its full poster stage, the rest collapsed but still listing artists and genres; any row opens its event's
@@ -176,20 +179,36 @@ export function Page({ guide }: { guide: Guide }) {
           <div className="hero-stage" role="region" aria-label="精选活动海报" dangerouslySetInnerHTML={{ __html: heroReel(guide) }} />
         </section>
         <section ref={schedule} id="schedule" className={`schedule ${WRAP} relative [padding:44px_0_64px] max-[701px]:[padding:32px_0_38px]`} aria-labelledby="schedule-title">
-          <div className={`section-heading mb-6 ${TEXT_SHADOW}`}>
-            <h2 id="schedule-title" className="text-[30px] leading-[1.3] font-semibold [margin:9px_0_0] tracking-[-.04em] max-[701px]:text-[26px]">全部活动</h2>
-          </div>
+          <SectionTitle as="h2" id="schedule-title" english="EVENTS" label="全部活动" size="text-[30px] tracking-[.02em] max-[701px]:text-[26px]"
+            className={`section-heading [margin:9px_0_24px] text-[13px] ${TEXT_SHADOW}`} />
           <FilterDock guide={guide} filters={filters} change={change} tags={tags} count={valid ? total : events.length} summary={summary} valid={valid}
             pickers={pickers} venueText={chosenVenues.join('、')} venueCount={chosenVenues.length} schedule={schedule} />
           <noscript><p className="noscript text-(--muted) text-[13px] [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:var(--glass-tint)] [box-shadow:var(--glass-shadow)] p-4">启用 JavaScript 可使用组合筛选；下方仍可浏览全部活动、海报与购票链接。</p></noscript>
-          <div className={EMPTY} id="empty-state" hidden={!valid || total > 0}>
-            <h3 className="text-[24px] font-medium [margin:8px_0]"><ShinyText>这组条件下暂无活动</ShinyText></h3>
-            <p className="text-[13px] text-(--muted)">试试其他日期、城市或音乐风格，发现更多现场。</p>
-            <button type="button" className={RESET} id="reset-empty" onClick={() => {
-              change(NO_FILTERS)
-              document.querySelector<HTMLElement>('.filter-toggle')?.focus()
-            }}>清空筛选，查看全部活动</button>
-          </div>
+          <section className={EMPTY} id="empty-state" aria-labelledby="empty-title" hidden={!valid || total > 0}>
+            <div>
+              <SectionTitle as="h3" id="empty-title" english="NO MATCH" label="暂无活动" size="text-[44px] tracking-[.02em] max-[701px]:text-[30px]" className="m-0 [column-gap:12px] text-[13px]" />
+              <p className="[margin:18px_0_0] max-w-[320px] text-[13px] leading-[1.8] text-(--muted) max-[701px]:mt-3.5">这组条件下没有活动。去掉一个条件，或换个日期、城市与音乐风格。</p>
+            </div>
+            <div>
+              <ul className="m-0 p-0 list-none" aria-label="已选条件">
+                {tags.map(tag => (
+                  <li key={tag.key}>
+                    <button type="button" className={CONDITION} aria-label={`移除条件：${tag.label}`} onClick={() => {
+                      change(tag.remove(filters))
+                      document.querySelector<HTMLElement>('.filter-toggle')?.focus()
+                    }}>
+                      <span><span className="inline-block w-16 text-[11px] font-medium tracking-[.12em] text-(--muted)">{KINDS[tag.key.split('|')[0]]}</span><span className="condition-value">{tag.label}</span></span>
+                      <span className={TAG_CLOSE} aria-hidden="true">×</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button type="button" className={`${LINK} w-full [border:0] [background:none] cursor-pointer`} id="reset-empty" onClick={() => {
+                change(NO_FILTERS)
+                document.querySelector<HTMLElement>('.filter-toggle')?.focus()
+              }}>清空全部条件</button>
+            </div>
+          </section>
           {guide.days.map(day => {
             const visible = day.events.filter(event => visibleIds.has(event.id))
             return <DayGroup key={day.iso} day={day} visible={visible} hidden={valid && active && !visible.length}

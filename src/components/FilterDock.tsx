@@ -6,19 +6,20 @@ import type { Filters } from '../lib/filters'
 import type { Guide } from '../lib/guide'
 import { eased, IN_OUT, reducedMotion, useHydrated, useIsomorphicLayoutEffect } from '../lib/motion'
 import { CALENDAR, CHEVRON, PickerTrigger, rangeText } from './Pickers'
+import { SectionTitle } from './SectionTitle'
 
 // Every pill and round button is one control tall (--control, 40px) with 13px Syne labels (control-scale questions 1–6).
 const PILL_TEXT = '[font:600_13px/1.2_var(--font-display)]'
 // Tags are drawn by the effect below, so their classes live here too.
 const TAG = 'filter-tag relative specular-rim press inline-flex items-center gap-2 min-h-(--control) [padding:0_8px_0_var(--control-pad)] [border:0] rounded-[999px] [background:color-mix(in_srgb,var(--brand-pink)_16%,transparent)] [--spec-base:color-mix(in_srgb,var(--brand-pink)_70%,transparent)] text-white [font:600_13px/1_var(--font-display)] whitespace-nowrap cursor-pointer'
-const TAG_CLOSE = 'grid place-items-center size-(--control-inner) rounded-[50%] [background:var(--brand-pink)] text-[12px]/none'
+export const TAG_CLOSE = 'grid place-items-center size-(--control-inner) rounded-[50%] [background:var(--brand-pink)] text-[12px]/none'
 const CHIP = 'filter-chip relative specular-rim press-chip inline-flex rounded-[999px] touch-manipulation'
 const CHIP_INPUT = 'peer absolute inset-0 w-full h-full m-0 opacity-0 cursor-pointer'
 const CHIP_LABEL = `inline-flex items-center min-h-(--control) [padding:0_var(--control-pad)] [border:1px_solid_rgb(255_255_255/.22)] rounded-[999px] [background:var(--glass-pill)] text-[#eee] ${PILL_TEXT} whitespace-nowrap peer-checked:border-white peer-checked:[background:#fff] peer-checked:text-[#120f17] peer-focus-visible:[outline:2px_solid_var(--focus)] peer-focus-visible:outline-offset-2`
 const BAR = 'filter-bar filter-bar-look group/bar flex items-center gap-2 h-[calc(var(--control)_+_16px)]'
 const CARD = 'filter-card filter-card-look min-w-0 m-0 p-4'
 const SELECT = 'filter-select block clear-both mt-3'
-const LEGEND = 'float-left w-full [margin:0_0_10px] p-0 [font:700_20px/1.2_var(--font-display)] text-(--ink)'
+const LEGEND = 'float-left w-full [margin:0_0_10px] p-0 text-[11px]'
 const CHIPS = 'filter-chips flex flex-wrap gap-1.5 clear-both'
 // Split family chip (question 176): the name is 全部 X (white when chosen); the round button inside its right end opens the
 // sub-genres, its touch area still 44px; with only some of them chosen the rim turns brand pink and the button shows their
@@ -441,7 +442,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
           onClick={event => { if (event.target === panel.current) setOpen(false) }}
           onScroll={markMore}>
           <fieldset className={CARD} style={cardColor('pink')}>
-            <legend className={LEGEND}>城市</legend>
+            <SectionTitle as="legend" english="CITY" label="城市" className={LEGEND} />
             <div className={CHIPS}>
               {guide.cities.map(city => (
                 <label key={city} className={CHIP}>
@@ -453,7 +454,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
             </div>
           </fieldset>
           <fieldset className={CARD} style={cardColor('yellow')}>
-            <legend className={LEGEND}>风格</legend>
+            <SectionTitle as="legend" english="GENRE" label="风格" className={LEGEND} />
             <div className={`${CHIPS} genre-chips`}>
               {guide.families.map(({ name, subgenres }, index) => {
                 const id = `family-${index}-picker`
@@ -480,7 +481,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
             </div>
           </fieldset>
           <fieldset className={CARD} style={cardColor('cyan')}>
-            <legend className={LEGEND}>时段 · 场地</legend>
+            <SectionTitle as="legend" english="TIME · VENUE" label="时段 · 场地" className={LEGEND} />
             <div className={CHIPS}>
               {PERIODS.map(([value, label]) => (
                 <label key={value} className={CHIP}>
@@ -499,7 +500,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
             <p className="filter-note [margin:12px_0_0] text-[11px]/[1.6] text-(--muted)">跨夜场次按开场日归类；时段匹配各场已知开场时间。</p>
           </fieldset>
           <fieldset className={CARD} style={cardColor('violet')}>
-            <legend id="dates-label" className={LEGEND}>日期范围</legend>
+            <SectionTitle as="legend" id="dates-label" english="DATES" label="日期范围" className={LEGEND} />
             <div className={`${SELECT} filter-dates`}>
               <PickerTrigger id="dates" labelledBy="dates-label" text={rangeText(filters.from, filters.to)} placeholder="全部日期" glyph={CALENDAR}
                 expanded={pickers.shown === 'dates'} popup="dialog" triggerRef={element => { if (element) triggers.set('dates', element) }}

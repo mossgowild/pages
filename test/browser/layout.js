@@ -35,6 +35,8 @@ function checkLayout() {
   // whose two stars flow unless motion is reduced.
   for (const [selector, edge] of [['.topbar', 'borderBottomColor'], ['.site-footer', 'borderTopColor'], ['.day-group:not([hidden]) .day-heading']]) {
     const host = document.querySelector(selector);
+    // With no results every day is hidden.
+    if (!host && !document.getElementById('empty-state').hidden) continue;
     const line = host.querySelector(':scope > .divider');
     assert(line && line.getBoundingClientRect().height === 1, `${selector}: divider must be a 1px line`);
     assert(!edge || getComputedStyle(host)[edge] === 'rgba(0, 0, 0, 0)', `${selector}: divider replaces the border`);
@@ -102,7 +104,7 @@ function checkLayout() {
     assert(box.left >= barBox.left - 1 && box.right <= barBox.right + 1, `${part.className}: bar content overflows`);
   }
   const panelOpen = !nav.hidden;
-  for (const panel of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card') : []), document.getElementById('empty-state')]) {
+  for (const panel of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card') : [])]) {
     if (!panel.getClientRects().length) continue;
     const style = getComputedStyle(panel);
     // The bar is a full pill (28px on its 56px height, concentric with its 40px buttons) and squares its corners as it docks (× (1 − --dock); question 216).
@@ -113,17 +115,17 @@ function checkLayout() {
     if (value.getClientRects().length) assert(value.scrollHeight <= value.clientHeight, `${value.textContent}: the picker text must not be cropped`);
   }
   // One control height for every clickable pill and round button (question 4).
-  for (const el of document.querySelectorAll('.filter-toggle, .filter-tag, .filter-clear, .filter-chip span, .family-chip, .family-more, .picker-trigger, .ms-search, .ms-option, .picker-clear, .picker-done, button.dr-day, .reset-empty')) {
+  for (const el of document.querySelectorAll('.filter-toggle, .filter-tag, .filter-clear, .filter-chip span, .family-chip, .family-more, .picker-trigger, .ms-search, .ms-option, .picker-clear, .picker-done, button.dr-day')) {
     if (el.getClientRects().length) assert(Math.abs(el.getBoundingClientRect().height - control) < 1, `${el.className}: controls are ${control}px tall`);
   }
   for (const circle of document.querySelectorAll('.filter-tag span, .family-more')) {
     const box = circle.matches('.family-more') ? parseFloat(getComputedStyle(circle, '::before').height) : circle.getBoundingClientRect().height;
     if (circle.getClientRects().length) assert(Math.abs(box - (control - 16)) < 1, `${circle.className || 'tag ×'}: inset circles sit 8px inside the pill`);
   }
-  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip span, .family-chip, .filter-select input, .picker-trigger, .ms-search, .filter-tag, .reset-empty')) {
+  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip span, .family-chip, .filter-select input, .picker-trigger, .ms-search, .filter-tag')) {
     if (pill.getClientRects().length) assert(parseFloat(getComputedStyle(pill).borderTopLeftRadius) >= pill.offsetHeight / 2, `${pill.className || pill.id}: control must be a pill`);
   }
-  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .reset-empty, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close')) {
+  for (const pill of document.querySelectorAll('.filter-toggle, .filter-chip, .family-chip, .picker-trigger, .ms-search, .filter-tag, .event-detail-close, .poster-preview-button, .poster-preview-close')) {
     const rim = getComputedStyle(pill, '::after');
     assert(rim.content !== 'none' && rim.maskComposite.includes('exclude'), 'Pills must carry the specular rim');
   }
@@ -144,15 +146,24 @@ function checkLayout() {
   }
   if (!/Firefox/.test(navigator.userAgent) && !(/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent))) {
     // Search boxes live in the pickers' popovers, outside the panel; only an open one has boxes to check.
-    for (const glass of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card, .picker-trigger, .filter-select input') : []), ...document.querySelectorAll('.ms-search'), document.getElementById('empty-state')]) {
+    for (const glass of [bar, ...(panelOpen ? nav.querySelectorAll('.filter-card, .picker-trigger, .filter-select input') : []), ...document.querySelectorAll('.ms-search')]) {
       if (glass.getClientRects().length) assert(getComputedStyle(glass).backdropFilter.includes('url('), 'Chromium glass must add the refraction filter');
     }
   }
   const count = document.getElementById('result-count');
   assert(Number(count.textContent) === document.querySelectorAll('.event-row:not([hidden])').length, 'The bar count must match the visible events');
   assert(!document.querySelector('.results-head'), 'The separate result line is replaced by the bar count');
-  const emptyTitle = document.querySelector('.empty-state .shiny-text');
-  assert(getComputedStyle(emptyTitle).animationName === (reducedMotion ? 'none' : 'shiny-text'), 'Empty state title must shine unless motion is reduced');
+  // No results: set on the terrain, not a glass card, one removable row per toolbar tag and a 44px 清空全部条件 line
+  // (docs/event-filters.md Q18).
+  const empty = document.getElementById('empty-state');
+  if (empty.getClientRects().length) {
+    assert(blurOf(empty) === 'none' && getComputedStyle(empty).backgroundColor === 'rgba(0, 0, 0, 0)', 'The empty state sits on the terrain, not on glass');
+    const rows = [...empty.querySelectorAll('.empty-condition .condition-value')].map(value => value.textContent);
+    const chosen = [...document.querySelectorAll('.filter-tags li:not(.is-leaving)')].map(li => li.firstElementChild.childNodes[0].textContent);
+    assert(rows.join('|') === chosen.join('|'), 'The empty state lists the toolbar\'s conditions');
+    for (const line of empty.querySelectorAll('.empty-condition, #reset-empty')) assert(line.getBoundingClientRect().height >= 44, 'Empty-state lines are 44px touch targets');
+  }
+  assert(document.querySelector('#schedule-title [lang="en"]')?.textContent === 'EVENTS', 'The list title is EVENTS 全部活动');
   assert(!document.querySelector('.date-nav, .date-nav-note'), 'The date axis is removed; dates are picked in the calendar');
   // Split family chips: 全部 X and the sub-genre arrow are both touch targets; a partial choice shows its number.
   assert(!nav.querySelector('select'), 'Sub-genres, venues and dates live in the pickers, not native selects');

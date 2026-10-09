@@ -6,6 +6,7 @@ import { startLabel, type Artist, type EventView, type Part, type Price, type St
 import { mapLinks, platformOf } from '../lib/maps'
 import { EASE, reducedMotion, useIsomorphicLayoutEffect, useMedia } from '../lib/motion'
 import { PickerPop } from './Pickers'
+import { SectionTitle } from './SectionTitle'
 
 // The share and copy icons beside a place or code that shares or copies on tap: whichever the browser offers shows. The
 // map pin beside a venue that opens the menu of maps.
@@ -30,7 +31,7 @@ const MAP_ICON = (
 
 // A link in the details: a whole line with the brand pink ↗, over a hairline. Links underline under the pointer even on
 // touch screens, as before the rewrite.
-const LINK = "relative flex items-center justify-between gap-3 min-h-[44px] [padding:8px_0] text-[#f1ecf7] [font:600_13px/1.4_var(--font-display)] tracking-[.06em] no-underline before:ledger-line after:content-['↗'/''] after:flex-none after:text-(--brand-pink) after:[transition:translate_.3s_var(--ease-card)] [&:hover]:underline hover:text-white hover:after:[translate:3px_-3px] print:text-[#333] print:min-h-0"
+export const LINK = "relative flex items-center justify-between gap-3 min-h-[44px] [padding:8px_0] text-[#f1ecf7] [font:600_13px/1.4_var(--font-display)] tracking-[.06em] no-underline before:ledger-line after:content-['↗'/''] after:flex-none after:text-(--brand-pink) after:[transition:translate_.3s_var(--ease-card)] [&:hover]:underline hover:text-white hover:after:[translate:3px_-3px] print:text-[#333] print:min-h-0"
 
 function RichPart({ part }: { part: Part }) {
   switch (part.type) {
@@ -299,16 +300,13 @@ const INFO_SECTIONS: [string, string, string, InfoKey[]][] = [
   ['entry', 'ENTRY', '入场须知', ['notes']],
 ]
 
-// Sections are told apart by their large titles and whitespace, not by rules: the English title large and white, the
-// Chinese one small beside it.
+// Sections are told apart by their large titles (SectionTitle.tsx) and whitespace, not by rules.
 function DetailSection({ name, english, label, caption, className, children }: {
   name: string; english: string; label: string; caption?: ReactNode; className: string; children: ReactNode
 }) {
   return (
     <section className={`event-field event-${name || 'lineup'} text-[13px] leading-[1.8] ${className}`} data-field={name === 'location' ? name : undefined}>
-      <h5 className="flex flex-wrap items-baseline [gap:4px_10px] [margin:0_0_10px] [font:500_11px/1.3_var(--font-display)] tracking-[.08em] text-(--muted) print:text-[#333]">
-        <span className="[font:700_20px/1_var(--font-display)] tracking-[.04em] text-white" lang="en">{english}</span>{label}{caption}
-      </h5>
+      <SectionTitle as="h5" english={english} label={label} className="[margin:0_0_10px] text-[11px]">{caption}</SectionTitle>
       {children}
     </section>
   )
