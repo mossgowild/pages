@@ -34,7 +34,7 @@ function checkLayout() {
     'No divider between the poster wall and the schedule (hero-mobile question 8)');
   // The header, each day heading and the footer carry a Star Border divider (Divider.tsx): a 1px line in place of a border,
   // whose two stars flow unless motion is reduced.
-  for (const [selector, edge] of [['.topbar', 'borderBottomColor'], ['.site-footer', 'borderTopColor'], ['.day-heading']]) {
+  for (const [selector, edge] of [['.topbar', 'borderBottomColor'], ['.site-footer', 'borderTopColor'], ['.day-group:not([hidden]) .day-heading']]) {
     const host = document.querySelector(selector);
     const line = host.querySelector(':scope > .divider');
     assert(line && line.getBoundingClientRect().height === 1, `${selector}: divider must be a 1px line`);
@@ -87,6 +87,15 @@ function checkLayout() {
     && edge.classList.contains('has-after') === strip.scrollWidth - strip.clientWidth - strip.scrollLeft > 1, 'The tag strip fades exactly where tags lie beyond it');
   // Layout height, so a tag mid-unfold (scaled from 0.8) still counts; leaving tags are on their way out.
   for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) assert(Math.abs(tag.offsetHeight - control) < 1, 'Selected tags are control-height pills, as tall as the filter button');
+  // The strip scrolls sideways only, and the tags' rims (0.7px outside each pill) stay inside the strip and its fade
+  // (docs/event-filters.md F7).
+  assert(getComputedStyle(strip).overflowY === 'hidden' && strip.scrollHeight <= strip.clientHeight, 'The tag strip does not scroll up and down');
+  const stripBox = strip.getBoundingClientRect(), fadeBox = edge.getBoundingClientRect();
+  for (const tag of strip.querySelectorAll('li:not(.is-leaving) .filter-tag')) {
+    const box = tag.getBoundingClientRect(), rim = -parseFloat(getComputedStyle(tag, '::after').top);
+    assert(box.top - rim >= Math.max(stripBox.top, fadeBox.top) - .01 && box.bottom + rim <= Math.min(stripBox.bottom, fadeBox.bottom) + .01,
+      'Tag rims are not cut at the top or bottom');
+  }
   const barBox = bar.getBoundingClientRect();
   for (const part of bar.children) {
     if (!part.getClientRects().length) continue;

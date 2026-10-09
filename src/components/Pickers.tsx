@@ -1,10 +1,10 @@
 // The filter pickers: a pill trigger in the panel and a top-layer popover at the end of the page (a dropdown under the
-// trigger on wide screens, a bottom sheet up to 768px). Three contents use it: a searchable multi-select list of venues
-// grouped by city, the same list for each genre family's sub-genres behind the arrow of its split chip, and a date-range
-// calendar. Motion (questions 196–198): the rhythm of the filter panel's React Bits Card Nav — the sheet comes in over
-// 0.4s with the veil, phones from the bottom edge and wide screens wiping down from the trigger, and the title row, the
-// list and 完成 rise 50px and fade in 0.08s apart from 0.3s; closing plays it backwards. A sheet let go past the drag
-// threshold leaves from where it was dropped. Reduced motion shows and hides at once.
+// trigger on wide screens, a bottom sheet over its own veil up to 768px). Three contents use it: a searchable
+// multi-select list of venues grouped by city, the same list for each genre family's sub-genres behind the arrow of its
+// split chip, and a date-range calendar. Motion (questions 196–198): the rhythm of the filter panel's React Bits Card
+// Nav — the sheet comes in over 0.4s with the veil, phones from the bottom edge and wide screens wiping down from the
+// trigger, and the title row, the list and 完成 rise 50px and fade in 0.08s apart from 0.3s; closing plays it backwards.
+// A sheet let go past the drag threshold leaves from where it was dropped. Reduced motion shows and hides at once.
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react'
 import { shortDate } from '../lib/filters'
 import { EASE, OUT, reducedMotion } from '../lib/motion'
@@ -22,8 +22,13 @@ const TRIGGER = 'picker-trigger relative specular-rim press flex items-center ga
 // Its own line box holds the whole glyph: overflow stays hidden for the ellipsis, and a 1.0 line box would crop the tops.
 const VALUE = 'picker-value flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap leading-[1.4] text-(--muted) in-[.has-value]:text-(--ink)'
 const COUNT = 'picker-count flex-none min-w-5 [padding:3px_7px] rounded-[999px] [background:var(--brand-pink)] text-white text-[11px] text-center'
-const POP = 'picker-pop fixed [inset:auto] m-0 p-0 [border:0] [background:none] text-(--ink) overflow-visible touch-manipulation open:grid screen-to-768:[inset:auto_0_0] screen-to-768:w-auto screen-to-768:max-w-none screen-to-768:backdrop:[background:rgb(5_5_11/.55)] screen-to-768:backdrop:[-webkit-backdrop-filter:blur(4px)] screen-to-768:backdrop:[backdrop-filter:blur(4px)] screen-to-768:backdrop:opacity-(--veil)'
-const SHEET = 'picker-sheet [grid-area:1/1] min-w-0 flex flex-col p-2.5 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(16_15_24/.95)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] screen-to-768:[padding:10px_16px_calc(16px_+_env(safe-area-inset-bottom))] screen-to-768:[border-bottom:0] screen-to-768:[border-radius:var(--radius)_var(--radius)_0_0] screen-to-768:[background:rgb(16_15_24/.96)]'
+// On phones the popover fills the screen: the sheet sits at the bottom over the popover's own veil, and only the two
+// take taps. The popover's ::backdrop cannot be the veil, as browsers fix it at pointer-events: none and a tap on it
+// would reach the filter underneath (docs/event-filters.md F9). Once closing has begun the veil lets taps through, so
+// the page answers at once while the sheet leaves.
+const POP = 'picker-pop fixed [inset:auto] m-0 p-0 [border:0] [background:none] text-(--ink) overflow-visible touch-manipulation open:grid screen-to-768:[inset:0] screen-to-768:w-auto screen-to-768:h-auto screen-to-768:max-w-none screen-to-768:pointer-events-none'
+const VEIL = 'picker-veil hidden screen-to-768:block [grid-area:1/1] [background:rgb(5_5_11/.55)] [-webkit-backdrop-filter:blur(4px)] [backdrop-filter:blur(4px)] pointer-events-auto in-[.is-closing]:pointer-events-none'
+const SHEET = 'picker-sheet pointer-events-auto [grid-area:1/1] screen-to-768:self-end min-w-0 flex flex-col p-2.5 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(16_15_24/.95)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] screen-to-768:[padding:10px_16px_calc(16px_+_env(safe-area-inset-bottom))] screen-to-768:[border-bottom:0] screen-to-768:[border-radius:var(--radius)_var(--radius)_0_0] screen-to-768:[background:rgb(16_15_24/.96)]'
 const HANDLE = 'picker-handle hidden screen-to-768:block screen-to-768:w-9 screen-to-768:h-1 screen-to-768:[margin:0_auto_12px] screen-to-768:rounded-[2px] screen-to-768:[background:rgb(255_255_255/.3)] screen-to-768:touch-none'
 const HEAD = 'picker-head hidden screen-to-768:flex screen-to-768:items-center screen-to-768:justify-between screen-to-768:[margin:0_4px_10px] screen-to-768:[font:700_18px/1.2_var(--font-display)] screen-to-768:touch-none'
 const CLEAR = 'picker-clear screen-to-768:min-h-(--control) screen-to-768:[padding:0_4px] screen-to-768:[border:0] screen-to-768:[background:none] screen-to-768:text-(--brand-pink) screen-to-768:[font:600_13px_var(--font-display)] screen-to-768:cursor-pointer'
@@ -59,6 +64,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
   onClose: () => void; onClear: () => void; onShown: (shown: boolean) => void; onOpened?: (pop: HTMLElement) => void; children: ReactNode
 }) {
   const pop = useRef<HTMLDivElement>(null)
+  const veil = useRef<HTMLDivElement>(null)
   const sheet = useRef<HTMLDivElement>(null)
   const motion = useRef<Animation[]>([])
   const closing = useRef(false)
@@ -97,7 +103,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       : [{ clipPath: 'inset(0 0 100% 0 round 24px)' }, { clipPath: 'inset(0 round 24px)' }]
     return [
       sheet.current!.animate(away, timing(lead)),
-      element.animate([{ '--veil': 0 }, { '--veil': 1 }], timing(lead)),
+      veil.current!.animate([{ opacity: 0 }, { opacity: 1 }], timing(lead)),
       ...parts.map((part, index) => part.animate([{ transform: 'translateY(50px)', opacity: 0 }, { transform: 'none', opacity: 1 }],
         timing(closingNow ? (parts.length - 1 - index) * 80 : 300 + index * 80))),
     ]
@@ -121,7 +127,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
         closing.current = false
         element.classList.remove('is-closing')
         sheet.current!.style.removeProperty('transform')
-        element.style.removeProperty('--veil')
+        veil.current!.style.removeProperty('opacity')
         element.hidePopover()
       }
       if (reducedMotion()) return finish()
@@ -131,7 +137,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       const back = { duration: 400, easing: EASE, fill: 'forwards' as const, direction: 'reverse' as const }
       motion.current = from
         ? [sheet.current!.animate([{ transform: 'translateY(100%)' }, { transform: `translateY(${from}px)` }], back),
-          element.animate([{ '--veil': 0 }, { '--veil': 1 - from / sheet.current!.offsetHeight }], back)]
+          veil.current!.animate([{ opacity: 0 }, { opacity: 1 - from / sheet.current!.offsetHeight }], back)]
         : play(true)
       Promise.all(motion.current.map(animation => animation.finished)).then(finish, () => {})
     }
@@ -153,8 +159,8 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
         if (element.contains(document.activeElement) || document.activeElement === document.body) trigger()?.focus({ preventScroll: true })
       }
     }
-    // An outside press closes it; Esc closes the open picker wherever focus is (phones do not move focus into the
-    // sheet), before the filter panel sees it.
+    // An outside press closes it (on phones the veil covers the outside and closes it on a tap); Esc closes the open
+    // picker wherever focus is (phones do not move focus into the sheet), before the filter panel sees it.
     const press = (event: globalThis.PointerEvent) => {
       if (element.matches(':popover-open') && !element.contains(event.target as Node) && !trigger()?.contains(event.target as Node)) onClose()
     }
@@ -196,7 +202,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       state.time = event.timeStamp
       stop()
       sheet.current!.style.transform = `translateY(${y}px)`
-      pop.current!.style.setProperty('--veil', String(1 - y / sheet.current!.offsetHeight))
+      veil.current!.style.opacity = String(1 - y / sheet.current!.offsetHeight)
     },
     onPointerUp: (event: PointerEvent<HTMLElement>) => release(event),
     onPointerCancel: (event: PointerEvent<HTMLElement>) => release(event),
@@ -213,14 +219,16 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       return onClose()
     }
     sheet.current!.style.removeProperty('transform')
-    pop.current!.style.removeProperty('--veil')
+    veil.current!.style.removeProperty('opacity')
     if (reducedMotion()) return
     motion.current = [sheet.current!.animate([{ transform: `translateY(${y}px)` }, { transform: 'none' }], { duration: 300, easing: OUT }),
-      pop.current!.animate([{ '--veil': 1 - y / height }, { '--veil': 1 }], { duration: 300, easing: OUT })]
+      veil.current!.animate([{ opacity: 1 - y / height }, { opacity: 1 }], { duration: 300, easing: OUT })]
   }
 
   return (
     <div ref={pop} id={`${id}-popover`} className={POP} popover="manual" role="dialog" aria-labelledby={`${id}-title`}>
+      {/* A tap on the veil closes the picker and goes no further. */}
+      <div ref={veil} className={VEIL} aria-hidden="true" onClick={onClose} />
       <div ref={sheet} className={SHEET}>
         <div className={HANDLE} aria-hidden="true" {...grip} />
         <div className={HEAD} {...grip}>

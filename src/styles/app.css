@@ -176,10 +176,6 @@ html.is-filtering { overflow: hidden; scrollbar-gutter: stable; }
   backdrop-filter: var(--glass-blur);
 }
 
-/* ---------- Filter pickers (Pickers.tsx) ---------- */
-/* The popover holds the glass sheet; Pickers.tsx animates the sheet, the veil and the parts inside. */
-@property --veil { syntax: "<number>"; inherits: true; initial-value: 1; }
-
 /* ---------- Event list (Page.tsx, EventRow.tsx) ---------- */
 /* Rows are the 24px frosted glass of the original cards. The poster fades out by an alpha mask straight into the glass
    (no dark overlay): downward on the open row (fully clear by 70% of the stage, where its text sits), toward the text
@@ -242,7 +238,9 @@ html:has(.poster-preview[open]) { overflow: hidden; }
 @media print { .poster-preview-origin { visibility: visible; } }
 /* Veils fade in with their blur from nothing. */
 @keyframes preview-backdrop { from { background: #05050b00; backdrop-filter: blur(0); } }
-/* The sheet's veil: half dark with a light blur (docs/glass-effects.md Q1). */
+/* --veil thins the detail sheet's and the preview's veils while they are pulled down. The sheet's veil: half dark with
+   a light blur (docs/glass-effects.md Q1). */
+@property --veil { syntax: "<number>"; inherits: true; initial-value: 1; }
 @utility sheet-veil {
   background: #05050b80;
   -webkit-backdrop-filter: blur(6px);

@@ -89,6 +89,8 @@ try {
     await wait(page, 900)
     assert.ok(!await page.evaluate(selector => document.querySelector(selector)!.matches(':popover-open'), pop))
     assert.equal(await page.getAttribute('.filter-toggle', 'aria-expanded'), 'true', 'Esc closes the picker before the panel')
+    // With tags in the bar: the strip and their rims (test/browser/layout.js).
+    await check(page)
     await page.click('.filter-tags li:first-child .filter-tag')
     await wait(page, 800)
     assert.deepEqual(await tags(page), ['Techno'])
@@ -121,6 +123,33 @@ try {
     await check(page)
     assert.deepEqual(errors, [])
     results.push('filters')
+    await page.close()
+  }
+
+  // A phone's picker is a bottom sheet over its own veil: a tap on the veil, over a city chip, closes the sheet and
+  // reaches nothing under it (docs/event-filters.md F9); while the sheet leaves, a second tap there reaches the chip.
+  {
+    const { page, errors } = await open(390)
+    await page.click('.filter-toggle')
+    await wait(page, 1400)
+    await page.click('[aria-controls="venue-popover"]')
+    await wait(page, 1300)
+    const [x, y, city] = await page.evaluate(() => {
+      const top = document.querySelector('#venue-popover .picker-sheet')!.getBoundingClientRect().top
+      const chip = [...document.querySelectorAll('label.filter-chip')].find(label => { const box = label.getBoundingClientRect(); return box.top > 60 && box.bottom < top - 4 })!
+      const box = chip.getBoundingClientRect()
+      return [box.left + box.width / 2, box.top + box.height / 2, chip.textContent!] as const
+    })
+    await page.mouse.click(x, y)
+    await wait(page, 150)
+    assert.deepEqual(await tags(page), [], 'The tap reaches no chip under the veil')
+    await page.mouse.click(x, y)
+    await wait(page, 1300)
+    assert.ok(!await page.evaluate(() => document.getElementById('venue-popover')!.matches(':popover-open')), 'A tap on the veil closes the sheet')
+    assert.deepEqual(await tags(page), [city], 'A tap while the sheet leaves reaches the page')
+    assert.equal(await page.getAttribute('.filter-toggle', 'aria-expanded'), 'true', 'The filter panel stays open')
+    assert.deepEqual(errors, [])
+    results.push('picker veil')
     await page.close()
   }
 

@@ -353,9 +353,11 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
               <i className="h-[1.5px] rounded-[1px] bg-current [transition:transform_.3s_linear] motion-reduce:[transition:none] group-[.is-open]/bar:[transform:translateY(-2.5px)_rotate(-45deg)]" />
             </span><span>筛选</span>
           </button>
-          <div className="filter-tags-edge fade-edges flex flex-1 min-w-0">
+          {/* The strip scrolls sideways only. Its 1px all round keeps each tag's rim (0.7px outside the pill) inside the
+              strip and its fade, and the wrapper's -1px sides keep the tags where they were (docs/event-filters.md F7). */}
+          <div className="filter-tags-edge fade-edges flex flex-1 min-w-0 -mx-px">
             {/* One tag tall even when every tag is leaving (lifted out of flow), so they are not clipped while they go. */}
-            <ul ref={tagList} className="filter-tags scrollbar-none relative flex flex-1 items-center gap-1.5 min-w-0 min-h-(--control) m-0 p-0 list-none overflow-x-auto [&>li]:flex-none" aria-label="已选条件" />
+            <ul ref={tagList} className="filter-tags scrollbar-none relative flex flex-1 items-center gap-1.5 min-w-0 min-h-[calc(var(--control)_+_2px)] m-0 p-px list-none overflow-x-auto overflow-y-hidden [&>li]:flex-none" aria-label="已选条件" />
           </div>
           <button ref={clear} type="reset" form="filters" className="filter-clear flex-none min-h-(--control) [padding:0_8px] [border:0] [background:none] text-(--muted) text-[13px] cursor-pointer" hidden>清空</button>
           <p className="filter-count flex flex-none items-center gap-1 h-7 m-0 [padding:0_0_0_10px] [border-left:1px_solid_rgb(255_255_255/.14)]" role="status" aria-live="polite" aria-atomic="true">
