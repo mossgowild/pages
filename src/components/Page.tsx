@@ -178,9 +178,8 @@ export function Page({ guide }: { guide: Guide }) {
           <div className="hero-stage" role="region" aria-label="精选活动海报" dangerouslySetInnerHTML={{ __html: heroReel(guide) }} />
         </section>
         <section ref={schedule} id="schedule" className={`schedule ${WRAP} relative [padding:44px_0_64px] max-[701px]:[padding:32px_0_38px]`} aria-labelledby="schedule-title">
-          <div className={`section-heading flex justify-between items-end gap-6 mb-6 ${TEXT_SHADOW} max-[701px]:items-start`}>
-            <div><h2 id="schedule-title" className="text-[30px] leading-[1.3] font-semibold [margin:9px_0_0] tracking-[-.04em] max-[701px]:text-[26px]">活动清单</h2></div>
-            <p className="[font-family:var(--font-display)] text-[12px] text-(--muted) m-0 max-[701px]:max-w-[120px] max-[701px]:text-right max-[701px]:text-[11px]">Club Nights · Raves<br />Beach Parties</p>
+          <div className={`section-heading mb-6 ${TEXT_SHADOW}`}>
+            <h2 id="schedule-title" className="text-[30px] leading-[1.3] font-semibold [margin:9px_0_0] tracking-[-.04em] max-[701px]:text-[26px]">全部活动</h2>
           </div>
           <FilterDock guide={guide} filters={filters} change={change} tags={tags} count={valid ? total : events.length} summary={summary} valid={valid}
             pickers={pickers} venueText={chosenVenues.join('、')} venueCount={chosenVenues.length} schedule={schedule} />

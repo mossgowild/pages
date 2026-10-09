@@ -2,51 +2,35 @@
 module: event-browsing
 status: 已完成
 shape: 分阶段
-updated: 2026-10-09
+updated: 2026-10-10
 ---
 
 # 活动浏览
 
 ## 需求澄清
 
-### 请求：手机上点“地点”跳转地图
+### 请求：活动清单标题：删掉英文小字、改个名字
 
-> 2026-10-09：“移动端地图点击后，不能跳转地图”
+> 2026-10-09：“活动清单右边club nights等那个地方不需要了”
+
+> 2026-10-09：“活动清单能否改个名字文案”
 
 ### 已查明事实
 
 | # | 事实 | 来源 |
 | --- | --- | --- |
-| F59 | 活动详情的“地点”区：有场地名时整块是一个按钮——浏览器提供系统分享时（手机 Safari 等，要 HTTPS），点按弹出系统分享面板，分享“城市 地址 场地”这段文字；不提供时（如 http 预览）改为复制这段文字。57 场里 56 场有场地名，其中 46 场另有地址、10 场只有场地名（如陀地士多、Boomerang、广州塔剧场、澳门伦敦人）；只有城市的 1 场不是按钮。按“城市＋场地＋地址”去重共 30 条：深圳 7、广州 8、香港 13、珠海 1、澳门 1（同一场地的不同写法各算一条）。页面上没有地图链接，`data/events.json` 里也没有地图链接或坐标 | `src/components/EventRow.tsx` 的 `Venue`、`CopyTarget`；`data/events.json` |
-| F60 | 这是 2026-10-03 定下的做法：AGENTS.md 第五节写着“点按场地与地址本身调用系统分享（不支持时复制），不做地图跳转（第 157–159 题）”，那几道题的问答不在现有工作文档里（提交 `39f31cb` 加入）。这次的请求要改掉它 | AGENTS.md；`git log -S 地图跳转` |
-| F61 | iPhone Air 模拟器的 Safari：打开 OIL（深圳）的详情、点“地点”，弹出的是 iOS 的分享面板（提醒事项、更多、拷贝、存储到“文件”），里面没有地图，所以跳不到地图 | 模拟器截图 |
-| F62 | 高德地图官方的网页链接：`https://uri.amap.com/search?keyword=…&city=…&view=map&src=…&callnative=1`，手机与电脑通用；`callnative=1` 时在手机上尝试唤起高德 App，没装 App 就留在高德的网页地图。在本机网络下用模拟器打开，先要定位授权，接着出现“滑动验证”（代理不代过验证码，没往下测）；普通用户会不会遇到这一步取决于网络，这里确认不了 | https://lbs.amap.com/api/uri-api/guide/search/search ；模拟器 |
-| F63 | Apple 地图的链接：`https://maps.apple.com/?q=…` 按关键词搜索，`address=…` 直接显示这个地址（Apple 官方 Map Links 文档，归档页）。模拟器 Safari 里打开这种链接会唤起地图 App，但模拟器的地图没定位到这个地址（两种写法都停在默认视图），要在真机核对；安卓手机没有 Apple 地图。iOS 18.4 起另有统一链接：`maps.apple.com/search?query=…` 按文字搜索，`maps.apple.com/place?address=…&name=…` 按地址显示地点卡片、卡片用给定的名称 | https://developer.apple.com/library/iad/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html ；https://developer.apple.com/documentation/mapkit/unified-map-urls ；模拟器 |
-| F64 | 百度地图官方的网页链接：`api.map.baidu.com/place/search?query=…&region=…&output=html&src=…`，`query`、`output=html`（网页上显示地图必须）与 `src`（调用方标识，不传“不保证服务”）必填，`region` 限定城市；文档说在 iOS 浏览器里打开百度的网页地图，没写网页能唤起百度地图 App（App 另有 `baidumap://` 协议）。实测（内置浏览器、手机宽度）：`src=webapp.cardioravers.events` 可用，跳到百度的手机网页并列出搜索结果，不直接落点；搜 OIL 时“地址＋场地名”让 OIL CLUB 排第 4，“场地名＋路名”排第 2，要在列表里再点一下 | https://lbsyun.baidu.com/faq/api?title=webapi/uri/web ；内置浏览器 |
-| F65 | 腾讯地图官方的网页链接：`apis.map.qq.com/uri/v1/search?keyword=…&region=…&referer=…`，打开腾讯的网页（或手机网页）地图并显示搜索结果；`referer` 必填，文档说“一般为您的应用名称”，示例里填的却是一串开发者 key；App 另有调用协议。实测（内置浏览器、手机宽度）：`referer` 只填名称（`cardioravers`）就能用，跳到腾讯的手机网页地图并直接落点：OIL 落在 OIL CLUB；香港 Ciclo 落在同一栋楼（霎东街 15 号）里的另一家店 | https://lbs.qq.com/webApi/uriV1/uriGuide/uriWebPoisearch （内置浏览器读取）；内置浏览器 |
-| F66 | 筛选的弹层外壳 `PickerPop` 可直接用作菜单：`popover="manual"`、手机（768px 以下）是底部弹层带自己的遮罩，更宽时是挂在触发按钮下的浮层；已有 Card Nav 节奏的进出场、下拉关闭、点遮罩或外面关闭、Esc 关闭与关闭后焦点回到触发按钮。它的标题行固定带“清除”、底部固定是“完成”按钮，都是筛选用的 | `src/components/Pickers.tsx` 的 `PickerPop`；`src/components/Page.tsx` |
-| F67 | 活动详情是 `showModal()` 打开的 `<dialog>`：详情以外的页面都不可交互，所以菜单要放在详情卡片里面（顶层显示不受卡片的变换与裁切影响）。详情自己也接 Esc（`cancel` 事件关详情）和触屏下拉（卡片滚到顶时下拉关详情）：菜单放进卡片后，菜单开着时按 Esc、下拉菜单都会连带关掉详情，要拦住。清单行里也有一份同样的详情（无脚本时显示，`EventDetails` 的 `inRow`），菜单只该出现在详情卡片里 | `src/components/EventDetail.tsx`；`src/components/EventRow.tsx` 的 `EventDetails` |
-| F68 | 站内区分鼠标与触屏的约定是 `(hover: hover) and (pointer: fine)`：样式里是 `mouse` 变体，原图预览的工具栏只在这种设备上出现（AGENTS.md：“鼠标等可悬停、指针精确的设备上另有……”）；iPad 等触屏设备算触屏 | `src/styles/app.css`；`src/components/PosterPreview.tsx`；AGENTS.md |
-| F69 | 详情里的链接都在新标签页打开（`target="_blank" rel="noopener noreferrer"`），样式是整行文字加品牌粉 ↗ | `src/components/EventRow.tsx` 的 `LINK` |
-| F70 | 实现后在 iPhone Air 模拟器 Safari 里点深圳 OIL（有地址）的四家：Apple 地图唤起地图 App，显示名为 OIL 的地点卡片，落在泰然大厦（F63 里没定位的是旧写法，统一链接能定位）；高德在新标签页先出滑动验证（本机网络，没代过）；百度跳到手机网页的搜索列表，OIL CLUB 排第 2，页面另弹“使用百度地图app效果更佳”；腾讯直接落在 OIL CLUB。Apple 地图不留新标签页，其余三家开新标签页，Safari 的返回键关掉它回到详情，菜单已收起 | 模拟器截图 [菜单](event-browsing/map-menu-iphone.jpg)、[Apple](event-browsing/map-apple-oil.jpg)（网页地图的截图随 Q42 删去） |
-| F71 | 香港的两处在 Apple 地图里都是搜索结果列表、不直接落点：Ciclo（有地址）列出“香港特别行政区湾仔区铜锣湾霎东街…”与 Oliv，第一条就是地址；启德邮轮码头候船大厅 A（只有场地名）列出启德邮轮码头公园、启德邮轮码头等，地图移到启德 | 模拟器截图 [Ciclo](event-browsing/map-apple-ciclo.jpg) |
-| F72 | Chrome 实测模态对话框与弹层：对话框外的弹层在对话框模态期间点了没反应（inert）；弹层的 `keydown` 里只 `stopPropagation()` 时 Esc 照样触发对话框的 `cancel` 把它关掉，加 `preventDefault()` 后对话框不关；对话框 `close()` 后里面的弹层仍是 `:popover-open` | 草稿目录 `popover/probe.ts`（无头 Chrome） |
-| F73 | 为什么网页链接进不了高德、百度、腾讯的 App：iOS 只在链接的网址被 App 登记为“通用链接”时才直接打开 App。Apple 缓存的登记文件里，高德 App 只登记了 `m.amap.com/applink/*`，腾讯地图 App 登记了 `map.qq.com` 下除 `/m/`、`/nav/` 等以外的路径，百度的 `map.baidu.com` 没有登记通用链接；L1 用的 `uri.amap.com`、`api.map.baidu.com`、`apis.map.qq.com` 都不在其中，所以只打开网页（高德的 `callnative=1` 在 moss 的手机上也没唤起 App） | `https://app-site-association.cdn-apple.com/a/v1/<域名>`（2026-10-09） |
-| F74 | 三家官方的 App 调起协议：高德 `iosamap://poi?sourceApplication=…&name=…`（安卓 `androidamap://`），百度 `baidumap://map/place/search?query=…&region=…&src=ios.<公司>.<应用>`，腾讯 `qqmap://map/search?keyword=…&region=…&referer=…`；都是装了 App 才能打开 | https://lbs.amap.com/api/amap-mobile/guide/ios/search ；https://lbsyun.baidu.com/faq/api?title=webapi/uri/ios ；https://lbs.qq.com/uri_v1/guide-mobile-poiSearch.html |
-| F75 | 模拟器（没装这三家 App）的 Safari 里点这类协议链接：弹出“Safari 浏览器打不开该网页，因为网址无效。”，要点“好”，页面留在原处；先试协议、1.5 秒后还在页面就转网页地图的写法，最后停在腾讯的网页地图。装了 App 时 Safari 会不会先问“是否在 App 中打开”、要点多少下，模拟器装不了这些 App，测不了；微信内置浏览器一般不让网页调起别家 App，也要真机核对 | 模拟器测试页（草稿目录 `schemes/`） |
-| F76 | 高德的 App 协议没有城市参数（只有可选的经纬度范围），城市要写进搜索文字；安卓版是 `androidamap://poi?sourceApplication=…&keywords=…`（参数名是 `keywords`，iOS 是 `name`） | https://lbs.amap.com/api/amap-mobile/guide/ios/search ；https://lbs.amap.com/api/amap-mobile/guide/android/search |
-| F77 | 按 Q42 改后在 iPhone Air 模拟器 Safari 里：菜单照旧，点高德（`iosamap://`）弹出“Safari 浏览器打不开该网页，因为网址无效。”，点“好”后停在详情、菜单已收起（模拟器没装这些 App）。同一地址只改 `#` 后面时 Safari 不重新加载，先前打开的页面仍是旧构建，换个查询参数打开才拿到新版 | 模拟器截图 [没装 App 时](event-browsing/map-app-missing.jpg) |
+| F78 | 清单区的标题是 `<h2 id="schedule-title">活动清单</h2>`（30px、手机 26px，系统中文字体），清单区 `<section id="schedule">` 以它为标签（`aria-labelledby`）；页面上别处没有这几个字，测试与检查脚本也不读它。AGENTS.md 与项目技能 `pages-site-visual-choices` 用“活动清单”指这个区（如“海报墙向下延伸到‘活动清单’标题区块上沿”），改名后这些说法要跟着改 | `src/components/Page.tsx`；`grep -rn 活动清单 src test scripts AGENTS.md .claude/skills` |
+| F79 | 标题右边原有两行英文小字 “Club Nights · Raves / Beach Parties”（Syne 12px、灰色，手机 11px 右对齐）。已按紧凑单元删掉（改动在工作区、未提交）：只改 `src/components/Page.tsx`，标题外层只为左右对齐而写的 flex 类一并去掉；改前改后标题顶边（1440 宽 919px、390 宽 649px）、筛选栏与第一天的位置都不变；`bun run build`、`bun run check:browser`、`bunx tsc --noEmit`、`git diff --check` 通过。验收时 moss 提出改标题名，转为分阶段 | 本会话；量位置的脚本在草稿目录 `heading/measure.ts` |
+| F80 | 站内其他标题的写法：页眉标题“国庆电音指南”（Noto Sans SC Black 斜切）；活动详情各区是英文大字加中文小标签（如 “TICKETS 票务”“VENUE 地点”，英文 Syne 700 20px、中文 11px 灰色）；日期标题是 “09.30 Wed / 8 场”。清单按日期分组、日内按开场时间排 | `src/components/Page.tsx`；`src/components/EventRow.tsx` 的 `DetailSection` |
+| F81 | 本机防火墙已关闭（`socketfilterfw --getglobalstate`：disabled），工作文档的 Bun 渲染服务与 3417 预览手机都能连；Q44 提问前说的“Bun 不在放行名单、手机可能打不开”不成立 | `socketfilterfw --getglobalstate`（2026-10-10）；moss-browser 技能 |
 
 ### 问答
 
 | # | 问题 | 答复 | 影响 |
 | --- | --- | --- | --- |
-| Q37 | 手机上点“地点”要怎样（F59–F63；选 A–C 就改掉 F60 的旧规定，手机上点“地点”不再分享或复制，电脑上照旧）：A 直接打开地图，按环境选——iPhone 的浏览器打开 Apple 地图（唤起地图 App），安卓与微信里打开高德地图网页（能唤起高德 App 时唤起）；B 先弹一个小菜单，列出 Apple 地图（仅 iPhone）、高德、百度、腾讯地图，选了再跳；C 各处都打开高德地图网页（能唤起高德 App 时唤起）；D 保留现在的分享，旁边另加一个“地图”入口。推荐 A：一点就到、不加界面；iPhone 自带 Apple 地图，大陆与香港（10 个场地）都能用；微信里能不能从网页唤起别的 App 要真机核对，网页地图最稳 | “B 先选地图”（2026-10-09 提问工具） | 手机上点“地点”先弹出地图菜单（Apple 地图仅 iPhone、高德、百度、腾讯地图），选了再跳；手机上不再分享或复制，电脑上照旧；AGENTS.md 的“不做地图跳转”要改；百度、腾讯的跳转链接已补查（F64、F65） |
-| Q38 | 地图上靠什么找到场地（F59、F62、F63）：A 文字搜索——把“城市＋地址＋场地名”交给地图，不用补数据，个别地址可能要在搜索结果里再点一下；B 给 23 个场地补经纬度——地图直接落在大头针上、最准，要逐个查坐标并核对，数据里加一个字段。推荐 A：先上线，验收时在手机上点几个场地看准不准，搜不准的再补坐标 | “A 文字搜索”（2026-10-09 提问工具） | 不补数据，各家地图都按“城市＋地址＋场地名”搜索；验收时在手机上抽查几个场地 |
-| Q39 | 在地图菜单里选了某家之后打开什么（F62–F65）：A 网页链接——四家都用官方网页链接（Apple 地图的 `maps.apple.com` 在 iPhone 上本来就会唤起地图 App；高德加 `callnative=1` 会尝试唤起高德 App；百度、腾讯打开网页地图），浏览器、微信里都能打开；B 直接唤起 App——用各家的 App 协议，装了就直接进 App，没装或在微信里会打不开；C 先试 App、打不开再转网页——约 2 秒后转网页，微信里直接用网页，但“打不开”在各浏览器里判断得不准，可能先弹一个错误提示。推荐 A：一定打得开，高德与 Apple 地图照样能进 App | “A 网页链接”（2026-10-09 提问工具） | 已被 Q41、Q42 改变：Apple 地图仍用网页链接（能进 App），高德、百度、腾讯在手机浏览器里改用 App 协议、只在微信里用网页链接 |
-| Q40 | 怎么分层（F59、F66–F69）：A 一层——`src/components/EventRow.tsx` 的“地点”在触屏设备上改为打开地图菜单（Apple 地图只在 iPhone、iPad 上列出；各家链接按“城市＋地址＋场地名”拼出，没有地址的用“城市＋场地名”），鼠标设备照旧分享或复制；`src/components/Pickers.tsx` 的弹层外壳让“清除”与底部按钮可省或换字，供菜单复用；`src/components/EventDetail.tsx` 在菜单开着时让 Esc 与下拉只关菜单；AGENTS.md 与本站技能改掉“不做地图跳转”；`scripts/check-browser.ts` 加触屏点“地点”出菜单、链接正确的检查；验收时模拟器实看，再请你在手机上抽查几个场地；B 两层——L1 同 A 但只在模拟器验收，L2 等你在手机上抽查后，按结果逐家调整搜索用的文字（搜不准的再问要不要补坐标）。推荐 A：菜单与链接合起来才是一个能用的结果，搜索词的微调在同一次验收里就能做完 | “A 一层”（2026-10-09 提问工具） | 一层：`src/lib/maps.ts` 与测试、`EventRow.tsx`、`Pickers.tsx`、`EventDetail.tsx`、AGENTS.md 与本站技能、`check-browser.ts`；模拟器实看后请你手机抽查 |
-| Q41 | 需求变化 | “苹果地图正确跳转app，高德/百度/疼痛想你没有”（2026-10-09 L1 验收时，“疼痛想你”应是“腾讯”） | 手机上点高德、百度、腾讯也要进 App：改变 Q39 选的网页链接，L1 回到待做，补查各家进 App 的办法后重新问 Q39 |
-| Q42 | 高德、百度、腾讯怎样进 App（F73–F75；Q41 改变了 Q39）：A 直接用 App 协议——装了就进 App 并搜索场地；没装时 Safari 弹“网址无效”、停在详情，用的人得自己换一家；B 先试 App、约 1.5 秒后没离开页面就打开网页地图——装了进 App，没装时可能先闪一下“网址无效”再到网页地图；装了 App 但 Safari 先问“是否打开”时，1.5 秒内没点就会转去网页，判断不准；C 每家分成两行：“高德地图”进 App、旁边小字“网页”打开网页地图——都打得开，菜单从 4 行变 7 行。三种方案在微信里都改用网页链接（微信一般不让网页调起别家 App），Apple 地图不变。推荐 A：菜单本来就是选自己装了的那家，进 App 最直接；没装的人点到提示也知道换一家 | “A App 协议”（2026-10-09 提问工具） | 手机浏览器里高德、百度、腾讯改用 App 协议（F74）；微信里仍用网页链接；Apple 地图不变；L1 按此改写 |
+| Q43 | 修改要求 | “活动清单能否改个名字文案”（2026-10-09 验收删小字时） | 紧凑单元转为分阶段：删小字的改动保留，标题改名要先定文案 |
+| Q44 | 清单区标题改成什么（F78–F80）：A “国庆排期”——清单按日期排、场地发国庆活动也常叫“国庆排期”，和“国庆电音指南”对得上，字数与现在一样、版面不动；B “全部活动”——强调这里是全部场次，首屏是精选海报；C “派对日程”——更贴近 raver 的说法；D 英文大字加中文小标签，和详情各区一样（如 “EVENTS 活动”），版面跟着改成详情区标题的样式；也可以直接写你想要的。推荐 A：最贴合这份指南按日期选场的用法，只换字不动版面 | “B 全部活动”（2026-10-09 提问工具） | 标题改为“全部活动”，字号与版面不变；AGENTS.md 与项目技能里指这一块的“活动清单”改成“全部活动” |
+| Q45 | 怎么分层（F78、F79、Q44）：A 一层——`src/components/Page.tsx` 删小字（已做）并把标题改为“全部活动”，AGENTS.md 第五节与项目技能 `pages-site-visual-choices` 里指这一块的“活动清单”跟着改，一次验收；B 两层——L1 只验收已做的删小字，L2 再改名与改说法。推荐 A：两处都只是标题这一行，合在一起看一次就够 | “A 一层”（2026-10-09 提问工具） | 一层：删小字与改名一起验收 |
 
 ### 以往：首屏轮播窄屏优化（2026-10-04）
 
@@ -228,6 +212,44 @@ updated: 2026-10-09
 | Q35 | 怎么分层（Q34a 后重问，括号里是各层改的文件）：A 三层——L1 过场修正：保留已做的改动，修 F48 的预览起点错位，加弱网兜底：海报没到时卡片照样飞出、到了整张淡入，点开的那张优先下载，首屏墙先下载屏幕上的海报（`assets/event-detail.js`、`assets/poster-preview.js`、`assets/site.css`、`scripts/hero.mjs` 与重建的 `assets/hero.js`、`scripts/check_detail.js`、`scripts/check_preview.js`、AGENTS.md、README）；L2 海报减轻：新增生成脚本，用 `cwebp` 为每张海报生成 720px 宽 WebP 轻量版，取代页面没在用的 `.thumb.jpg` 并更新 `sources.json`；首屏墙与清单收起行改用轻量版，每天展开的第一条换原图；详情与原图预览先用屏幕上已有的版本起飞、落定后换原图（新脚本 `scripts/build_posters.py`、`scripts/build_page.py`、`assets/posters/`、`assets/accordion.js`、`assets/event-detail.js`、`assets/poster-preview.js`、`scripts/check_page.py`、AGENTS.md、README）；L3 原图预览交互：原 L2，不变。B 两层——L1 过场修正与海报减轻合为一层（上面 L1、L2 的文件），L2 原图预览交互。推荐 A：L1 大部分已做完，补上 F48 与兜底就能先在正常网速下单独验收；L2 改生成流程与图片文件，弱网效果单独实测验收；预览交互不受影响 | “B 两层”（2026-10-05 提问工具） | L1 为过场修正与海报减轻（一次验收），L2 为原图预览交互（内容不变） |
 | Q36 | 慢速 4G 下 10 秒时首屏屏幕上的海报只到约一半（F53、F54），而 L1 验收写的是“慢速 4G 约 10 秒内到位”，怎么处理：A 首批到齐前墙先不漂——打开时屏幕上那批下完再开始漂移（最多等 8 秒），快速 4G 下约 1–2 秒、几乎察觉不到，慢速 4G 下开头几秒是静止的墙，预计 10 秒时屏幕上的海报基本到齐（估计）；B 再减轻轻量版——短边 600px、质量 70，合计约 1.9MB（小 40%），3 倍屏手机上更软，慢速 4G 约快四成；C 保持现在的做法，L1 验收改为实测值（慢速 4G 10 秒约一半，手机约 14 秒、桌面约 18 秒全部到位）。推荐 A：弱网时漂着空白卡片正是首屏看起来坏掉的原因，海报到齐再漂能让首屏始终完整，快网下几乎没有差别；B 用清晰度换得有限，C 保留空白漂移 | “A 到齐前先不漂 (推荐)”（2026-10-05 提问工具） | 首屏墙打开时先静止，屏幕上那批海报下完（最多等 8 秒）再开始漂移；之后漂进来的按队列接着下；改 `scripts/hero.mjs`（重建 `assets/hero.js`），实现方案与 AGENTS.md 的首屏描述同步 |
 
+### 以往：手机上点“地点”跳转地图（2026-10-09）
+
+> 2026-10-09：“移动端地图点击后，不能跳转地图”
+
+### 已查明事实
+
+| # | 事实 | 来源 |
+| --- | --- | --- |
+| F59 | 活动详情的“地点”区：有场地名时整块是一个按钮——浏览器提供系统分享时（手机 Safari 等，要 HTTPS），点按弹出系统分享面板，分享“城市 地址 场地”这段文字；不提供时（如 http 预览）改为复制这段文字。57 场里 56 场有场地名，其中 46 场另有地址、10 场只有场地名（如陀地士多、Boomerang、广州塔剧场、澳门伦敦人）；只有城市的 1 场不是按钮。按“城市＋场地＋地址”去重共 30 条：深圳 7、广州 8、香港 13、珠海 1、澳门 1（同一场地的不同写法各算一条）。页面上没有地图链接，`data/events.json` 里也没有地图链接或坐标 | `src/components/EventRow.tsx` 的 `Venue`、`CopyTarget`；`data/events.json` |
+| F60 | 这是 2026-10-03 定下的做法：AGENTS.md 第五节写着“点按场地与地址本身调用系统分享（不支持时复制），不做地图跳转（第 157–159 题）”，那几道题的问答不在现有工作文档里（提交 `39f31cb` 加入）。这次的请求要改掉它 | AGENTS.md；`git log -S 地图跳转` |
+| F61 | iPhone Air 模拟器的 Safari：打开 OIL（深圳）的详情、点“地点”，弹出的是 iOS 的分享面板（提醒事项、更多、拷贝、存储到“文件”），里面没有地图，所以跳不到地图 | 模拟器截图 |
+| F62 | 高德地图官方的网页链接：`https://uri.amap.com/search?keyword=…&city=…&view=map&src=…&callnative=1`，手机与电脑通用；`callnative=1` 时在手机上尝试唤起高德 App，没装 App 就留在高德的网页地图。在本机网络下用模拟器打开，先要定位授权，接着出现“滑动验证”（代理不代过验证码，没往下测）；普通用户会不会遇到这一步取决于网络，这里确认不了 | https://lbs.amap.com/api/uri-api/guide/search/search ；模拟器 |
+| F63 | Apple 地图的链接：`https://maps.apple.com/?q=…` 按关键词搜索，`address=…` 直接显示这个地址（Apple 官方 Map Links 文档，归档页）。模拟器 Safari 里打开这种链接会唤起地图 App，但模拟器的地图没定位到这个地址（两种写法都停在默认视图），要在真机核对；安卓手机没有 Apple 地图。iOS 18.4 起另有统一链接：`maps.apple.com/search?query=…` 按文字搜索，`maps.apple.com/place?address=…&name=…` 按地址显示地点卡片、卡片用给定的名称 | https://developer.apple.com/library/iad/featuredarticles/iPhoneURLScheme_Reference/MapLinks/MapLinks.html ；https://developer.apple.com/documentation/mapkit/unified-map-urls ；模拟器 |
+| F64 | 百度地图官方的网页链接：`api.map.baidu.com/place/search?query=…&region=…&output=html&src=…`，`query`、`output=html`（网页上显示地图必须）与 `src`（调用方标识，不传“不保证服务”）必填，`region` 限定城市；文档说在 iOS 浏览器里打开百度的网页地图，没写网页能唤起百度地图 App（App 另有 `baidumap://` 协议）。实测（内置浏览器、手机宽度）：`src=webapp.cardioravers.events` 可用，跳到百度的手机网页并列出搜索结果，不直接落点；搜 OIL 时“地址＋场地名”让 OIL CLUB 排第 4，“场地名＋路名”排第 2，要在列表里再点一下 | https://lbsyun.baidu.com/faq/api?title=webapi/uri/web ；内置浏览器 |
+| F65 | 腾讯地图官方的网页链接：`apis.map.qq.com/uri/v1/search?keyword=…&region=…&referer=…`，打开腾讯的网页（或手机网页）地图并显示搜索结果；`referer` 必填，文档说“一般为您的应用名称”，示例里填的却是一串开发者 key；App 另有调用协议。实测（内置浏览器、手机宽度）：`referer` 只填名称（`cardioravers`）就能用，跳到腾讯的手机网页地图并直接落点：OIL 落在 OIL CLUB；香港 Ciclo 落在同一栋楼（霎东街 15 号）里的另一家店 | https://lbs.qq.com/webApi/uriV1/uriGuide/uriWebPoisearch （内置浏览器读取）；内置浏览器 |
+| F66 | 筛选的弹层外壳 `PickerPop` 可直接用作菜单：`popover="manual"`、手机（768px 以下）是底部弹层带自己的遮罩，更宽时是挂在触发按钮下的浮层；已有 Card Nav 节奏的进出场、下拉关闭、点遮罩或外面关闭、Esc 关闭与关闭后焦点回到触发按钮。它的标题行固定带“清除”、底部固定是“完成”按钮，都是筛选用的 | `src/components/Pickers.tsx` 的 `PickerPop`；`src/components/Page.tsx` |
+| F67 | 活动详情是 `showModal()` 打开的 `<dialog>`：详情以外的页面都不可交互，所以菜单要放在详情卡片里面（顶层显示不受卡片的变换与裁切影响）。详情自己也接 Esc（`cancel` 事件关详情）和触屏下拉（卡片滚到顶时下拉关详情）：菜单放进卡片后，菜单开着时按 Esc、下拉菜单都会连带关掉详情，要拦住。清单行里也有一份同样的详情（无脚本时显示，`EventDetails` 的 `inRow`），菜单只该出现在详情卡片里 | `src/components/EventDetail.tsx`；`src/components/EventRow.tsx` 的 `EventDetails` |
+| F68 | 站内区分鼠标与触屏的约定是 `(hover: hover) and (pointer: fine)`：样式里是 `mouse` 变体，原图预览的工具栏只在这种设备上出现（AGENTS.md：“鼠标等可悬停、指针精确的设备上另有……”）；iPad 等触屏设备算触屏 | `src/styles/app.css`；`src/components/PosterPreview.tsx`；AGENTS.md |
+| F69 | 详情里的链接都在新标签页打开（`target="_blank" rel="noopener noreferrer"`），样式是整行文字加品牌粉 ↗ | `src/components/EventRow.tsx` 的 `LINK` |
+| F70 | 实现后在 iPhone Air 模拟器 Safari 里点深圳 OIL（有地址）的四家：Apple 地图唤起地图 App，显示名为 OIL 的地点卡片，落在泰然大厦（F63 里没定位的是旧写法，统一链接能定位）；高德在新标签页先出滑动验证（本机网络，没代过）；百度跳到手机网页的搜索列表，OIL CLUB 排第 2，页面另弹“使用百度地图app效果更佳”；腾讯直接落在 OIL CLUB。Apple 地图不留新标签页，其余三家开新标签页，Safari 的返回键关掉它回到详情，菜单已收起 | 模拟器截图 [菜单](event-browsing/map-menu-iphone.jpg)、[Apple](event-browsing/map-apple-oil.jpg)（网页地图的截图随 Q42 删去） |
+| F71 | 香港的两处在 Apple 地图里都是搜索结果列表、不直接落点：Ciclo（有地址）列出“香港特别行政区湾仔区铜锣湾霎东街…”与 Oliv，第一条就是地址；启德邮轮码头候船大厅 A（只有场地名）列出启德邮轮码头公园、启德邮轮码头等，地图移到启德 | 模拟器截图 [Ciclo](event-browsing/map-apple-ciclo.jpg) |
+| F72 | Chrome 实测模态对话框与弹层：对话框外的弹层在对话框模态期间点了没反应（inert）；弹层的 `keydown` 里只 `stopPropagation()` 时 Esc 照样触发对话框的 `cancel` 把它关掉，加 `preventDefault()` 后对话框不关；对话框 `close()` 后里面的弹层仍是 `:popover-open` | 草稿目录 `popover/probe.ts`（无头 Chrome） |
+| F73 | 为什么网页链接进不了高德、百度、腾讯的 App：iOS 只在链接的网址被 App 登记为“通用链接”时才直接打开 App。Apple 缓存的登记文件里，高德 App 只登记了 `m.amap.com/applink/*`，腾讯地图 App 登记了 `map.qq.com` 下除 `/m/`、`/nav/` 等以外的路径，百度的 `map.baidu.com` 没有登记通用链接；L1 用的 `uri.amap.com`、`api.map.baidu.com`、`apis.map.qq.com` 都不在其中，所以只打开网页（高德的 `callnative=1` 在 moss 的手机上也没唤起 App） | `https://app-site-association.cdn-apple.com/a/v1/<域名>`（2026-10-09） |
+| F74 | 三家官方的 App 调起协议：高德 `iosamap://poi?sourceApplication=…&name=…`（安卓 `androidamap://`），百度 `baidumap://map/place/search?query=…&region=…&src=ios.<公司>.<应用>`，腾讯 `qqmap://map/search?keyword=…&region=…&referer=…`；都是装了 App 才能打开 | https://lbs.amap.com/api/amap-mobile/guide/ios/search ；https://lbsyun.baidu.com/faq/api?title=webapi/uri/ios ；https://lbs.qq.com/uri_v1/guide-mobile-poiSearch.html |
+| F75 | 模拟器（没装这三家 App）的 Safari 里点这类协议链接：弹出“Safari 浏览器打不开该网页，因为网址无效。”，要点“好”，页面留在原处；先试协议、1.5 秒后还在页面就转网页地图的写法，最后停在腾讯的网页地图。装了 App 时 Safari 会不会先问“是否在 App 中打开”、要点多少下，模拟器装不了这些 App，测不了；微信内置浏览器一般不让网页调起别家 App，也要真机核对 | 模拟器测试页（草稿目录 `schemes/`） |
+| F76 | 高德的 App 协议没有城市参数（只有可选的经纬度范围），城市要写进搜索文字；安卓版是 `androidamap://poi?sourceApplication=…&keywords=…`（参数名是 `keywords`，iOS 是 `name`） | https://lbs.amap.com/api/amap-mobile/guide/ios/search ；https://lbs.amap.com/api/amap-mobile/guide/android/search |
+| F77 | 按 Q42 改后在 iPhone Air 模拟器 Safari 里：菜单照旧，点高德（`iosamap://`）弹出“Safari 浏览器打不开该网页，因为网址无效。”，点“好”后停在详情、菜单已收起（模拟器没装这些 App）。同一地址只改 `#` 后面时 Safari 不重新加载，先前打开的页面仍是旧构建，换个查询参数打开才拿到新版 | 模拟器截图 [没装 App 时](event-browsing/map-app-missing.jpg) |
+
+### 问答
+
+| # | 问题 | 答复 | 影响 |
+| --- | --- | --- | --- |
+| Q37 | 手机上点“地点”要怎样（F59–F63；选 A–C 就改掉 F60 的旧规定，手机上点“地点”不再分享或复制，电脑上照旧）：A 直接打开地图，按环境选——iPhone 的浏览器打开 Apple 地图（唤起地图 App），安卓与微信里打开高德地图网页（能唤起高德 App 时唤起）；B 先弹一个小菜单，列出 Apple 地图（仅 iPhone）、高德、百度、腾讯地图，选了再跳；C 各处都打开高德地图网页（能唤起高德 App 时唤起）；D 保留现在的分享，旁边另加一个“地图”入口。推荐 A：一点就到、不加界面；iPhone 自带 Apple 地图，大陆与香港（10 个场地）都能用；微信里能不能从网页唤起别的 App 要真机核对，网页地图最稳 | “B 先选地图”（2026-10-09 提问工具） | 手机上点“地点”先弹出地图菜单（Apple 地图仅 iPhone、高德、百度、腾讯地图），选了再跳；手机上不再分享或复制，电脑上照旧；AGENTS.md 的“不做地图跳转”要改；百度、腾讯的跳转链接已补查（F64、F65） |
+| Q38 | 地图上靠什么找到场地（F59、F62、F63）：A 文字搜索——把“城市＋地址＋场地名”交给地图，不用补数据，个别地址可能要在搜索结果里再点一下；B 给 23 个场地补经纬度——地图直接落在大头针上、最准，要逐个查坐标并核对，数据里加一个字段。推荐 A：先上线，验收时在手机上点几个场地看准不准，搜不准的再补坐标 | “A 文字搜索”（2026-10-09 提问工具） | 不补数据，各家地图都按“城市＋地址＋场地名”搜索；验收时在手机上抽查几个场地 |
+| Q39 | 在地图菜单里选了某家之后打开什么（F62–F65）：A 网页链接——四家都用官方网页链接（Apple 地图的 `maps.apple.com` 在 iPhone 上本来就会唤起地图 App；高德加 `callnative=1` 会尝试唤起高德 App；百度、腾讯打开网页地图），浏览器、微信里都能打开；B 直接唤起 App——用各家的 App 协议，装了就直接进 App，没装或在微信里会打不开；C 先试 App、打不开再转网页——约 2 秒后转网页，微信里直接用网页，但“打不开”在各浏览器里判断得不准，可能先弹一个错误提示。推荐 A：一定打得开，高德与 Apple 地图照样能进 App | “A 网页链接”（2026-10-09 提问工具） | 已被 Q41、Q42 改变：Apple 地图仍用网页链接（能进 App），高德、百度、腾讯在手机浏览器里改用 App 协议、只在微信里用网页链接 |
+| Q40 | 怎么分层（F59、F66–F69）：A 一层——`src/components/EventRow.tsx` 的“地点”在触屏设备上改为打开地图菜单（Apple 地图只在 iPhone、iPad 上列出；各家链接按“城市＋地址＋场地名”拼出，没有地址的用“城市＋场地名”），鼠标设备照旧分享或复制；`src/components/Pickers.tsx` 的弹层外壳让“清除”与底部按钮可省或换字，供菜单复用；`src/components/EventDetail.tsx` 在菜单开着时让 Esc 与下拉只关菜单；AGENTS.md 与本站技能改掉“不做地图跳转”；`scripts/check-browser.ts` 加触屏点“地点”出菜单、链接正确的检查；验收时模拟器实看，再请你在手机上抽查几个场地；B 两层——L1 同 A 但只在模拟器验收，L2 等你在手机上抽查后，按结果逐家调整搜索用的文字（搜不准的再问要不要补坐标）。推荐 A：菜单与链接合起来才是一个能用的结果，搜索词的微调在同一次验收里就能做完 | “A 一层”（2026-10-09 提问工具） | 一层：`src/lib/maps.ts` 与测试、`EventRow.tsx`、`Pickers.tsx`、`EventDetail.tsx`、AGENTS.md 与本站技能、`check-browser.ts`；模拟器实看后请你手机抽查 |
+| Q41 | 需求变化 | “苹果地图正确跳转app，高德/百度/疼痛想你没有”（2026-10-09 L1 验收时，“疼痛想你”应是“腾讯”） | 手机上点高德、百度、腾讯也要进 App：改变 Q39 选的网页链接，L1 回到待做，补查各家进 App 的办法后重新问 Q39 |
+| Q42 | 高德、百度、腾讯怎样进 App（F73–F75；Q41 改变了 Q39）：A 直接用 App 协议——装了就进 App 并搜索场地；没装时 Safari 弹“网址无效”、停在详情，用的人得自己换一家；B 先试 App、约 1.5 秒后没离开页面就打开网页地图——装了进 App，没装时可能先闪一下“网址无效”再到网页地图；装了 App 但 Safari 先问“是否打开”时，1.5 秒内没点就会转去网页，判断不准；C 每家分成两行：“高德地图”进 App、旁边小字“网页”打开网页地图——都打得开，菜单从 4 行变 7 行。三种方案在微信里都改用网页链接（微信一般不让网页调起别家 App），Apple 地图不变。推荐 A：菜单本来就是选自己装了的那家，进 App 最直接；没装的人点到提示也知道换一家 | “A App 协议”（2026-10-09 提问工具） | 手机浏览器里高德、百度、腾讯改用 App 协议（F74）；微信里仍用网页链接；Apple 地图不变；L1 按此改写 |
 
 ## 实现方案
 
@@ -262,6 +284,7 @@ flowchart TD
 
 ### 活动清单与详情
 
+- 标题（Q43–Q44）：清单区的标题是“全部活动”（30px、手机 26px），右边不放英文小字。
 - 清单：按日期分组，日内按开场时间排序；每天第一条可见的活动固定展开（海报舞台桌面 560px、手机 520px），其余收起、点按不再展开；筛选隐藏首条时由当天第一条可见行接替；收起行外观照旧（海报 70% 色彩、列出全部艺人与风格），平放不倾斜（glass-effects）。行内不再有展开线（Q20–Q21 前的“± 展开详情”取消）。
 - 入口：清单条目整行（含海报）、首屏海报墙任一海报、`#event-id` 地址（加载、返回与前进）都打开该活动的详情（Q23–Q25）；条目名称按钮可用键盘 Enter／Space 打开。
 - 详情卡片层（Q20–Q21）：同一页面内的 `<dialog>`，手机全屏，桌面居中约 760px 宽、24px 圆角的卡片，卡片的磨砂材质、遮罩与边框光见 glass-effects；顶部为与展开行相同的裁切舞台（海报铺满、向下淡出，开场时间、城市、名称、场地与时间、艺人、风格叠在淡出区），下面依次为阵容、票务、活动详情、入场须知、地点，沿用现有详情分区的结构与样式（宽屏有阵容时左栏阵容、右栏其余）；卡内滚动，打开期间页面不滚动；详情内容取自该行已有的节点，不重复生成。
@@ -313,46 +336,35 @@ flowchart TD
 
 ## 执行记录
 
-### 本任务：手机上点“地点”跳转地图
+### 本任务：活动清单标题：删掉英文小字、改个名字
 
-- 确认：“确认”（2026-10-09 提问工具，按 Q42 改写后的方案）
-- 学习：写入：moss-web-ui（从网页打开地图等 App：网页链接只有登记为通用链接才进 App，查 `app-site-association.cdn-apple.com`；高德、百度、腾讯用 App 协议，没装时 Safari 提示网址无效，微信里给网页链接）；moss-browser（模拟器 `open_url` 同一地址只改 `#` 不重新加载，加查询参数）
+- 确认：“确认”（2026-10-10 提问工具）
+- 学习：无合格候选：改名是本站的文案决定，已写进 AGENTS.md 与结论区；没有新的纠正或可复用的做法
 
 #### 目标与范围
 
-- 目标：手机等触屏设备上，点活动详情的“地点”先选一家地图，再跳到那家地图上的这个场地（Q37）。
-- 不做：不补坐标或地图链接数据（Q38）；高德、百度、腾讯不“先试 App 再转网页”（Q42）；鼠标设备的分享与复制不变（Q37）；菜单只列 Q37 的四家，不加 Google 地图；无脚本时清单行内的详情不加菜单；不加地图品牌 Logo。
-- 须遵守：Q37–Q42；AGENTS.md 第五节的控件规范（`--control` 等令牌、胶囊材质）与“内容即操作”；弹层沿用 Card Nav 节奏，动画走 `eased()`（本站技能）；不拿效果换流畅；模拟器只用 iPhone Air。
+- 目标：清单区标题去掉右边的英文小字，改名为“全部活动”（Q43、Q44）。
+- 不做：不改标题的字号、字体与位置；不改清单、筛选栏与详情；AGENTS.md 里把这一块当作“活动清单”这个概念来说的地方（如“不进入活动清单”“活动清单采用按日期分组……”）不改名。
+- 须遵守：Q43–Q45；AGENTS.md 第五节的页面契约。
 
 #### 层
 
-1. L1 触屏地图菜单
-  - 内容：已做的部分保留（见 L1 面板：`src/lib/maps.ts` 与测试、`EventRow.tsx` 的 `SheetVenue`、`Pickers.tsx`、`EventDetail.tsx`、AGENTS.md 与项目技能、`check-browser.ts`）；按 Q42 改：`src/lib/maps.ts` 让高德、百度、腾讯在手机浏览器里给 App 协议——高德 iOS `iosamap://poi?sourceApplication=cardioravers&name=城市 地址 场地&dev=0`、安卓 `androidamap://poi?sourceApplication=cardioravers&keywords=…&dev=0`，百度 `baidumap://map/place/search?query=地址 场地&region=城市&src=ios.cardioravers.events`（安卓 `andr.`），腾讯 `qqmap://map/search?keyword=地址 场地&region=城市&referer=cardioravers`——微信内置浏览器（UA 含 `MicroMessenger`）里仍给现在的网页链接；协议链接在本页打开（不开新标签页），Apple 地图与网页链接仍开新标签页；`test/maps.test.ts` 与 `scripts/check-browser.ts` 按新链接改；AGENTS.md 与项目技能的地图句改为“App 协议，微信里网页”
-  - 验收：iPhone Air 模拟器 Safari 打开详情点“地点”，菜单照旧；Apple 地图进地图 App；高德、百度、腾讯的链接是各家 App 协议（模拟器没装 App，只能看到“网址无效”提示、停在详情）；电脑上点“地点”照旧分享或复制；最后请你在手机上点高德、百度、腾讯，确认进得了 App 并搜到场地，有条件再在微信里试网页地图
-  - 验证：`bun run build`（含链接测试：手机浏览器给协议、微信给网页、Apple 不变）、`bun run check:browser`（iPhone、安卓与微信三种 UA 的菜单链接）、`bunx tsc --noEmit`、`git diff --check`；模拟器实测菜单与各项的行为，确认没有脚本错误
-  - 依据：Q37–Q42、F59–F76
+1. L1 标题删小字并改名
+  - 内容：`src/components/Page.tsx`：删掉 “Club Nights · Raves / Beach Parties” 与只为左右对齐写的布局类（已做，F79），`#schedule-title` 的文字改为“全部活动”；AGENTS.md 第五节“向下延伸到‘活动清单’标题区块上沿”与项目技能 `pages-site-visual-choices` 的“海报墙延伸到‘活动清单’标题上沿”改为“全部活动”
+  - 验收：桌面与手机上标题为“全部活动”，右边没有英文小字，标题、筛选栏与第一天的位置和改前一样；给你看截图
+  - 验证：`bun run build`、`bun run check:browser`、`bunx tsc --noEmit`、`git diff --check`；无头 Chrome 量标题、筛选栏与第一天的位置并截图（1440、390 宽）
+  - 依据：Q43–Q45、F78–F80
 
 #### 交付
 
 - 操作：无（改动留在工作区）
 
-#### 残余风险
+### L1 标题删小字并改名（已完成）
 
-- 没装高德、百度或腾讯 App 的人点了只看到“网址无效”，要自己换一家（Q42 选 A）；装了 App 时 Safari 会不会先问一次“是否打开”，模拟器测不了（F75）。
-- 微信里用网页地图：高德网页在部分网络下先出滑动验证（F62），微信能否打开这些网页要真机核对。
-- Apple 地图的统一链接要 iOS 18.4 起；更早的系统可能只打开地图、不落到场地（F63）。
-- 文字搜索不总能直接落点：百度给的是结果列表，香港个别场地会落到同一栋楼的别家（F64、F65）；抽查后再定要不要补坐标（Q38）。
-
-### L1 触屏地图菜单（已完成）
-
-- 修改要求：“苹果地图正确跳转app，高德/百度/疼痛想你没有”（2026-10-09 第一次验收时；按 Q41、Q42 改写方案后重做）
-- 改动：新增 `src/lib/maps.ts`（`platformOf` 判断 Apple 设备与能否进 App：iOS、安卓浏览器能，微信不能；`mapLinks` 给四家链接：Apple 地图用 `maps.apple.com`，高德、百度、腾讯在能进 App 时给 `iosamap://`／`androidamap://`、`baidumap://`、`qqmap://`，否则给官方网页链接）与 `test/maps.test.ts`；`src/components/EventRow.tsx` 的 `Venue` 在详情卡片里交给新的 `SheetVenue`：触屏设备上点“地点”打开地图菜单（复用 `PickerPop`，标题为场地名，链接整行加品牌粉 ↗，App 协议在本页打开、网页链接开新标签页，点了即收起，底部“取消”），右侧图标换成地图标记，鼠标设备与清单行照旧分享或复制；`src/components/Pickers.tsx` 的 `PickerPop`：不传 `onClear` 时不显示“清除”，底部按钮文字可换（`doneLabel`），`onShown` 可省，Esc 同时 `preventDefault()`；`src/components/EventDetail.tsx`：起点在弹层里的触摸不触发详情下拉，详情关闭时先收起里面开着的弹层；AGENTS.md 第五节与项目技能 `pages-site-visual-choices` 改写“不做地图跳转”；`scripts/check-browser.ts` 加触屏地图菜单检查（安卓、iPhone、微信三种 UA）与鼠标设备照旧分享或复制的断言；验收截图存于 `docs/event-browsing/`（方案外，作验收依据）
-- 验证：`bun run build`（19 项测试通过，含 4 项链接测试）、`bun run check:browser`（全部通过，含 maps (android)、maps (iphone)、maps (wechat)：菜单出现、链接与 `mapLinks` 一致、App 协议本页打开、网页链接新标签页、点遮罩与 Esc 只关菜单）、`bunx tsc --noEmit`、`git diff --check` 通过；iPhone Air 模拟器 Safari：Apple 地图进地图 App 并落到 OIL（F70）、香港两处为搜索列表（F71），高德等协议在没装 App 时提示网址无效、停在详情（F77），下拉与返回键关闭按预期；装了 App 的真机效果要你确认
-- 学习：写入：moss-web-ui（模态对话框里的弹层：放在对话框 DOM 里、Esc 要 `preventDefault()`、关对话框时收起里面的弹层、下拉手势不接弹层里的触摸，F72）；moss-browser（模拟器里滑动后内容还会惯性滚动或回弹，按坐标点按前再截一张确认位置）
-
-- 验收：“接受并提交”（2026-10-09 提问工具）
-
-![手机上的地图菜单（iPhone Air 模拟器）](event-browsing/map-menu-iphone.jpg)
+- 改动：`src/components/Page.tsx`：删掉标题右边的 “Club Nights · Raves / Beach Parties” 与只为左右对齐写的布局类（`flex justify-between items-end gap-6`、手机 `items-start`），标题外多出的一层 `<div>` 一并去掉，`#schedule-title` 改为“全部活动”；AGENTS.md 第五节与项目技能 `pages-site-visual-choices` 里“海报墙延伸到……标题上沿”的说法改为“全部活动”
+- 验证：`bun run build`（19 项测试）、`bun run check:browser`（全部通过）、`bunx tsc --noEmit`、`git diff --check` 通过；无头 Chrome 量位置：标题顶边 1440 宽 919px、390 宽 649px，筛选栏 983px、707.8px，第一天 1089px、804.8px，与改前一致；1440、390 宽截图看过
+- 学习：无合格候选：这层没有新的纠正或约定；防火墙已关、Bun 渲染服务的情况 moss-browser 技能里已写明
+- 验收：“接受并提交”（2026-10-10 提问工具）
 
 ### 以往：首屏轮播窄屏优化（2026-10-04）
 
@@ -777,3 +789,44 @@ flowchart TD
 - 修改后验证：内置浏览器打开 127.0.0.1:8766，`glass.js` 新传 8804B；打开 PLAY X 的原图预览，鼠标移到工具栏附近时 −／＋／复位的亮度为 0.50、0.76、0.93，光带朝向鼠标；无头 Chrome 中鼠标停在 ＋ 上时三个按钮亮度 0.96–1.00；`check_preview.js` 等脚本检查不受影响
 - 修改后学习：写入 `moss-browser`（本地预览服务要发 no-cache，否则内置浏览器会继续用缓存里的旧脚本；已缓存时换端口；验收前核对脚本是新传的）
 - 验收：“接受”（2026-10-06）
+
+### 以往：手机上点“地点”跳转地图（2026-10-09）
+
+- 确认：“确认”（2026-10-09 提问工具，按 Q42 改写后的方案）
+- 学习：写入：moss-web-ui（从网页打开地图等 App：网页链接只有登记为通用链接才进 App，查 `app-site-association.cdn-apple.com`；高德、百度、腾讯用 App 协议，没装时 Safari 提示网址无效，微信里给网页链接）；moss-browser（模拟器 `open_url` 同一地址只改 `#` 不重新加载，加查询参数）
+
+#### 目标与范围
+
+- 目标：手机等触屏设备上，点活动详情的“地点”先选一家地图，再跳到那家地图上的这个场地（Q37）。
+- 不做：不补坐标或地图链接数据（Q38）；高德、百度、腾讯不“先试 App 再转网页”（Q42）；鼠标设备的分享与复制不变（Q37）；菜单只列 Q37 的四家，不加 Google 地图；无脚本时清单行内的详情不加菜单；不加地图品牌 Logo。
+- 须遵守：Q37–Q42；AGENTS.md 第五节的控件规范（`--control` 等令牌、胶囊材质）与“内容即操作”；弹层沿用 Card Nav 节奏，动画走 `eased()`（本站技能）；不拿效果换流畅；模拟器只用 iPhone Air。
+
+#### 层
+
+1. L1 触屏地图菜单
+  - 内容：已做的部分保留（见 L1 面板：`src/lib/maps.ts` 与测试、`EventRow.tsx` 的 `SheetVenue`、`Pickers.tsx`、`EventDetail.tsx`、AGENTS.md 与项目技能、`check-browser.ts`）；按 Q42 改：`src/lib/maps.ts` 让高德、百度、腾讯在手机浏览器里给 App 协议——高德 iOS `iosamap://poi?sourceApplication=cardioravers&name=城市 地址 场地&dev=0`、安卓 `androidamap://poi?sourceApplication=cardioravers&keywords=…&dev=0`，百度 `baidumap://map/place/search?query=地址 场地&region=城市&src=ios.cardioravers.events`（安卓 `andr.`），腾讯 `qqmap://map/search?keyword=地址 场地&region=城市&referer=cardioravers`——微信内置浏览器（UA 含 `MicroMessenger`）里仍给现在的网页链接；协议链接在本页打开（不开新标签页），Apple 地图与网页链接仍开新标签页；`test/maps.test.ts` 与 `scripts/check-browser.ts` 按新链接改；AGENTS.md 与项目技能的地图句改为“App 协议，微信里网页”
+  - 验收：iPhone Air 模拟器 Safari 打开详情点“地点”，菜单照旧；Apple 地图进地图 App；高德、百度、腾讯的链接是各家 App 协议（模拟器没装 App，只能看到“网址无效”提示、停在详情）；电脑上点“地点”照旧分享或复制；最后请你在手机上点高德、百度、腾讯，确认进得了 App 并搜到场地，有条件再在微信里试网页地图
+  - 验证：`bun run build`（含链接测试：手机浏览器给协议、微信给网页、Apple 不变）、`bun run check:browser`（iPhone、安卓与微信三种 UA 的菜单链接）、`bunx tsc --noEmit`、`git diff --check`；模拟器实测菜单与各项的行为，确认没有脚本错误
+  - 依据：Q37–Q42、F59–F76
+
+#### 交付
+
+- 操作：无（改动留在工作区）
+
+#### 残余风险
+
+- 没装高德、百度或腾讯 App 的人点了只看到“网址无效”，要自己换一家（Q42 选 A）；装了 App 时 Safari 会不会先问一次“是否打开”，模拟器测不了（F75）。
+- 微信里用网页地图：高德网页在部分网络下先出滑动验证（F62），微信能否打开这些网页要真机核对。
+- Apple 地图的统一链接要 iOS 18.4 起；更早的系统可能只打开地图、不落到场地（F63）。
+- 文字搜索不总能直接落点：百度给的是结果列表，香港个别场地会落到同一栋楼的别家（F64、F65）；抽查后再定要不要补坐标（Q38）。
+
+### L1 触屏地图菜单（已完成）
+
+- 修改要求：“苹果地图正确跳转app，高德/百度/疼痛想你没有”（2026-10-09 第一次验收时；按 Q41、Q42 改写方案后重做）
+- 改动：新增 `src/lib/maps.ts`（`platformOf` 判断 Apple 设备与能否进 App：iOS、安卓浏览器能，微信不能；`mapLinks` 给四家链接：Apple 地图用 `maps.apple.com`，高德、百度、腾讯在能进 App 时给 `iosamap://`／`androidamap://`、`baidumap://`、`qqmap://`，否则给官方网页链接）与 `test/maps.test.ts`；`src/components/EventRow.tsx` 的 `Venue` 在详情卡片里交给新的 `SheetVenue`：触屏设备上点“地点”打开地图菜单（复用 `PickerPop`，标题为场地名，链接整行加品牌粉 ↗，App 协议在本页打开、网页链接开新标签页，点了即收起，底部“取消”），右侧图标换成地图标记，鼠标设备与清单行照旧分享或复制；`src/components/Pickers.tsx` 的 `PickerPop`：不传 `onClear` 时不显示“清除”，底部按钮文字可换（`doneLabel`），`onShown` 可省，Esc 同时 `preventDefault()`；`src/components/EventDetail.tsx`：起点在弹层里的触摸不触发详情下拉，详情关闭时先收起里面开着的弹层；AGENTS.md 第五节与项目技能 `pages-site-visual-choices` 改写“不做地图跳转”；`scripts/check-browser.ts` 加触屏地图菜单检查（安卓、iPhone、微信三种 UA）与鼠标设备照旧分享或复制的断言；验收截图存于 `docs/event-browsing/`（方案外，作验收依据）
+- 验证：`bun run build`（19 项测试通过，含 4 项链接测试）、`bun run check:browser`（全部通过，含 maps (android)、maps (iphone)、maps (wechat)：菜单出现、链接与 `mapLinks` 一致、App 协议本页打开、网页链接新标签页、点遮罩与 Esc 只关菜单）、`bunx tsc --noEmit`、`git diff --check` 通过；iPhone Air 模拟器 Safari：Apple 地图进地图 App 并落到 OIL（F70）、香港两处为搜索列表（F71），高德等协议在没装 App 时提示网址无效、停在详情（F77），下拉与返回键关闭按预期；装了 App 的真机效果要你确认
+- 学习：写入：moss-web-ui（模态对话框里的弹层：放在对话框 DOM 里、Esc 要 `preventDefault()`、关对话框时收起里面的弹层、下拉手势不接弹层里的触摸，F72）；moss-browser（模拟器里滑动后内容还会惯性滚动或回弹，按坐标点按前再截一张确认位置）
+
+- 验收：“接受并提交”（2026-10-09 提问工具）
+
+![手机上的地图菜单（iPhone Air 模拟器）](event-browsing/map-menu-iphone.jpg)
