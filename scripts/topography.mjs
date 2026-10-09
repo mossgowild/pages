@@ -195,7 +195,7 @@ export function initTopography(canvas, reel, sentinel, dock, footer) {
 
   const root = document.documentElement;
   const animating = () => !reducedMotion.matches && !document.hidden && !canvas.hidden;
-  // An event's detail sheet (assets/event-detail.js) covers the page: the terrain holds its last frame meanwhile, which
+  // An event's detail sheet (src/components/EventDetail.tsx) covers the page: the terrain holds its last frame meanwhile, which
   // spares the main thread while the sheet flies in and out (docs/event-browsing.md F42).
   const covered = () => root.classList.contains('is-detail');
   function render(now) {

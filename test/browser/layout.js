@@ -1,4 +1,5 @@
-// Paste into the browser console, then call checkLayout() after layout changes.
+// Layout rules checked in the page itself: test/browser.ts injects this file and calls checkLayout() at several widths
+// and states; it can also be pasted into a browser console.
 function checkLayout() {
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
   const viewport = document.documentElement.clientWidth;
@@ -140,22 +141,19 @@ function checkLayout() {
   const count = document.getElementById('result-count');
   assert(Number(count.textContent) === document.querySelectorAll('.event-row:not([hidden])').length, 'The bar count must match the visible events');
   assert(!document.querySelector('.results-head'), 'The separate result line is replaced by the bar count');
-  const emptyTitle = document.querySelector('.empty-state h3');
+  const emptyTitle = document.querySelector('.empty-state .shiny-text');
   assert(getComputedStyle(emptyTitle).animationName === (reducedMotion ? 'none' : 'shiny-text'), 'Empty state title must shine unless motion is reduced');
   assert(!document.querySelector('.date-nav, .date-nav-note'), 'The date axis is removed; dates are picked in the calendar');
   // Split family chips: 全部 X and the sub-genre arrow are both touch targets; a partial choice shows its number.
-  const genreSelect = document.getElementById('genre');
-  assert(genreSelect.hidden && !nav.querySelector('#genre + .picker-trigger'), 'Sub-genres live behind the family arrows, not a 更多风格 picker');
+  assert(!nav.querySelector('select'), 'Sub-genres, venues and dates live in the pickers, not native selects');
   for (const chip of nav.querySelectorAll('.family-chip')) {
     const all = chip.querySelector('.family-all input'), more = chip.querySelector('.family-more');
     const members = JSON.parse(chip.dataset.members);
-    const chosen = [...genreSelect.selectedOptions].filter(option => members.includes(option.value)).length;
     const pop = document.getElementById(more.getAttribute('aria-controls'));
     assert(!more.hidden && pop?.parentElement === document.body && pop.popover === 'manual', `${all.value}: the arrow opens a top-layer picker`);
-    assert(!(all.checked && chosen), `${all.value}: 全部 and sub-genres exclude each other`);
     const rows = [...pop.querySelectorAll('.ms-option')];
-    assert(rows.length === members.length && rows.every((row, index) => row.getAttribute('aria-selected')
-      === String(all.checked || genreSelect.querySelector(`option[value="${CSS.escape(members[index])}"]`).selected)),
+    const chosen = all.checked ? 0 : rows.filter(row => row.getAttribute('aria-selected') === 'true').length;
+    assert(rows.length === members.length && (!all.checked || rows.every(row => row.getAttribute('aria-selected') === 'true')),
       `${all.value}: the whole family shows every sub-genre ticked`);
     assert(chip.classList.contains('is-partial') === chosen > 0 && Number(more.querySelector('.family-count').textContent || 0) === chosen,
       `${all.value}: partial state and count out of sync`);
@@ -167,19 +165,15 @@ function checkLayout() {
     }
   }
   assert(!nav.querySelector('input[name="genre-unknown"]'), 'No 风格未知 chip');
-  for (const select of nav.querySelectorAll('select[data-multi-select]')) {
-    const trigger = select.nextElementSibling;
-    const pop = document.getElementById(`${select.id}-popover`);
-    assert(select.hidden && trigger.classList.contains('picker-trigger') && trigger.getAttribute('aria-controls') === pop.id && pop.parentElement === document.body,
-      `${select.id}: multi-select must be a custom trigger with a top-layer popover`);
-    assert(Number(trigger.querySelector('.picker-count').textContent || 0) === select.selectedOptions.length, `${select.id}: trigger count out of sync`);
+  for (const id of ['venue', 'dates']) {
+    const trigger = nav.querySelector(`[aria-controls="${id}-popover"]`);
+    const pop = document.getElementById(`${id}-popover`);
+    assert(trigger?.classList.contains('picker-trigger') && pop?.parentElement === document.body && pop.popover === 'manual',
+      `${id}: the picker is a custom trigger with a top-layer popover`);
   }
-  const datesTrigger = document.getElementById('to').nextElementSibling;
-  assert(document.getElementById('from').hidden && document.getElementById('to').hidden && datesTrigger.classList.contains('picker-trigger')
-    && datesTrigger.getAttribute('aria-controls') === 'dates-popover', 'Dates must use the custom calendar trigger');
-  const datePicks = [...document.querySelectorAll('#dates-popover button.dr-day[aria-pressed="true"]')].map(button => button.dataset.date);
-  assert(datePicks.join() === [...new Set([from.value, to.value].filter(Boolean))].join(), 'Calendar selection must match the date range');
-  for (const control of [...document.querySelectorAll('.picker-trigger, .filter-select input, .filter-chip')].filter(control => control.getClientRects().length)) {
+  const venueCount = Number(nav.querySelector('[aria-controls="venue-popover"] .picker-count').textContent || 0);
+  assert(venueCount === document.querySelectorAll('#venue-popover .ms-option[aria-selected="true"]').length, 'venue: trigger count out of sync');
+  for (const control of [...document.querySelectorAll('.picker-trigger, .filter-chip')].filter(control => control.getClientRects().length)) {
     const box = control.getBoundingClientRect();
     const card = control.closest('.filter-card').getBoundingClientRect();
     assert(box.left >= card.left - 1 && box.right <= card.right + 1, `${control.id || control.textContent}: filter control overflows its card`);
@@ -215,11 +209,8 @@ function checkLayout() {
       assert(row.scrollWidth <= row.clientWidth, `${row.id}: overflowing content`);
       // Unknown lineup and genres are left out (question 183); the other four categories are always there.
       const known = 4 + (JSON.parse(row.dataset.genres).length > 0) + (row.querySelector('.row-artists') !== null);
-      // An open detail sheet holds the row's own details (assets/event-detail.js).
-      const parts = [row, ...(row.classList.contains('event-detail-origin') ? [document.querySelector('.event-detail .event-details')] : [])];
-      const field = name => parts.some(part => part.querySelector(`[data-field="${name}"]`));
-      assert(parts.reduce((sum, part) => sum + part.querySelectorAll('[data-field]').length, 0) === known
-        && ['name', 'location', 'info', 'posters'].every(field), `${row.id}: missing information`);
+      const field = name => row.querySelector(`[data-field="${name}"]`);
+      assert(row.querySelectorAll('[data-field]').length === known && ['name', 'location', 'info', 'posters'].every(field), `${row.id}: missing information`);
       assert(getComputedStyle(row).borderTopLeftRadius === '24px', `${row.id}: rows use the shared radius`);
       assert(getComputedStyle(row).transform === 'none', `${row.id}: rows lie flat (docs/glass-effects.md)`);
       const stage = row.querySelector('.event-stage').getBoundingClientRect();

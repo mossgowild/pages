@@ -1,10 +1,14 @@
-/* Tailwind without its preflight reset while public/assets/site.css still styles the page; components move their styles
-   here one by one and site.css goes away by the end of the rewrite (docs/site-rewrite.md L1–L3). */
+/* Tailwind without its preflight reset while legacy.css still styles the page; components move their styles
+   here one by one and legacy.css goes away by the end of the rewrite (docs/site-rewrite.md L1–L3). */
+@layer theme, legacy, utilities;
 @import "tailwindcss/theme.css" layer(theme);
+/* The site's stylesheet from before the rewrite, below the utilities so a component's utilities win over the rules it
+   replaces; components take their rules out of it as they move to utilities. */
+@import "./legacy.css" layer(legacy);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
 @source "..";
 
-/* The design tokens still live on :root in site.css; the theme names them for utilities. */
+/* The design tokens still live on :root in legacy.css; the theme names them for utilities. */
 @theme inline {
   --color-brand-pink: var(--brand-pink);
   --color-brand-yellow: var(--brand-yellow);
@@ -12,4 +16,172 @@
   --color-brand-violet: var(--brand-violet);
   --radius-panel: var(--radius);
   --font-display: var(--font-display);
+}
+
+/* The site's screen-only breakpoints (print keeps the wide layout), widest first so the narrower ones win; the plain
+   max-[701px]: stands in for max-width:700px without "screen". */
+@custom-variant screen-from-1101 (@media screen and (min-width: 1101px));
+@custom-variant screen-to-1100 (@media screen and (max-width: 1100px));
+@custom-variant screen-from-901 (@media screen and (min-width: 901px));
+@custom-variant screen-to-768 (@media screen and (max-width: 768px));
+@custom-variant screen-from-701 (@media screen and (min-width: 701px));
+@custom-variant screen-to-700 (@media screen and (max-width: 700px));
+/* Page states set by scripts: the accordion (the rows' collapsed state applies only with the script) and the scroll
+   parallax (assets/scroll-motion.js). */
+@custom-variant scripted (.accordion-ready &);
+@custom-variant collapsed (.accordion-ready .event-row:not(.is-active) &);
+@custom-variant scroll-motion (.scroll-motion &);
+/* A mouse or trackpad (the preview's toolbar and × show only there). */
+@custom-variant mouse (@media (hover: hover) and (pointer: fine));
+
+/* React Bits Shiny Text (ShinyText.tsx): the original's stops around the shine centre --shine (a percentage of the
+   gradient line), from #b5b5b5 to white at the smoothstep of 0, .2 … 1, blended with gamma 2.2; the centre runs from
+   122% to -22% (its extent past each end) on the original's cosine ease. */
+@property --shine { syntax: "<number>"; inherits: false; initial-value: 122; }
+@keyframes shiny-text { from { --shine: 122; } to { --shine: -22; } }
+.shiny-text {
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(120deg, #b5b5b5 0%,
+    #b5b5b5 calc((var(--shine) - 20) * 1%), #bebebe calc((var(--shine) - 16.8) * 1%), #d3d3d3 calc((var(--shine) - 13.6) * 1%),
+    #e8e8e8 calc((var(--shine) - 10.4) * 1%), #f9f9f9 calc((var(--shine) - 7.2) * 1%), #fff calc((var(--shine) - 4) * 1%),
+    #fff calc((var(--shine) + 4) * 1%), #f9f9f9 calc((var(--shine) + 7.2) * 1%), #e8e8e8 calc((var(--shine) + 10.4) * 1%),
+    #d3d3d3 calc((var(--shine) + 13.6) * 1%), #bebebe calc((var(--shine) + 16.8) * 1%), #b5b5b5 calc((var(--shine) + 20) * 1%),
+    #b5b5b5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shiny-text 2s linear(0, 0.0062, 0.0245, 0.0545, 0.0955, 0.1464, 0.2061, 0.273, 0.3455, 0.4218, 0.5, 0.5782, 0.6545, 0.727, 0.7939, 0.8536, 0.9045, 0.9455, 0.9755, 0.9938, 1) infinite;
+}
+.shiny-text.is-away { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .shiny-text { animation: none; background-image: linear-gradient(#b5b5b5, #b5b5b5); } }
+@media print { .shiny-text { background: none; color: #111; } }
+
+/* ---------- Filter toolbar (FilterDock.tsx) ---------- */
+/* React Bits Card Nav as the filter bar: a sticky 56px glass bar whose four tinted glass cards open as Card Nav's own
+   overlay: they float over the list under a page scrim, never change the page height, and scroll inside when taller
+   than the screen. Only the bar sticks; the list scrolls under its own glass (no shadow). When the bar pins to the top,
+   FilterDock.tsx sets .is-stuck and --dock eases 0→1 over 0.4s (power3.out): the floating capsule becomes a flush
+   full-width bar — the 12px gap closes by translation (the page flow never moves), the bar bleeds to both viewport edges
+   by --bleed (--edge × --dock) while its content stays on the content column, the corners square off and only the bottom
+   edge keeps its line. */
+@property --dock { syntax: "<number>"; inherits: true; initial-value: 0; }
+html.is-filtering { overflow: hidden; scrollbar-gutter: stable; }
+@utility filter-bar-look {
+  border: 1px solid var(--glass-edge);
+  border-color: rgb(255 255 255/calc(.13*(1 - var(--dock)))) rgb(255 255 255/calc(.13*(1 - var(--dock)))) var(--glass-edge);
+  border-radius: calc((var(--control)/2 + 8px)*(1 - var(--dock)));
+  background: linear-gradient(rgb(12 10 20/calc(.55*var(--dock))),rgb(12 10 20/calc(.55*var(--dock)))),var(--glass-tint);
+  box-shadow: inset 0 1px 0 rgb(255 255 255/calc(.14*(1 - var(--dock)))),inset 0 -1px 0 rgb(255 255 255/.04);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  margin-inline: calc(-1*var(--bleed));
+  padding: 0 calc(7px*(1 - var(--dock)) + var(--bleed));
+}
+/* The tag strip fades at either edge only where more tags lie beyond it (question 189). The fades sit on a wrapper that
+   does not scroll: a mask on the scrolling strip itself stops covering tags while their animations run on the
+   compositor, and the fade would turn into a hard cut. */
+@utility fade-edges {
+  --fade-start: 0px;
+  --fade-end: 0px;
+  mask-image: linear-gradient(90deg,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent);
+  -webkit-mask-image: linear-gradient(90deg,transparent,#000 var(--fade-start),#000 calc(100% - var(--fade-end)),transparent);
+  &.has-before { --fade-start: 24px; }
+  &.has-after { --fade-end: 24px; }
+}
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+/* The panel reaches 16px past the column on each side and runs to the bottom of the screen, so card shadows are not
+   clipped and only the screen edge cuts the cards; the bottom space lets the last card clear the edge. While more cards
+   lie below, a 48px fade (a sticky layer, not a mask, which would cut the cards off from their backdrop) says so; it
+   sticks within the panel's padding, hence the negative offset that takes it down to the screen edge. */
+@utility more-below {
+  &::after {
+    content: "";
+    position: sticky;
+    bottom: calc(-24px - env(safe-area-inset-bottom));
+    grid-column: 1/-1;
+    height: 48px;
+    margin: -48px -16px 0;
+    background: linear-gradient(rgb(5 5 11/0),rgb(5 5 11/.9));
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+  &.has-more::after { opacity: 1; }
+}
+/* The four cards: frosted glass tinted with the card's brand colour. */
+@utility filter-card-look {
+  border: 1px solid var(--glass-edge);
+  border-color: color-mix(in srgb,var(--card-color) 45%,transparent);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg,color-mix(in srgb,var(--card-color) 22%,transparent),color-mix(in srgb,var(--card-color) 6%,transparent));
+  box-shadow: var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+/* ---------- Filter pickers (Pickers.tsx) ---------- */
+/* The popover holds the glass sheet; Pickers.tsx animates the sheet, the veil and the parts inside. */
+@property --veil { syntax: "<number>"; inherits: true; initial-value: 1; }
+
+/* ---------- Event list (Page.tsx, EventRow.tsx) ---------- */
+/* Rows are the 24px frosted glass of the original cards. The poster fades out by an alpha mask straight into the glass
+   (no dark overlay): downward on the open row (fully clear by 70% of the stage, where its text sits), toward the text
+   side on collapsed rows. --open (registered, so it interpolates) blends the two masks over the accordion's 0.6s. */
+@property --open { syntax: "<number>"; inherits: true; initial-value: 1; }
+@utility poster-fade {
+  --fade: calc(1 - var(--open));
+  -webkit-mask-image: linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));
+  mask-composite: intersect;
+}
+/* Details read as an editorial ledger (no pills or buttons): a hairline fading to the right under each timetable row,
+   ticket tier and link, as a pseudo-element (after:ledger-line). */
+@utility ledger-line {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg,rgb(255 255 255/.16),rgb(255 255 255/.16) 70%,transparent);
+  pointer-events: none;
+}
+/* A venue or mini-program code that shares or copies on tap brightens its place name under the mouse once it works. */
+@custom-variant copy-hover { @media (hover: hover) { .copy-target:not(:disabled):hover & { @slot; } } }
+
+/* ---------- Detail sheet and full-image preview (EventDetail.tsx, PosterPreview.tsx) ---------- */
+/* The page behind stays put (scroll locked, scrollbar space kept), and the row or wall poster the sheet came from, or the
+   sheet poster the preview came from, is hidden until it has shrunk back into it. */
+html.is-detail { overflow: hidden; scrollbar-gutter: stable; }
+html:has(.poster-preview[open]) { overflow: hidden; }
+.event-detail-origin, .poster-preview-origin { visibility: hidden; }
+@media print { .poster-preview-origin { visibility: visible; } }
+/* Veils fade in with their blur from nothing. */
+@keyframes preview-backdrop { from { background: #05050b00; backdrop-filter: blur(0); } }
+/* The sheet's veil: half dark with a light blur (docs/glass-effects.md Q1). */
+@utility sheet-veil {
+  background: #05050b80;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: var(--veil,1);
+}
+/* A round ×: two 14×1.5px strokes on its span. */
+@utility close-cross {
+  & span::before, & span::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 1.5px;
+    margin: -.75px 0 0 -7px;
+    border-radius: 1px;
+    background: currentColor;
+    rotate: 45deg;
+  }
+  & span::after { rotate: -45deg; }
 }

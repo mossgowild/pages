@@ -193,7 +193,7 @@ export function initHero(root) {
     request();
   };
   // Frames run only while the wall is on screen, the page is shown, motion is allowed and no event's details cover the
-  // page (assets/event-detail.js pauses the wall so a poster it opened from is still there to return to).
+  // page (src/components/EventDetail.tsx pauses the wall so a poster it opened from is still there to return to).
   const request = () => {
     if (!visible || document.hidden || reduced.matches || document.documentElement.classList.contains('is-detail')) last = null;
     else if (!raf) raf = requestAnimationFrame(frame);

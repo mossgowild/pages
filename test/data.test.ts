@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test'
 import data from '../data/events.json'
-import { validate } from '../src/lib/guide'
+import { validate } from '../src/lib/guide.server'
 
 test('the data keeps every rule', () => validate())
 

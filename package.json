@@ -8,7 +8,8 @@
     "posters": "bun scripts/build-posters.ts",
     "test": "bun test",
     "build:hero": "bun build scripts/hero.mjs --target browser --format iife --minify --outfile public/assets/hero.js",
-    "build:topography": "bun build scripts/topography.mjs --target browser --format iife --minify --outfile public/assets/topography.js"
+    "build:topography": "bun build scripts/topography.mjs --target browser --format iife --minify --outfile public/assets/topography.js",
+    "check:browser": "bun scripts/check-browser.ts"
   },
   "dependencies": {
     "@tanstack/react-router": "^1.170.41",
@@ -26,6 +27,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "happy-dom": "^20.14.5",
     "ogl": "1.0.11",
+    "playwright-core": "^1.64.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^7.0.2",
     "vite": "^8.3.4"

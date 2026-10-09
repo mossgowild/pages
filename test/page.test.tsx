@@ -7,7 +7,8 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import data from '../data/events.json'
 import manifest from '../public/assets/posters/sources.json'
 import { Page } from '../src/components/Page'
-import { guide, type GuideEvent } from '../src/lib/guide'
+import type { GuideEvent } from '../src/lib/guide'
+import { guide } from '../src/lib/guide.server'
 import { SCRIPTS } from '../src/routes/__root'
 
 const publicFile = (path: string) => new URL(`../public/${path}`, import.meta.url)
@@ -22,6 +23,8 @@ const fulls = new Map(manifest.images.map(image => [image.path, image.full]))
 const escape = (text: string) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 const text = (element: Element | null | undefined) => element?.textContent ?? ''
 const all = (scope: ParentNode, selector: string) => [...scope.querySelectorAll(selector)]
+// Markup with each element's semantic class (its first) only, without the Tailwind utilities that follow it.
+const semantic = (element: Element) => element.innerHTML.replace(/ class="(\S+)[^"]*"/g, ' class="$1"')
 
 // A WebP's pixel size from its header (lossy VP8, lossless VP8L or extended VP8X).
 function webpSize(bytes: Uint8Array) {
@@ -190,7 +193,7 @@ function checkLineup(card: Element, event: GuideEvent) {
     expect(all(card, 'tr.crew-row').some(row => text(row.children[0]).includes(member.role) && member.names.every(name => text(row).includes(name)))).toBe(true)
   }
   // A B2B pairing reads as one line (question 187).
-  const pairs = all(card, '.artist-pair').map(pair => pair.innerHTML)
+  const pairs = all(card, '.artist-pair').map(semantic)
   for (const artist of artists) {
     if (artist.format !== 'B2B' || artist.names.length < 2 || !tables.length) continue
     expect(pairs).toContain(artist.names.map(name => `<span class="artist-name">${escape(name)}</span>`).join('<small class="artist-b2b">B2B</small>'))
@@ -251,7 +254,7 @@ function checkVenue(card: Element, event: GuideEvent) {
   const [first, ...address] = event.location
   const [city, place = ''] = first.split(/ · (.*)/s)
   // The city label leads the place on one line.
-  expect(all(venue, '.venue-name').map(name => name.innerHTML)).toContain(`<span class="venue-city">${escape(city)}</span>${escape(place)}`)
+  expect(all(venue, '.venue-name').map(semantic)).toContain(`<span class="venue-city">${escape(city)}</span>${escape(place)}`)
   const share = venue.querySelector('button.copy-target.venue-target')
   if (!place) expect(venue.querySelector('.copy-target')).toBeNull()
   else {

@@ -6,8 +6,28 @@
 // pixels. A single tap on the image does nothing; the backdrop, Esc, Enter and the back button close. With a mouse a
 // toolbar (− ＋ fit) and a × appear while the mouse moves and fade after 2s of rest. Reduced motion skips every
 // transition, the inertia and the springs.
-(() => {
-  const dialog = document.querySelector('.poster-preview');
+//
+// The gestures run frame by frame on the image itself, so the dialog's behaviour is one effect over its elements; React
+// draws the dialog and leaves the image inside the view to it.
+// @ts-nocheck -- ported unchanged from the page's own script; typing it adds nothing until it is reworked.
+import { useEffect, useRef } from 'react'
+import { CLOSE_BUTTON } from './EventDetail'
+
+// A full-screen dialog over a dark, blurred veil, the image centred within the safe area; the image itself (a copy of the
+// sheet's poster) takes its look from the view.
+const PREVIEW = 'poster-preview fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) open:grid open:grid-rows-[minmax(0,1fr)] backdrop:[background:#05050bea] backdrop:[backdrop-filter:blur(12px)] backdrop:[opacity:var(--veil,1)] backdrop:[animation:preview-backdrop_.26s_ease-out] [&.is-closing]:backdrop:[animation:preview-backdrop_.22s_ease-in_reverse_forwards] print:open:hidden'
+const VIEW = 'poster-preview-view flex items-center justify-center min-w-0 min-h-0 overflow-hidden overscroll-contain touch-none select-none [padding:max(16px,env(safe-area-inset-top))_max(16px,env(safe-area-inset-right))_max(16px,env(safe-area-inset-bottom))_max(16px,env(safe-area-inset-left))] focus:[outline:none] [&.is-keyboard]:focus:[outline:2px_solid_var(--focus)] [&.is-keyboard]:focus:[outline-offset:-4px] [&_img]:block [&_img]:flex-none [&_img]:w-auto [&_img]:h-auto [&_img]:max-w-full [&_img]:max-h-full [&_img]:object-contain [&_img]:[transform-origin:center] [&_img]:cursor-default [&_img]:[-webkit-user-drag:none] [&_img]:[box-shadow:0_16px_64px_#0008] [&_img]:[transition:opacity_.3s_ease-out] [&_img.is-pending]:opacity-0 [&.is-zoomed_img]:cursor-grab [&.is-dragging_img]:cursor-grabbing'
+// With a mouse, the toolbar and the × show while the mouse moves and fade after 2s of rest (has-tools); touch screens never
+// show them.
+const MOUSE_ONLY = 'hidden mouse:opacity-0 mouse:pointer-events-none mouse:[transition:opacity_.3s_ease-out] mouse:[.poster-preview.has-tools:not(.is-closing)_&]:opacity-100 mouse:[.poster-preview.has-tools:not(.is-closing)_&]:pointer-events-auto'
+const TOOLS = `poster-preview-tools ${MOUSE_ONLY} mouse:[.poster-preview[open]_&]:flex absolute left-[50%] bottom-[max(24px,calc(env(safe-area-inset-bottom)_+_16px))] [translate:-50%_0] h-[calc(var(--control)_+_16px)] items-center gap-2 [padding:0_7px] [border:1px_solid_var(--glass-edge)] rounded-[calc(var(--control)/2_+_8px)] [background:rgb(10_10_16/.55)] [-webkit-backdrop-filter:blur(12px)] [backdrop-filter:blur(12px)]`
+// A control-size round button with the pills' specular rim (legacy.css); at a zoom limit it greys out.
+const BUTTON = 'poster-preview-button relative grid place-items-center w-(--control) h-(--control) p-0 [border:0] rounded-[999px] [background:rgb(255_255_255/.06)] text-white cursor-pointer [--spec-base:rgb(255_255_255/.3)] [&_svg]:block aria-disabled:text-[rgb(255_255_255/.32)] aria-disabled:cursor-default hover:not-aria-disabled:[--spec-base:#fff] focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:3px]'
+
+export function PosterPreview() {
+  const root = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+  const dialog = root.current;
   const view = dialog.querySelector('.poster-preview-view');
   const tools = dialog.querySelector('.poster-preview-tools');
   const closer = dialog.querySelector('.poster-preview-close');
@@ -137,7 +157,7 @@
     return running;
   }
 
-  // A poster on a faded stage (the detail sheet's, assets/site.css) keeps that fade on the flying image: the stage's masks,
+  // A poster on a faded stage (the detail sheet's, poster-fade in app.css) keeps that fade on the flying image: the stage's masks,
   // sized to the visible frame in the image's own pixels, grow until the whole image lies in their opaque top, so the
   // fade melts away as the image flies out and returns as it flies back (docs/event-browsing.md F43).
   function fadeFrame(from, visible) {
@@ -158,7 +178,7 @@
   }
 
   // With a mouse the toolbar and the × show while it moves and fade after 2s of rest, unless the pointer rests on them or
-  // the keyboard is on them (Q31–Q33); touch screens never show them (assets/site.css).
+  // the keyboard is on them (Q31–Q33); touch screens never show them (MOUSE_ONLY).
   const held = () => tools.matches(':hover') || closer.matches(':hover') || Boolean(dialog.querySelector('.poster-preview-tools :focus-visible, .poster-preview-close:focus-visible'));
   function wake() {
     if (!finePointer.matches || closing) return;
@@ -168,7 +188,7 @@
   }
 
   document.addEventListener('click', event => {
-    // The full image opens from the poster at the top of an event's detail sheet (assets/event-detail.js).
+    // The full image opens from the poster at the top of an event's detail sheet (EventDetail.tsx).
     const link = event.target.closest('.event-detail .event-posters a');
     if (!link || event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
@@ -176,8 +196,10 @@
     source = link;
     const poster = source.querySelector('img');
     image = poster.cloneNode();
+    // The copy takes the preview's look, not the stage's crop and parallax.
+    image.removeAttribute('class');
     // It opens as the version the stage shows and takes the original at once: the light version stays on screen until
-    // the original has downloaded; one not downloaded yet stays hidden and fades in whole (Q34, assets/site.css).
+    // the original has downloaded; one not downloaded yet stays hidden and fades in whole (Q34).
     if (!showsOriginal(poster)) image.removeAttribute('srcset');
     image.removeAttribute('loading');
     image.fetchPriority = 'high';
@@ -195,7 +217,7 @@
     view.focus({ preventScroll: true });
     reset();
     source.classList.add('poster-preview-origin');
-    // The text over the stage fades while the image is open (assets/site.css).
+    // The text over the stage fades while the image is open (EventRow.tsx).
     source.closest('.event-stage')?.classList.add('is-previewing');
     // The back button closes the image first: opening records an entry at the same address.
     history.pushState({ ...history.state, preview: true }, '');
@@ -418,4 +440,23 @@
     view.classList.remove('is-dragging');
     reset();
   });
-})();
+  }, [])
+  return (
+    <dialog ref={root} className={PREVIEW} aria-label="海报预览" aria-describedby="poster-preview-help">
+      <p className="sr-only" id="poster-preview-help">双指或滚轮缩放，放大后拖动查看；双击切换缩放；下拉、捏小或点背景退出。键盘加减号缩放，方向键移动，0 恢复全图，Esc 退出。</p>
+      <div className={VIEW} tabIndex={0} autoFocus aria-label="图片缩放与移动" />
+      <div className={TOOLS} role="toolbar" aria-label="缩放">
+        <button type="button" className={BUTTON} data-zoom="out" aria-label="缩小">
+          <svg aria-hidden="true" viewBox="0 0 14 14" width="14" height="14"><path d="M2 7h10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+        </button>
+        <button type="button" className={BUTTON} data-zoom="in" aria-label="放大">
+          <svg aria-hidden="true" viewBox="0 0 14 14" width="14" height="14"><path d="M2 7h10M7 2v10" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+        </button>
+        <button type="button" className={BUTTON} data-zoom="fit" aria-label="复位">
+          <svg aria-hidden="true" viewBox="0 0 14 14" width="14" height="14"><path d="M1.75 5V1.75H5M9 1.75h3.25V5M12.25 9v3.25H9M5 12.25H1.75V9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+      </div>
+      <button type="button" className={`poster-preview-close ${CLOSE_BUTTON} ${MOUSE_ONLY} mouse:[.poster-preview[open]_&]:block`} aria-label="关闭预览"><span aria-hidden="true" /></button>
+    </dialog>
+  )
+}
