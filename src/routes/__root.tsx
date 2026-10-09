@@ -16,7 +16,7 @@ function RootDocument() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#0b0b10" />
-        <meta name="description" content="2026 大湾区国庆电音活动指南。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。" />
+        <meta name="description" content="大湾区电音活动指南。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。" />
         <HeadContent />
         <link rel="icon" href="assets/brand/favicon-32.png" type="image/png" sizes="32x32" />
         <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" sizes="any" />

@@ -5,7 +5,6 @@ function checkLayout() {
   const viewport = document.documentElement.clientWidth;
   assert(document.documentElement.scrollWidth <= viewport, 'Page overflows horizontally');
   const wordmark = document.querySelector('.title-wordmark').getBoundingClientRect();
-  const region = document.querySelector('.title-region').getBoundingClientRect();
   const logo = document.querySelector('.title-logo').getBoundingClientRect();
   const updated = document.querySelector('.site-updated').getBoundingClientRect();
   const brand = document.querySelector('.title-lockup').getBoundingClientRect();
@@ -20,12 +19,12 @@ function checkLayout() {
   // The label's trailing letter-spacing hangs past the edge, so its last glyph lines up with the time.
   assert(Math.abs(updateLabel.getBoundingClientRect().right - parseFloat(getComputedStyle(updateLabel).letterSpacing) - updateTime.getBoundingClientRect().right) < 1,
     'Right-align both update lines');
-  assert(wordmark.bottom <= region.top && region.right < logo.left, 'The title leads; the byline “region  by logo” sits below it (question 260)');
+  assert(document.querySelector('.title-wordmark').textContent === '大湾区电音指南' && wordmark.bottom <= logo.top,
+    'The title leads; “by [logo]” sits below it (question 260, docs/guide-identity.md Q1)');
   // Both rows skew 12° from their bottom-left corner, so the title's box overhangs on the right by its height × tan 12°.
   const overhang = wordmark.height * Math.tan(12 * Math.PI / 180);
-  assert(Math.abs(wordmark.left - region.left) < 1 && Math.abs(wordmark.right - overhang - logo.right) < 1,
-    'Title and byline rows must share their left and right edges');
-  assert(updated.left >= Math.max(wordmark.right, region.right) && updated.right <= viewport,
+  assert(Math.abs(wordmark.right - overhang - logo.right) < 1, 'Title and byline rows must share their right edges');
+  assert(updated.left >= wordmark.right && updated.right <= viewport,
     'Header update time overlaps the title or leaves the viewport');
   assert(!document.querySelector('.hero-bottom, .top-links, .top-meta, .date-panel, .date-trigger'),
     'Remove the repeated hero footer, header navigation and date drawer');
