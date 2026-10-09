@@ -191,10 +191,11 @@ export function startGlass() {
     }, STILL)
     glow()
   }
-  const permission = (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission
   let ask: (() => void) | undefined
+  // Only secure contexts have DeviceOrientationEvent; a plain-http page (a phone on a LAN preview) must not touch it.
   if (!hover.matches && 'DeviceOrientationEvent' in window) {
     addEventListener('deviceorientation', tilted)
+    const permission = (DeviceOrientationEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission
     const REFUSED = 'glass-motion-refused'
     let refused = false
     try { refused = sessionStorage.getItem(REFUSED) === '1' } catch {}
