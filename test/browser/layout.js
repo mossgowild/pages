@@ -159,12 +159,14 @@ function checkLayout() {
   assert(!nav.querySelector('select'), 'Sub-genres, venues and dates live in the pickers, not native selects');
   for (const chip of nav.querySelectorAll('.family-chip')) {
     const all = chip.querySelector('.family-all input'), more = chip.querySelector('.family-more');
-    const members = JSON.parse(chip.dataset.members);
+    const subgenres = JSON.parse(chip.dataset.subgenres);
     const pop = document.getElementById(more.getAttribute('aria-controls'));
-    assert(!more.hidden && pop?.parentElement === document.body && pop.popover === 'manual', `${all.value}: the arrow opens a top-layer picker`);
+    assert(more.hidden === !subgenres.length && pop?.parentElement === document.body && pop.popover === 'manual', `${all.value}: the arrow opens a top-layer picker`);
     const rows = [...pop.querySelectorAll('.ms-option')];
     const chosen = all.checked ? 0 : rows.filter(row => row.getAttribute('aria-selected') === 'true').length;
-    assert(rows.length === members.length && (!all.checked || rows.every(row => row.getAttribute('aria-selected') === 'true')),
+    // Only sub-genres: a member named like the family is no row of its own (docs/event-filters.md Q10).
+    assert(rows.length === subgenres.length && !rows.some(row => row.textContent === all.value), `${all.value}: the picker lists the sub-genres only`);
+    assert(!all.checked || rows.every(row => row.getAttribute('aria-selected') === 'true'),
       `${all.value}: the whole family shows every sub-genre ticked`);
     assert(chip.classList.contains('is-partial') === chosen > 0 && Number(more.querySelector('.family-count').textContent || 0) === chosen,
       `${all.value}: partial state and count out of sync`);

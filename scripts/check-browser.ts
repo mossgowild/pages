@@ -88,8 +88,11 @@ try {
     await page.click(`${pop} .ms-option >> nth=0`)
     await wait(page, 400)
     assert.match(await page.getAttribute('.family-chip:has(input[value="Techno"])', 'class') ?? '', /is-partial/)
-    const members = await page.locator(`${pop} .ms-option`).count()
-    for (let i = 1; i < members; i++) await page.click(`${pop} .ms-option >> nth=${i}`)
+    // Sub-genres only, no row named Techno; ticking them all is the whole family, events tagged just Techno included
+    // (docs/event-filters.md Q10).
+    assert.ok(!(await page.locator(`${pop} .ms-option`).allTextContents()).includes('Techno'), 'No row named like the family')
+    const subgenres = await page.locator(`${pop} .ms-option`).count()
+    for (let i = 1; i < subgenres; i++) await page.click(`${pop} .ms-option >> nth=${i}`)
     await wait(page, 400)
     assert.ok(await page.isChecked('input[name="family"][value="Techno"]'), 'Ticking every sub-genre turns them into the whole family')
     assert.deepEqual(await tags(page), ['深圳', 'Techno'])

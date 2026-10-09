@@ -216,24 +216,25 @@ export function Page({ guide }: { guide: Guide }) {
           groups={venueGroups.map(group => ({ label: group.city, rows: group.venues.map(venue => ({ value: `${group.city}|${venue}`, text: venue })) }))}
           selected={row => filters.venue.includes(row.value)} onToggle={row => change({ ...filters, venue: toggleIn(filters.venue, row.value) })} />
       </PickerPop>
-      {guide.families.map(({ name, members }, index) => {
+      {guide.families.map(({ name, subgenres }, index) => {
         const id = `family-${index}-picker`
         const all = filters.families.includes(name)
-        const chosen = members.filter(genre => filters.genres.includes(genre)).length
+        const chosen = subgenres.filter(genre => filters.genres.includes(genre)).length
         // The whole family shows every sub-genre ticked; unticking one leaves the others as a partial choice, and ticking
-        // the last one turns them back into the whole family (questions 176, 179).
+        // the last one turns them back into the whole family (questions 176, 179), events tagged just the family's name
+        // included (docs/event-filters.md Q10).
         const toggleMember = (row: Row) => {
-          const others = filters.genres.filter(genre => !members.includes(genre))
-          if (all) return change({ ...filters, families: filters.families.filter(family => family !== name), genres: [...others, ...members.filter(genre => genre !== row.value)] })
+          const others = filters.genres.filter(genre => !subgenres.includes(genre))
+          if (all) return change({ ...filters, families: filters.families.filter(family => family !== name), genres: [...others, ...subgenres.filter(genre => genre !== row.value)] })
           const picked = toggleIn(filters.genres, row.value)
-          if (members.every(genre => picked.includes(genre))) return change({ ...filters, families: [...filters.families, name], genres: others })
+          if (subgenres.every(genre => picked.includes(genre))) return change({ ...filters, families: [...filters.families, name], genres: others })
           change({ ...filters, genres: picked })
         }
         return (
           <PickerPop key={id} {...pickerProps(id)} title={name} doneText={all ? '全部' : chosen ? `${chosen} 项` : ''}
-            onClear={() => change({ ...filters, families: filters.families.filter(family => family !== name), genres: filters.genres.filter(genre => !members.includes(genre)) })}>
+            onClear={() => change({ ...filters, families: filters.families.filter(family => family !== name), genres: filters.genres.filter(genre => !subgenres.includes(genre)) })}>
             <MultiList id={id} labelId={`${id}-title`} placeholder={`搜索 ${name} 小类`} opened={shownPicker === id}
-              groups={[{ label: null, rows: members.map(genre => ({ value: genre, text: genre })) }]}
+              groups={[{ label: null, rows: subgenres.map(genre => ({ value: genre, text: genre })) }]}
               selected={row => all || filters.genres.includes(row.value)} onToggle={toggleMember} />
           </PickerPop>
         )

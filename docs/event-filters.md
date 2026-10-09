@@ -9,26 +9,27 @@ updated: 2026-10-10
 
 ## 问答
 
-### 请求：结果数变化时滚动
+### 请求：小类里拿掉与大类同名的一行
 
-> 2026-10-10：“筛选栏右边的数字变化时加一点滚动动画”
+> 2026-10-10：“C 从小类拿掉”（回答“小类里与大类同名的那一行要不要改？”，见结论区“风格小类里排第一的是大类本身”）
 
 ### 已查明事实
 
 | # | 事实 | 来源 |
 | --- | --- | --- |
-| F18 | 筛选栏右端的结果数是 `<strong id="result-count">`（Syne 700 17px、品牌粉），后面跟灰色小字“场”；外层 `<p class="filter-count">` 是 `role="status"`、`aria-live="polite"`，读屏读的是旁边隐藏的“全部 57 场活动”这类说明。数字在任何条件变化时跟着变（勾选、移除标签、“清空”），范围 0–57，一位或两位数；现在是直接换字，没有动画 | `src/components/FilterDock.tsx`；`src/components/Page.tsx`（`count={valid ? total : events.length}`） |
-| F19 | React Bits 的 Counter 组件：每一位是一列竖排的 0–9，数字变化时整列上下滚到新数字（走较短的方向，中间的数字会滚过去）；用 motion 库的弹簧（默认刚度 100、阻尼 10、质量 1，阻尼比 0.5，会冲过头再回弹，约 1 秒停稳）；上下各 16px 渐隐遮住列里别的数字；位数变化（如 57→8）时多出的那一列直接消失 | https://github.com/DavidHDev/react-bits `src/content/Components/Counter/Counter.jsx` |
-| F20 | 站内没有 motion 等动画库，弹层与标签的动效都是自写的 Web Animations：Card Nav 节奏 0.4s power3.out，走 `eased()` 让 Safari 交给合成线程；标签增减不过冲（新标签自 0.8 缩放淡入）；减少动态效果时一律不动 | `package.json`；`src/lib/motion.ts`；AGENTS.md 第五节；项目技能 `pages-site-visual-choices` |
-| F21 | 实现后的核对：无头 Chrome（GPU）停帧——57→18 与 18→57 在 0、30、60、100、150、220、300、400 毫秒，桌面与手机宽度，起止数字正好居中、中间各位滚过、上下渐隐，[停帧图](event-filters/count-frames.png)；iPhone Air 模拟器 Safari：勾选深圳后让主线程空转 3 秒，空转开始 1.2 秒时的截图结果数已停在 18（数字带还没被脚本收起），滚动由合成线程跑完 | 草稿目录 `count/frames.ts`、`sheet/count.js`；`xcrun simctl io` 截图 |
+| F22 | 每个风格大类的小类弹层，列的是 `genre_families` 里这一类的全部成员，按本期场数从多到少排（AGENTS.md：只列小类、不设“全部”行）；七个大类都把大类名本身也列为成员（如 Techno 类里有“Techno”），因为有的活动只标了大类名、没有更细的小类 | `src/lib/guide.server.ts`（`members … sort((a, b) => count(b) - count(a))`）；`data/events.json` 的 `genre_families` |
+| F23 | 同名成员的场数在五类里最多，所以排第一：Techno 11 场（其中 9 场没有更细的 Techno 小类）、House 9（9）、Bass 9（3）、Trance 5（4）、Experimental 3（2）；Hard Dance 里 Hardstyle 3 场排第一、Hard Dance 1 场，Open Format 里 Hip-Hop 5 场排第一、Open Format 2 场 | `data/events.json` 统计 |
+| F24 | 筛选结果是对的：点大类胶囊（“全部 Techno”）筛出这一类全部 22 场；在弹层里只勾“Techno”这一行，只筛出标了 Techno 的 11 场，不含只标 Hard Techno 等小类的场次。容易误会的是这一行与大类同名，看起来像“全部 Techno” | `src/lib/filters.ts`；`src/components/Page.tsx` |
+| F25 | 小类弹层的选择规则（第 176、179 题）：点大类胶囊选“全部 X”；整类选中时弹层显示全部小类已勾选，取消其中一项变成其余小类的部分选择；逐个勾满全部小类则回到整类。勾“小类”筛的是标了这个小类的场次，整类筛的是这一类任一成员的场次（含只标大类名的） | `src/components/Page.tsx` 的 `toggleMember`；`src/lib/filters.ts` |
+| F26 | 拿掉同名行后各类剩下的小类：Techno 7 个、House 9、Trance 4、Bass 12、Hard Dance 只剩 Hardstyle 1 个、Experimental 4、Open Format 18；只标大类名、没有本类其他小类的场次：Techno 9、House 9、Trance 4、Bass 3、Experimental 2、Open Format 1、Hard Dance 0（这些场次只能靠大类胶囊选到） | `data/events.json` 统计 |
+| F27 | 用到成员列表的检查：`test/browser/layout.js` 核对弹层行数等于胶囊的 `data-members`；`scripts/check-browser.ts` 在 Techno 弹层里勾第一行、再勾满其余行来验证“勾满回到整类”；页面上没有保存筛选条件（不读地址或本地存储），不涉及旧状态 | `test/browser/layout.js`；`scripts/check-browser.ts`；`grep localStorage src` |
 
 ### 问答
 
 | # | 问题 | 答复 | 影响 |
 | --- | --- | --- | --- |
-| Q7 | 数字怎么滚（F18–F20）：A React Bits Counter——每一位像里程表一样上下滚到新数字，中间的数字会滚过去，上下渐隐；B 整个数字一起滑——旧数字向上滑出、新数字从下面滑进来（变少时反过来），不经过中间数字；C 计数——数字从旧值一个个数到新值，不滚动。推荐 A：最像“滚动”，也是 React Bits 原版做法；动得快慢与回弹要不要照原版另问 | “A 里程表式”（2026-10-10 提问工具） | 照 React Bits Counter：每一位一列 0–9 上下滚到新数字，上下渐隐；快慢与回弹见 Q8 |
-| Q8 | 滚动的快慢与回弹（Q7、F19、F20）：A 照原版弹簧——冲过头再回弹，约 1 秒停稳，更有弹性；B 筛选其余动效的节奏——0.4s power3.out，干脆停住、不过冲，和标签、弹层一致。推荐 B：整站动效克制，筛选栏里标签与弹层都不过冲，结果数和它们同时变，节奏一致更整齐 | “B 站内节奏”（2026-10-10 提问工具） | 每一位按 0.4s power3.out 滚到新数字、不过冲；用 `eased()` 写成关键帧，Safari 交给合成线程 |
-| Q9 | 怎么分层（Q7、Q8）：A 一层——`src/components/FilterDock.tsx` 的结果数换成逐位滚动的数字（每一位一条从旧值到新值的数字带，用 `src/lib/motion.ts` 的 `eased()` 0.4s 滚到位、上下渐隐；停住时只剩当前数字，读屏照旧读旁边的说明；首次显示与减少动态效果时不动），`scripts/check-browser.ts` 加滚动的检查，AGENTS.md 第五节与本文档结论区写上这条，一次验收；B 两层——L1 先在页面上临时做出效果给你看，L2 再定稿、补检查与说明。推荐 A：样式与节奏都已定，直接做好再看更省事 | “A 一层”（2026-10-10 提问工具） | 一层：做好滚动并补检查与说明，一次验收 |
+| Q10 | 拿掉同名行后，勾满弹层里的小类算什么（F25、F26）：A 勾满就是整类——照现在“逐个勾满回到整类”，筛出这一类全部场次，也包括只标大类名的（如 Techno 勾满 7 个小类得到全部 22 场，比勾的 13 场多出只标 Techno 的 9 场）；整类时取消一项，剩下的小类不再包括只标大类名的场次；Hard Dance 只剩 Hardstyle 一个小类，勾它就等于整类。B 勾满仍是部分选择——只有点大类胶囊才是整类，弹层勾满显示“7 项”、筛 13 场；整类时打开弹层仍全部勾选，取消一项变成其余小类。推荐 A：保留已定的“勾满回到整类”（第 176、179 题），胶囊的“全部”与弹层的勾选始终一致；只标大类名的场次本来就属于这一类 | “A 勾满即整类”（2026-10-10 提问工具） | 弹层只列与大类不同名的小类；勾满它们回到整类（含只标大类名的场次），整类时取消一项变成其余小类 |
+| Q11 | 怎么分层（Q10）：A 一层——`src/lib/guide.server.ts` 给每个大类算出不含同名成员的小类列表，`src/components/Page.tsx` 的小类弹层与“勾满回到整类”改用它，`src/components/FilterDock.tsx` 胶囊上的小类数与没有小类时隐藏箭头跟着改；`test/browser/layout.js`、`scripts/check-browser.ts` 按新列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明，一次验收；B 两层——L1 只改弹层不列同名行，L2 再改检查与说明。推荐 A：改动集中、规则不变，合在一起才能验收 | “A 一层”（2026-10-10 提问工具） | 一层：弹层、规则、检查与说明一起改，一次验收 |
 
 ### 以往：筛选面板打开后触屏滚动穿透（2026-10-09）
 
@@ -84,7 +85,41 @@ updated: 2026-10-10
 | Q5 | 卡顿怎样算修好（F12、F13）：A 我在模拟器里证明动画已交给合成线程（主线程忙时底部面板与遮罩照样动完）、逐帧计时不变差，验收时再请你在看到卡顿的那台手机、那个浏览器里实际看；B 在 A 之外，做一个手机测试页，让你盲比改前改后两种写法（顺序打乱、不标名字）。推荐 A：模拟器测不出手机的手感（F13），但能直接证明卡顿的原因已经去掉（F12），手感由你验收时判断 | “A 模拟器证明加手机上看”（2026-10-09 提问工具） | 验证：模拟器里主线程忙时动画照样走完、逐帧计时不变差；验收时 moss 在看到卡顿的手机与浏览器里看 |
 | Q6 | 怎么分层（Q4、Q5 已定）：A 三层——L1 标签条（`src/components/FilterDock.tsx`：标签条纵向不能滚，四周留 1px 给反光环、外边距 -1px 让标签位置不变；`test/browser/layout.js` 加断言：标签条不能纵向滚、反光环在标签条与渐隐遮罩以内；解决 F7、F8）；L2 点击穿透（`src/components/Pickers.tsx`：手机上弹层铺满屏幕，底部面板以外是一层真正的遮罩，取代 `::backdrop`、样子不变，点它只关弹层，在它上面拖不会动到后面的面板，下拉关闭与松手回弹改为调这层遮罩的透明度；`scripts/check-browser.ts` 加检查：点遮罩后弹层关闭、筛选条件不变；解决 F9）；L3 动画交给合成线程（`src/lib/motion.ts`：把 `EASE` 曲线写成关键帧，延迟写成开头停住的一段，关闭写成反序的正向播放；`Pickers.tsx` 的底部面板、遮罩与内容，`FilterDock.tsx` 的面板遮罩、卡片与标签改用它，曲线、时长与样子不变；解决 F10–F12、F16）。B 两层——L1 是 A 的 L1 加 L2（标签条与点击穿透），L2 是 A 的 L3（动画）。C 一层，全部一起做。推荐 B：两处小修都靠 Chrome 与模拟器的点按、拖动核对，一起验收即可；动画要你在手机上看手感（Q5），单独一层，看的时候不夹杂别的改动 | “B 两层”（2026-10-09 提问工具） | 方案按两层写：L1 标签条与点击穿透，L2 动画交给合成线程 |
 
+### 以往：结果数变化时滚动（2026-10-10）
+
+> 2026-10-10：“筛选栏右边的数字变化时加一点滚动动画”
+
+### 已查明事实
+
+| # | 事实 | 来源 |
+| --- | --- | --- |
+| F18 | 筛选栏右端的结果数是 `<strong id="result-count">`（Syne 700 17px、品牌粉），后面跟灰色小字“场”；外层 `<p class="filter-count">` 是 `role="status"`、`aria-live="polite"`，读屏读的是旁边隐藏的“全部 57 场活动”这类说明。数字在任何条件变化时跟着变（勾选、移除标签、“清空”），范围 0–57，一位或两位数；现在是直接换字，没有动画 | `src/components/FilterDock.tsx`；`src/components/Page.tsx`（`count={valid ? total : events.length}`） |
+| F19 | React Bits 的 Counter 组件：每一位是一列竖排的 0–9，数字变化时整列上下滚到新数字（走较短的方向，中间的数字会滚过去）；用 motion 库的弹簧（默认刚度 100、阻尼 10、质量 1，阻尼比 0.5，会冲过头再回弹，约 1 秒停稳）；上下各 16px 渐隐遮住列里别的数字；位数变化（如 57→8）时多出的那一列直接消失 | https://github.com/DavidHDev/react-bits `src/content/Components/Counter/Counter.jsx` |
+| F20 | 站内没有 motion 等动画库，弹层与标签的动效都是自写的 Web Animations：Card Nav 节奏 0.4s power3.out，走 `eased()` 让 Safari 交给合成线程；标签增减不过冲（新标签自 0.8 缩放淡入）；减少动态效果时一律不动 | `package.json`；`src/lib/motion.ts`；AGENTS.md 第五节；项目技能 `pages-site-visual-choices` |
+| F21 | 实现后的核对：无头 Chrome（GPU）停帧——57→18 与 18→57 在 0、30、60、100、150、220、300、400 毫秒，桌面与手机宽度，起止数字正好居中、中间各位滚过、上下渐隐，[停帧图](event-filters/count-frames.png)；iPhone Air 模拟器 Safari：勾选深圳后让主线程空转 3 秒，空转开始 1.2 秒时的截图结果数已停在 18（数字带还没被脚本收起），滚动由合成线程跑完 | 草稿目录 `count/frames.ts`、`sheet/count.js`；`xcrun simctl io` 截图 |
+
+### 问答
+
+| # | 问题 | 答复 | 影响 |
+| --- | --- | --- | --- |
+| Q7 | 数字怎么滚（F18–F20）：A React Bits Counter——每一位像里程表一样上下滚到新数字，中间的数字会滚过去，上下渐隐；B 整个数字一起滑——旧数字向上滑出、新数字从下面滑进来（变少时反过来），不经过中间数字；C 计数——数字从旧值一个个数到新值，不滚动。推荐 A：最像“滚动”，也是 React Bits 原版做法；动得快慢与回弹要不要照原版另问 | “A 里程表式”（2026-10-10 提问工具） | 照 React Bits Counter：每一位一列 0–9 上下滚到新数字，上下渐隐；快慢与回弹见 Q8 |
+| Q8 | 滚动的快慢与回弹（Q7、F19、F20）：A 照原版弹簧——冲过头再回弹，约 1 秒停稳，更有弹性；B 筛选其余动效的节奏——0.4s power3.out，干脆停住、不过冲，和标签、弹层一致。推荐 B：整站动效克制，筛选栏里标签与弹层都不过冲，结果数和它们同时变，节奏一致更整齐 | “B 站内节奏”（2026-10-10 提问工具） | 每一位按 0.4s power3.out 滚到新数字、不过冲；用 `eased()` 写成关键帧，Safari 交给合成线程 |
+| Q9 | 怎么分层（Q7、Q8）：A 一层——`src/components/FilterDock.tsx` 的结果数换成逐位滚动的数字（每一位一条从旧值到新值的数字带，用 `src/lib/motion.ts` 的 `eased()` 0.4s 滚到位、上下渐隐；停住时只剩当前数字，读屏照旧读旁边的说明；首次显示与减少动态效果时不动），`scripts/check-browser.ts` 加滚动的检查，AGENTS.md 第五节与本文档结论区写上这条，一次验收；B 两层——L1 先在页面上临时做出效果给你看，L2 再定稿、补检查与说明。推荐 A：样式与节奏都已定，直接做好再看更省事 | “A 一层”（2026-10-10 提问工具） | 一层：做好滚动并补检查与说明，一次验收 |
+
+### 以往：风格小类里排第一的是大类本身（2026-10-10）
+
+> 2026-10-10：“风格里，为什么第一个选项都是大类本身，是不是有问题”
+
+- 学习：无合格候选：本次是对现有数据与排序的解释，没有新的纠正或可复用的做法
+
 ## 结论
+
+### 风格小类
+
+- 来由（F22–F24）：有的活动只标了大类名（如“Techno”），大类名因此也是这一类的成员；按场数排序时它总排第一，看起来像“全部 X”，与大类胶囊重复、容易误选。
+- 小类弹层只列与大类不同名的小类，按本期场数从多到少（Q10）；只标大类名的场次通过大类胶囊“全部 X”选到。
+- 选择规则不变（第 176、179 题）：整类选中时弹层显示全部小类已勾选，取消一项变成其余小类的部分选择（不再包括只标大类名的场次）；逐个勾满全部小类回到整类（含只标大类名的场次，Q10）。
+- 大类没有别的小类时，胶囊上不显示打开弹层的箭头。
 
 ### 底部弹层、遮罩与标签条
 
@@ -121,37 +156,35 @@ flowchart TD
 
 ## 记录
 
-### 本任务：结果数变化时滚动
+### 本任务：小类里拿掉与大类同名的一行
 
 - 确认：“确认”（2026-10-10 提问工具）
-- 学习：无合格候选：本任务唯一的经验已在 L1 写入 moss-web-ui，没有别的纠正或约定
+- 学习：无合格候选：同名行的来由与决定已写进结论区与 AGENTS.md，没有别的纠正或可复用的做法
 
 #### 目标与范围
 
-- 目标：筛选栏右端的结果数变化时，逐位像里程表一样滚到新数字（Q7），0.4s 不过冲（Q8）。
-- 不做：不改结果数的字号、颜色、位置与“场”字；不改读屏说明；不引入动画库；不照原版的弹簧回弹（Q8）。
-- 须遵守：Q7–Q9；AGENTS.md 第五节的筛选栏契约；Card Nav 节奏与 `eased()`（项目技能 `pages-site-visual-choices`）；减少动态效果时不动；不拿效果换流畅，手机表现至少在 iPhone Air 模拟器里看。
+- 目标：风格小类弹层不再列与大类同名的一行，勾满其余小类即整类（Q10）。
+- 不做：不改 `data/events.json` 的风格标注与 `genre_families`；不给只标大类名的场次补小类；不改筛选的匹配逻辑（整类仍按全部成员匹配）。
+- 须遵守：Q10、Q11；第 176、179 题的选择规则；AGENTS.md 第五节的筛选契约。
 
 #### 层
 
-1. L1 结果数逐位滚动
-  - 内容：`src/components/FilterDock.tsx`：`#result-count` 里每一位一个窗口，数字变化时放一条从旧值到新值的数字带（个位按整数逐个、十位按十位逐个），用 `eased()` 0.4s 把数字带移到新数字，播完换回只有当前数字的静止状态；窗口上下渐隐（`mask-image`）；首次显示、减少动态效果时直接换数字；滚动途中再变化时从当前位置接着滚；数字带 `aria-hidden`，读屏仍读隐藏说明。`scripts/check-browser.ts`：勾选城市后结果数在滚动中、0.5 秒后停在新数字且文字等于场数，减少动态效果时直接是新数字；`test/browser/layout.js` 里读 `#result-count` 的检查按需调整。AGENTS.md 第五节筛选栏一段写上“结果数逐位滚动”
-  - 验收：勾选或移除条件时，结果数逐位上下滚到新数字，0.4 秒停住、不过冲，上下渐隐，数字不被裁切；位数变化时多的一位直接出现或消失；减少动态效果时直接换；给你看慢放的过程截图，并请你在手机上试
-  - 验证：`bun run build`、`bun run check:browser`（含新增检查）、`bunx tsc --noEmit`、`git diff --check`；内置浏览器放慢动画逐帧截图核对滚动与渐隐；iPhone Air 模拟器里看滚动是否顺、确认交给了合成线程（主线程空转时照样滚完）
-  - 依据：Q7–Q9、F18–F20
+1. L1 小类弹层不列同名行
+  - 内容：`src/lib/guide.server.ts`：每个大类在 `members`（用于匹配）之外给出不含同名成员的小类列表（按场数排序）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”都改用小类列表；`src/components/FilterDock.tsx`：胶囊的部分选择数与 `data-members` 按小类列表，没有小类时不显示箭头；`test/browser/layout.js`、`scripts/check-browser.ts` 按小类列表核对，`test/page.test.tsx` 补“弹层不列同名行”；AGENTS.md 第五节写明弹层不列与大类同名的成员
+  - 验收：七个大类的弹层第一行都不再是大类名；Techno 勾满 7 个小类回到“全部 Techno”（22 场），整类时取消一项得到其余小类；Hard Dance 弹层只有 Hardstyle，勾上即整类；给你看弹层截图
+  - 验证：`bun run build`（含新测试）、`bun run check:browser`、`bunx tsc --noEmit`、`git diff --check`；内置浏览器打开 Techno、Hard Dance 弹层截图
+  - 依据：Q10、Q11、F22–F27
 
 #### 交付
 
 - 操作：无（改动留在工作区）
 
-### L1 结果数逐位滚动（已完成）
+### L1 小类弹层不列同名行（已完成）
 
-- 改动：`src/components/FilterDock.tsx` 新增 `RollingCount`：`#result-count` 每一位一个 1ch 宽、1.25em 高、上下渐隐的窗口（等宽数字），数字变化时在窗口里放一条从旧值到新值的数字带（`aria-hidden`），用 `eased()` 0.4s 移到新数字（`fill: both`，停在终点直到数字带收起，免得终点那一帧露出带头），滚动中途再变时按数字带当前的位置接着滚；新出现或消失的位直接出现或消失；首次显示与减少动态效果时直接换；停住后只剩静止数字，`#result-count` 的文字就是这个数。`scripts/check-browser.ts`：勾选深圳后 150ms 在滚、700ms 已停，新增“减少动态效果时直接换”的检查。AGENTS.md 第五节筛选栏写上结果数滚动。`test/browser/layout.js` 不用改（它在静止时读结果数）
-- 验证：`bun run build`（19 项测试）、`bun run check:browser`（全部通过，含新增 count (reduce) 与滚动中、停住的断言）、`bunx tsc --noEmit`、`git diff --check` 通过；停帧与模拟器核对见 F21；第一次停帧发现数字带越长越偏、起始数字落在窗口外（`offsetHeight` 把 21.25px 取整成 21px），改用 `getBoundingClientRect().height` 后起止都居中
-- 学习：写入：moss-web-ui（按格子高度移动长条内容时用 `getBoundingClientRect().height`，`offsetHeight` 取整会逐格累积；停在第 0 毫秒与终点截帧核对）
+- 改动：`src/lib/guide.server.ts`：大类给页面的不再是全部成员，而是 `subgenres`——去掉与大类同名的成员、按场数排序（匹配活动仍按 `data/events.json` 的全部成员）；`src/components/Page.tsx`：小类弹层的行、“整类时取消一项”“勾满回到整类”、清除都改用 `subgenres`；`src/components/FilterDock.tsx`：胶囊的部分选择数、勾整类时清掉的小类与 `data-subgenres` 用 `subgenres`，没有小类时不显示箭头；`test/browser/layout.js` 核对弹层行就是 `subgenres`、没有与大类同名的行、没有小类时箭头隐藏；`scripts/check-browser.ts` 断言 Techno 弹层没有“Techno”一行；`test/page.test.tsx` 断言七个弹层都不列同名行；AGENTS.md 第五节写明
+- 验证：`bun run build`（19 项测试通过）、`bun run check:browser`（全部通过）、`bunx tsc --noEmit`、`git diff --check` 通过；无头 Chrome（390 宽）：七类弹层的行都不含大类名（Hard Dance 只有 Hardstyle）；Techno 逐个勾满 7 个小类后“全部 Techno”勾上、显示 22 场；整类时取消第一项变成其余 6 个小类、8 场；Hard Dance 勾 Hardstyle 即整类；看过 Techno 与 Hard Dance 弹层截图
+- 学习：无合格候选：这层没有新的纠正或可复用的做法
 - 验收：“接受并提交”（2026-10-10 提问工具）
-
-![结果数滚动的停帧](event-filters/count-frames.png)
 
 ### 以往：底部弹层卡顿、点击穿透与标签条滚动（2026-10-09）
 
@@ -210,3 +243,35 @@ flowchart TD
   - 没核对：手机上的手感，等 moss 验收时看（Q5）。
 - 学习：写入：moss-web-ui（延迟写成关键帧开头停住，动画从一开始就整段交给合成线程）；pages-site-visual-choices（Card Nav 曲线的动画一律用 `eased()` 写，原因与还没改的部分）；moss-browser（改动画写法时在两个构建的同一时刻暂停逐像素对比）
 - 验收：“接受并提交”
+
+### 以往：结果数变化时滚动（2026-10-10）
+
+- 确认：“确认”（2026-10-10 提问工具）
+- 学习：无合格候选：本任务唯一的经验已在 L1 写入 moss-web-ui，没有别的纠正或约定
+
+#### 目标与范围
+
+- 目标：筛选栏右端的结果数变化时，逐位像里程表一样滚到新数字（Q7），0.4s 不过冲（Q8）。
+- 不做：不改结果数的字号、颜色、位置与“场”字；不改读屏说明；不引入动画库；不照原版的弹簧回弹（Q8）。
+- 须遵守：Q7–Q9；AGENTS.md 第五节的筛选栏契约；Card Nav 节奏与 `eased()`（项目技能 `pages-site-visual-choices`）；减少动态效果时不动；不拿效果换流畅，手机表现至少在 iPhone Air 模拟器里看。
+
+#### 层
+
+1. L1 结果数逐位滚动
+  - 内容：`src/components/FilterDock.tsx`：`#result-count` 里每一位一个窗口，数字变化时放一条从旧值到新值的数字带（个位按整数逐个、十位按十位逐个），用 `eased()` 0.4s 把数字带移到新数字，播完换回只有当前数字的静止状态；窗口上下渐隐（`mask-image`）；首次显示、减少动态效果时直接换数字；滚动途中再变化时从当前位置接着滚；数字带 `aria-hidden`，读屏仍读隐藏说明。`scripts/check-browser.ts`：勾选城市后结果数在滚动中、0.5 秒后停在新数字且文字等于场数，减少动态效果时直接是新数字；`test/browser/layout.js` 里读 `#result-count` 的检查按需调整。AGENTS.md 第五节筛选栏一段写上“结果数逐位滚动”
+  - 验收：勾选或移除条件时，结果数逐位上下滚到新数字，0.4 秒停住、不过冲，上下渐隐，数字不被裁切；位数变化时多的一位直接出现或消失；减少动态效果时直接换；给你看慢放的过程截图，并请你在手机上试
+  - 验证：`bun run build`、`bun run check:browser`（含新增检查）、`bunx tsc --noEmit`、`git diff --check`；内置浏览器放慢动画逐帧截图核对滚动与渐隐；iPhone Air 模拟器里看滚动是否顺、确认交给了合成线程（主线程空转时照样滚完）
+  - 依据：Q7–Q9、F18–F20
+
+#### 交付
+
+- 操作：无（改动留在工作区）
+
+### L1 结果数逐位滚动（已完成）
+
+- 改动：`src/components/FilterDock.tsx` 新增 `RollingCount`：`#result-count` 每一位一个 1ch 宽、1.25em 高、上下渐隐的窗口（等宽数字），数字变化时在窗口里放一条从旧值到新值的数字带（`aria-hidden`），用 `eased()` 0.4s 移到新数字（`fill: both`，停在终点直到数字带收起，免得终点那一帧露出带头），滚动中途再变时按数字带当前的位置接着滚；新出现或消失的位直接出现或消失；首次显示与减少动态效果时直接换；停住后只剩静止数字，`#result-count` 的文字就是这个数。`scripts/check-browser.ts`：勾选深圳后 150ms 在滚、700ms 已停，新增“减少动态效果时直接换”的检查。AGENTS.md 第五节筛选栏写上结果数滚动。`test/browser/layout.js` 不用改（它在静止时读结果数）
+- 验证：`bun run build`（19 项测试）、`bun run check:browser`（全部通过，含新增 count (reduce) 与滚动中、停住的断言）、`bunx tsc --noEmit`、`git diff --check` 通过；停帧与模拟器核对见 F21；第一次停帧发现数字带越长越偏、起始数字落在窗口外（`offsetHeight` 把 21.25px 取整成 21px），改用 `getBoundingClientRect().height` 后起止都居中
+- 学习：写入：moss-web-ui（按格子高度移动长条内容时用 `getBoundingClientRect().height`，`offsetHeight` 取整会逐格累积；停在第 0 毫秒与终点截帧核对）
+- 验收：“接受并提交”（2026-10-10 提问工具）
+
+![结果数滚动的停帧](event-filters/count-frames.png)

@@ -95,7 +95,9 @@ function build() {
     const iso = day.toISOString().slice(0, 10)
     days.push({ iso, label: monthDay(iso), title: `${day.getUTCMonth() + 1} 月 ${day.getUTCDate()} 日`, weekday: WEEKDAYS[day.getUTCDay()], events: sorted.filter(event => event.date === iso) })
   }
-  // Sub-genres in each family picker: most events this edition first, ties in the JSON member order (question 179).
+  // Sub-genres in each family picker: most events this edition first, ties in the JSON member order (question 179). A
+  // member named like the family (events tagged just "Techno") is no sub-genre: those events come with the whole family
+  // (docs/event-filters.md Q10).
   const count = (genre: string) => events.filter(event => event.genres.includes(genre)).length
   const { title, publisher } = data
   const [, updatedDate, updatedTime] = data.updated_at.match(/^\d{4}-(\d\d-\d\d)T(\d\d:\d\d)/)!
@@ -105,7 +107,7 @@ function build() {
     editionYear: data.start_date.slice(0, 4), dateRange: `${monthDay(data.start_date)} — ${monthDay(data.end_date)}`,
     startDate: data.start_date, endDate: data.end_date, eventCount: events.length, days,
     cities: [...new Set(events.map(event => event.city))].sort(),
-    families: data.genre_order.families.map(name => ({ name, members: families[name].filter(count).sort((a, b) => count(b) - count(a)) })),
+    families: data.genre_order.families.map(name => ({ name, subgenres: families[name].filter(genre => genre !== name && count(genre)).sort((a, b) => count(b) - count(a)) })),
     genres: data.genre_order.genres,
     // The wall's posters; each names its 400px light version and that version's width, which assets/hero.js shows instead
     // of the 720px one where it covers the tile on the screen (docs/motion-performance.md).

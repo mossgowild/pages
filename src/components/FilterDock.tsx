@@ -455,20 +455,21 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
           <fieldset className={CARD} style={cardColor('yellow')}>
             <legend className={LEGEND}>风格</legend>
             <div className={`${CHIPS} genre-chips`}>
-              {guide.families.map(({ name, members }, index) => {
+              {guide.families.map(({ name, subgenres }, index) => {
                 const id = `family-${index}-picker`
-                const chosen = members.filter(genre => filters.genres.includes(genre)).length
+                const chosen = subgenres.filter(genre => filters.genres.includes(genre)).length
                 return (
                   // Split chip (question 176): the name is the 全部 X checkbox; the arrow opens the family's sub-genre
-                  // picker. Ticking the name selects the whole family, so it clears the sub-genres first.
-                  <div key={name} className={`${FAMILY}${chosen ? ' is-partial' : ''}`} data-members={JSON.stringify(members)}>
+                  // picker, and is left out for a family with no sub-genre of its own. Ticking the name selects the whole
+                  // family, so it clears the sub-genres first.
+                  <div key={name} className={`${FAMILY}${chosen ? ' is-partial' : ''}`} data-subgenres={JSON.stringify(subgenres)}>
                     <label className={FAMILY_ALL}>
                       <input className={CHIP_INPUT} type="checkbox" name="family" value={name} id={`family-${index}`} checked={filters.families.includes(name)}
                         onChange={event => change({ ...filters, families: toggled(filters.families, name, event.target.checked),
-                          genres: event.target.checked ? filters.genres.filter(genre => !members.includes(genre)) : filters.genres })} />
+                          genres: event.target.checked ? filters.genres.filter(genre => !subgenres.includes(genre)) : filters.genres })} />
                       <span className={FAMILY_LABEL}>{name}</span>
                     </label>
-                    <button ref={element => { if (element) triggers.set(id, element) }} type="button" className={FAMILY_MORE} hidden={!hydrated}
+                    <button ref={element => { if (element) triggers.set(id, element) }} type="button" className={FAMILY_MORE} hidden={!hydrated || !subgenres.length}
                       aria-label={`选择 ${name} 小类`} aria-expanded={pickers.shown === id} aria-controls={`${id}-popover`} aria-haspopup="listbox"
                       onClick={() => pickers.toggle(id)}>
                       <span className="family-count [font:700_12px/1_var(--font-display)] text-white" hidden={!chosen}>{chosen || ''}</span>{CHEVRON}

@@ -86,6 +86,12 @@ test('the page structure', () => {
   const chips = all(document, 'input[name="family"]').map(input => input.getAttribute('value'))
   expect(chips).toEqual(data.genre_order.families)
   expect(chips).toEqual(Object.keys(data.genre_families))
+  // Each family's picker lists its sub-genres, not a row named like the family (docs/event-filters.md Q10).
+  for (const [index, name] of chips.entries()) {
+    const rows = all(document, `#family-${index}-picker-popover .ms-option`).map(text)
+    expect(rows.length).toBeGreaterThan(0)
+    expect(rows).not.toContain(name)
+  }
   expect(html).not.toMatch(/wxid_|@chatroom|localhost|file:\/\/|\/Users\//)
   // The preview's mouse toolbar, × and help text (assets/poster-preview.js).
   expect(document.querySelector('.poster-preview-tools')?.getAttribute('role')).toBe('toolbar')
