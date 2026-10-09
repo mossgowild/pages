@@ -21,7 +21,7 @@
   `bun run build`（先跑测试）生成 `.output/` 作为网站，本机用 `node .output/server/index.mjs` 起服务；`public/assets/posters/` 存放图片，`public/assets/posters/sources.json` 记录图片来源；
   新增或更换海报后先运行 `bun run posters`（`scripts/build-posters.ts`，需要 `cwebp`，Homebrew `webp`），为每张海报生成短边 720px 与 400px 两档 WebP 轻量版（`<原文件名>.thumb.webp`、`<原文件名>.thumb-400.webp`，记在 `sources.json` 的 `thumbnail`、`thumbnail_small`；原图短边更小时保持原尺寸），并为 PNG、JPG 原图生成同尺寸的 WebP 显示版（`<原文件名>.full.webp`，记在 `full`：q90，标了 `full_lossless` 的颗粒图转无损，转出比原图大时 `full` 记原图本身；已是 WebP 的原图记它自己），再构建页面；
   数据与页面结构的检查是 `bun test`，浏览器检查是 `bun run check:browser`（构建之后）。旧会话目录的 HTML 不应被当作当前发布入口。
-- 当前专题为 2026 年 9 月 30 日–10 月 7 日。新的专题以 moss 指定范围为准，不把该日期永久套用。
+- 站点不再固定节日或起止日期（2026-10-10，guide-identity Q2）：`data/events.json` 没有 `start_date`、`end_date`，清单的每日分组、筛选日历的可选日期与页脚的“年份 / 月.日 — 月.日”都取活动里最早到最晚的日期（范围内没有活动的日子显示“当日暂无活动信息”），增删活动后范围随之变化。检索时要查的时间范围仍按 moss 每次指定的为准（见第一节）。
 
 ## 本会话复盘：必须防止重现的问题
 

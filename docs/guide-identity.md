@@ -1,6 +1,6 @@
 ---
 module: guide-identity
-status: 执行中
+status: 已完成
 shape: 分阶段
 updated: 2026-10-10
 ---
@@ -47,13 +47,14 @@ updated: 2026-10-10
 ### 日期范围
 
 - 不再固定节日或起止日期（Q2）：清单的日期范围取所有活动里最早到最晚的日期，每天一组，范围内没有活动的日子显示“当日暂无活动信息”；筛选日历只能选这段日期；页脚写年份与“月.日 — 月.日”。
-- 数据里不再有 `start_date`、`end_date`；每次更新只增删活动，范围随之变化。
+- 数据里不再有 `start_date`、`end_date`；每次更新只增删活动，范围随之变化（`src/lib/guide.server.ts` 的 `guideDays`）。
 
 ## 记录
 
 ### 本任务：改名“大湾区电音指南”，时间不局限于国庆
 
 - 确认：“确认”（2026-10-10 提问工具）
+- 学习：无合格候选：站名与排法的决定已写进 AGENTS.md 与记忆 `brand-lockup-typography`，日期规则已写进 AGENTS.md，没有别的纠正或可复用的做法
 
 #### 目标与范围
 
@@ -91,4 +92,11 @@ updated: 2026-10-10
 
 ![改后的页眉](guide-identity/header-after.png)
 
-### L2 日期范围按活动自动算（进行中）
+### L2 日期范围按活动自动算（已完成）
+
+- 改动：`data/events.json` 删去 `start_date`、`end_date`；`src/lib/guide.server.ts` 新增 `guideDays`（活动里最早到最晚的每一天），每日分组、页脚年份与日期、筛选日历的可选范围都由它得出，起止日期的两条断言换成“至少有一场活动”；`test/data.test.ts` 补“日期跟着活动走”（现在 9/30–10/6，加一场 10/9 的活动后延长到 10/9、共 10 天）；`scripts/check-browser.ts` 的空状态改为点日历的最后一天（Techno 那天没有活动）；AGENTS.md 项目目标一节的“当前专题为 2026 年 9 月 30 日–10 月 7 日”改写为范围随活动
+- 验证：`bun run build`（20 项测试通过）、`bun run check:browser`（全部通过）、`bunx tsc --noEmit`、`git diff --check` 通过；无头 Chrome（390 宽）：日期分组为 9/30–10/6 共 7 组，末尾不再有 10/7 的空组，日历可选 9/30–10/6（标题“可选 9/30—10/6”），页脚“2026 / 09.30 — 10.06 · 粤港澳大湾区”（[清单末尾截图](guide-identity/range-end-390.jpg)）
+- 学习：无合格候选：这层没有新的纠正或可复用的做法
+- 验收：“接受并提交”（2026-10-10 提问工具）
+
+![清单末尾与页脚](guide-identity/range-end-390.jpg)

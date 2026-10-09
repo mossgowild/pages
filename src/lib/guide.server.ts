@@ -17,6 +17,17 @@ const sameSet = (a: Iterable<string>, b: Iterable<string>) => {
   return x.size === y.size && [...x].every(value => y.has(value))
 }
 
+// The guide's days: every day from the earliest event to the latest, those without events included (docs/guide-identity.md
+// Q2); the data names no start or end of its own.
+export function guideDays(dates: string[]) {
+  const sorted = dates.toSorted()
+  const days: string[] = []
+  for (let day = new Date(`${sorted[0]}T00:00:00Z`); day <= new Date(`${sorted.at(-1)}T00:00:00Z`); day.setUTCDate(day.getUTCDate() + 1)) {
+    days.push(day.toISOString().slice(0, 10))
+  }
+  return days
+}
+
 // Every rule the data must keep; it throws on the first one broken.
 export function validate(input: typeof data = data, images: Map<string, Poster> = posters) {
   const events = input.events as GuideEvent[]
@@ -29,10 +40,9 @@ export function validate(input: typeof data = data, images: Map<string, Poster> 
   check(!/尚不明确|未知|"TBA"/.test(JSON.stringify(events)), 'Leave unknown details out instead of writing a placeholder')
   const placeholders = new Set(['阵容尚不明确', '嘉宾尚不明确', 'DJ / MC 组合'])
   check(!events.some(event => event.artists.some(artist => artist.names.some(name => placeholders.has(name)))), 'No stand-in lineup names')
-  check(input.start_date <= input.end_date, 'The edition must start before it ends')
+  check(events.length > 0, 'The guide needs an event')
   check(new Set(events.map(event => event.id)).size === events.length, 'Duplicate event IDs')
   for (const event of events) {
-    check(input.start_date <= event.date && event.date <= input.end_date, `${event.id}: outside the edition`)
     check(event.city && event.name && event.time.length, `${event.id}: city, name and time are required`)
     check((event.venues.length > 0) === event.location[0].includes(' · '), `${event.id}: venue and location disagree`)
     check(event.starts.every(time => Number.isInteger(time) && time >= 0 && time < 1440), `${event.id}: start minutes out of range`)
@@ -90,11 +100,12 @@ function build() {
       families: Object.keys(families).filter(name => families[name].some(genre => event.genres.includes(genre))),
       poster: event.posters.length ? { ...posters.get(event.posters[0].image)!, alt: event.posters[0].alt } : null,
     }))
-  const days = []
-  for (let day = new Date(`${data.start_date}T00:00:00Z`); day <= new Date(`${data.end_date}T00:00:00Z`); day.setUTCDate(day.getUTCDate() + 1)) {
-    const iso = day.toISOString().slice(0, 10)
-    days.push({ iso, label: monthDay(iso), title: `${day.getUTCMonth() + 1} 月 ${day.getUTCDate()} 日`, weekday: WEEKDAYS[day.getUTCDay()], events: sorted.filter(event => event.date === iso) })
-  }
+  const isos = guideDays(events.map(event => event.date))
+  const [first, last] = [isos[0], isos.at(-1)!]
+  const days = isos.map(iso => {
+    const day = new Date(`${iso}T00:00:00Z`)
+    return { iso, label: monthDay(iso), title: `${day.getUTCMonth() + 1} 月 ${day.getUTCDate()} 日`, weekday: WEEKDAYS[day.getUTCDay()], events: sorted.filter(event => event.date === iso) }
+  })
   // Sub-genres in each family picker: most events this edition first, ties in the JSON member order (question 179). A
   // member named like the family (events tagged just "Techno") is no sub-genre: those events come with the whole family
   // (docs/event-filters.md Q10).
@@ -104,8 +115,8 @@ function build() {
   return {
     title, fullTitle: title.region + title.topic + title.guide, byline: `By ${publisher.name}${publisher.latin}`,
     updatedIso: data.updated_at, updatedDate: updatedDate.replace('-', '.'), updatedTime,
-    editionYear: data.start_date.slice(0, 4), dateRange: `${monthDay(data.start_date)} — ${monthDay(data.end_date)}`,
-    startDate: data.start_date, endDate: data.end_date, eventCount: events.length, days,
+    editionYear: first.slice(0, 4), dateRange: `${monthDay(first)} — ${monthDay(last)}`,
+    startDate: first, endDate: last, eventCount: events.length, days,
     cities: [...new Set(events.map(event => event.city))].sort(),
     families: data.genre_order.families.map(name => ({ name, subgenres: families[name].filter(genre => genre !== name && count(genre)).sort((a, b) => count(b) - count(a)) })),
     genres: data.genre_order.genres,

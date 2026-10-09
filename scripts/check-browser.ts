@@ -118,7 +118,8 @@ try {
     await wait(page, 900)
     await page.click('[aria-controls="dates-popover"]')
     await wait(page, 900)
-    await page.click('#dates-popover button.dr-day >> nth=7')
+    // Techno has no event on the last day.
+    await page.click('#dates-popover button.dr-day >> nth=-1')
     await wait(page, 600)
     assert.equal(await visible(page), 0)
     assert.ok(await page.isVisible('#empty-state'), 'No results show the empty state')
