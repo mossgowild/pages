@@ -206,6 +206,9 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
     const state = current.current
     if (!state || state.closing) return
     state.closing = true
+    // A popover the details opened (the venue's menu of maps, closed by the back button) leaves with the sheet: on the
+    // top layer it would stay on screen through the flight back.
+    sheet.current!.querySelectorAll<HTMLElement>(':popover-open').forEach(popover => popover.hidePopover())
     const { row, origin, pushed } = state
     // Leave the pushed entry; an opened address (a shared link) drops its #event-id so a reload shows the list.
     if (pushed && !fromHistory) history.back()
@@ -287,7 +290,8 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
     const element = sheet.current!
     let pull: { start: number; y: number; time: number; speed: number; active: boolean; top: boolean } | null = null
     const start = (event: TouchEvent) => {
-      if (!current.current || current.current.closing || event.touches.length !== 1) return
+      // A touch in a popover of the details (the venue's menu of maps) belongs to that popover.
+      if (!current.current || current.current.closing || event.touches.length !== 1 || (event.target as Element).closest('[popover]')) return
       pull = { start: event.touches[0].clientY, y: 0, time: event.timeStamp, speed: 0, active: false, top: scroller.current!.scrollTop <= 0 }
     }
     const move = (event: TouchEvent) => {

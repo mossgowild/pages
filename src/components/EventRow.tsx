@@ -3,9 +3,12 @@
 // than saying so (questions 183, 185).
 import { forwardRef, Fragment, memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { startLabel, type Artist, type EventView, type Part, type Price, type Stage } from '../lib/guide'
-import { EASE, reducedMotion, useIsomorphicLayoutEffect } from '../lib/motion'
+import { mapLinks, platformOf } from '../lib/maps'
+import { EASE, reducedMotion, useIsomorphicLayoutEffect, useMedia } from '../lib/motion'
+import { PickerPop } from './Pickers'
 
-// The share and copy icons beside a place or code that shares or copies on tap: whichever the browser offers shows.
+// The share and copy icons beside a place or code that shares or copies on tap: whichever the browser offers shows. The
+// map pin beside a venue that opens the menu of maps.
 const ICON = 'action-icon hidden flex-none text-(--brand-pink) print:hidden!'
 const SHARE_ICON = (
   <svg className={`${ICON} [.is-share>&]:block`} aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
@@ -16,6 +19,12 @@ const COPY_ICON = (
   <svg className={`${ICON} [.is-copy>&]:block`} aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
     <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
     <path d="M10.5 3.5v-.5a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
+  </svg>
+)
+const MAP_ICON = (
+  <svg className={`${ICON} [.is-map>&]:block`} aria-hidden="true" viewBox="0 0 16 16" width="16" height="16">
+    <path d="M8 14.5S3.5 10.3 3.5 6.5a4.5 4.5 0 0 1 9 0c0 3.8-4.5 8-4.5 8Z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <circle cx="8" cy="6.5" r="1.75" fill="none" stroke="currentColor" strokeWidth="1.5" />
   </svg>
 )
 
@@ -186,7 +195,8 @@ function TicketPrice({ price }: { price: Price }) {
 }
 
 // Content that acts on tap: a venue's place and address open the system share sheet with “城市 地址 场地” where the browser
-// offers one, otherwise copy it; a mini-program code copies. A copy is confirmed in place for 2s. Without the script the
+// offers one, otherwise copy it (on a touch screen the sheet's venue opens the menu of maps instead, SheetVenue); a
+// mini-program code copies. A copy is confirmed in place for 2s. Without the script the
 // button stays disabled and the text stays selectable.
 // The content dims while 已复制 shows over it in the brand pink.
 const COPY = 'copy-target relative flex items-center gap-3 w-full min-h-[44px] [background:none] text-inherit [font:inherit] text-left cursor-pointer disabled:cursor-text disabled:select-text enabled:active:[filter:brightness(.85)] [&>:first-child]:flex-1 [&>:first-child]:min-w-0 [&>:first-child]:[transition:opacity_.2s] [&.is-copied>:first-child]:opacity-30'
@@ -215,8 +225,9 @@ function CopyTarget({ copy, share, className = '', children }: { copy: string; s
 }
 
 // 城市 · 场地 then address lines; an unknown place leaves the city alone. With a known place, the place and address
-// themselves are the action (CopyTarget). The city label leads the place on one line.
-function Venue({ location }: { location: string[] }) {
+// themselves are the action: in a row they share or copy (CopyTarget), in the sheet they may open the menu of maps
+// (SheetVenue). The city label leads the place on one line.
+function Venue({ location, inRow }: { location: string[]; inRow?: boolean }) {
   const [first, ...address] = location
   const split = first.indexOf(' · ')
   const [city, place] = split < 0 ? [first, ''] : [first.slice(0, split), first.slice(split + 3)]
@@ -230,7 +241,38 @@ function Venue({ location }: { location: string[] }) {
   )
   if (!place) return lines
   const text = [city, ...address, place].join(' ')
-  return <CopyTarget className="venue-target p-0 [border:0]" share={text} copy={text}><span className="venue-lines">{lines}</span>{SHARE_ICON}{COPY_ICON}</CopyTarget>
+  const content = <span className="venue-lines">{lines}</span>
+  if (!inRow) return <SheetVenue city={city} place={place} address={address} text={text}>{content}</SheetVenue>
+  return <CopyTarget className={VENUE_TARGET} share={text} copy={text}>{content}{SHARE_ICON}{COPY_ICON}</CopyTarget>
+}
+
+const VENUE_TARGET = 'venue-target p-0 [border:0]'
+
+// The sheet's venue (docs/event-browsing.md Q37–Q42): on a touch screen (anything but a hovering, fine pointer, F68) a
+// tap opens a menu of maps searching for the place (src/lib/maps.ts) — an app's own link in this tab, a web map in a new
+// one — in the filter pickers' popover: a bottom sheet titled with the place on phones, a dropdown under the venue on
+// wider screens.
+// The popover stays inside the sheet's dialog, as a modal dialog leaves everything outside it inert. With a mouse, and
+// in the first render, the venue shares or copies as in a row.
+function SheetVenue({ city, place, address, text, children }: { city: string; place: string; address: string[]; text: string; children: ReactNode }) {
+  const touch = useMedia('not all and (hover: hover) and (pointer: fine)')
+  const [open, setOpen] = useState(false)
+  const button = useRef<HTMLButtonElement>(null)
+  if (!touch) return <CopyTarget className={VENUE_TARGET} share={text} copy={text}>{children}{SHARE_ICON}{COPY_ICON}</CopyTarget>
+  return (
+    <>
+      <button ref={button} type="button" className={`${COPY} ${VENUE_TARGET} is-map`} aria-haspopup="dialog" aria-expanded={open}
+        aria-controls="venue-maps-popover" aria-label={`打开地图：${text}`} onClick={() => setOpen(!open)}>{children}{MAP_ICON}</button>
+      <PickerPop id="venue-maps" title={place} open={open} trigger={() => button.current} doneLabel="取消" onClose={() => setOpen(false)}>
+        <ul className="venue-maps m-0 [padding:0_4px] list-none">
+          {mapLinks(city, place, address, platformOf(navigator.userAgent, navigator.maxTouchPoints)).map(map => (
+            <li key={map.name}><a className={LINK} href={map.url} target={map.app ? undefined : '_blank'} rel={map.app ? undefined : 'noopener noreferrer'}
+              onClick={() => setOpen(false)}>{map.name}</a></li>
+          ))}
+        </ul>
+      </PickerPop>
+    </>
+  )
 }
 
 type InfoKey = keyof EventView['more_info']
@@ -415,7 +457,7 @@ export function EventDetails({ event, inRow }: { event: EventView; inRow?: boole
           </DetailSection>
         ))}
       </div>
-      <DetailSection name="location" english="VENUE" label="地点" className={`${field} text-[#d8cce3] print:text-[#333]`}><Venue location={event.location} /></DetailSection>
+      <DetailSection name="location" english="VENUE" label="地点" className={`${field} text-[#d8cce3] print:text-[#333]`}><Venue location={event.location} inRow={inRow} /></DetailSection>
     </div>
   )
 }

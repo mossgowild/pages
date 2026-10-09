@@ -1,9 +1,10 @@
 // The filter pickers: a pill trigger in the panel and a top-layer popover at the end of the page (a dropdown under the
 // trigger on wide screens, a bottom sheet over its own veil up to 768px). Three contents use it: a searchable
 // multi-select list of venues grouped by city, the same list for each genre family's sub-genres behind the arrow of its
-// split chip, and a date-range calendar. Motion (questions 196–198): the rhythm of the filter panel's React Bits Card
-// Nav — the sheet comes in over 0.4s with the veil, phones from the bottom edge and wide screens wiping down from the
-// trigger, and the title row, the list and 完成 rise 50px and fade in 0.08s apart from 0.3s; closing plays it backwards.
+// split chip, and a date-range calendar; the event sheet's menu of maps (EventRow.tsx) uses the popover too. Motion
+// (questions 196–198): the rhythm of the filter panel's React Bits Card Nav — the sheet comes in over 0.4s with the veil,
+// phones from the bottom edge and wide screens wiping down from the trigger, and the title row, the list and 完成 rise
+// 50px and fade in 0.08s apart from 0.3s; closing plays it backwards.
 // A sheet let go past the drag threshold leaves from where it was dropped. Reduced motion shows and hides at once.
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react'
 import { shortDate } from '../lib/filters'
@@ -56,12 +57,13 @@ export function PickerTrigger({ id, labelledBy, text, placeholder, badge, glyph,
   )
 }
 
-// The popover shell: header with 清除, 完成 button, positioning, open/close motion, closing on an outside press, Esc, 完成,
-// its trigger or another picker opening, and on a downward drag of the sheet's grip (phones). `open` is whether it should
-// be open; `onShown` reports when it actually is (until its closing motion has finished).
-export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear, onShown, onOpened, children }: {
-  id: string; title: string; open: boolean; trigger: () => HTMLElement | null | undefined; doneText: string
-  onClose: () => void; onClear: () => void; onShown: (shown: boolean) => void; onOpened?: (pop: HTMLElement) => void; children: ReactNode
+// The popover shell: header with 清除 (when there is something to clear), the bottom button (完成 with the choice's
+// summary, or the caller's label), positioning, open/close motion, closing on an outside press, Esc, that button, its
+// trigger or another picker opening, and on a downward drag of the sheet's grip (phones). `open` is whether it should be
+// open; `onShown` reports when it actually is (until its closing motion has finished).
+export function PickerPop({ id, title, open, trigger, doneLabel = '完成', doneText, onClose, onClear, onShown, onOpened, children }: {
+  id: string; title: string; open: boolean; trigger: () => HTMLElement | null | undefined; doneLabel?: string; doneText?: string
+  onClose: () => void; onClear?: () => void; onShown?: (shown: boolean) => void; onOpened?: (pop: HTMLElement) => void; children: ReactNode
 }) {
   const pop = useRef<HTMLDivElement>(null)
   const veil = useRef<HTMLDivElement>(null)
@@ -150,7 +152,7 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
     const replace = () => { if (element.matches(':popover-open')) place() }
     const toggled = (event: Event) => {
       const isOpen = (event as ToggleEvent).newState === 'open'
-      onShown(isOpen)
+      onShown?.(isOpen)
       if (isOpen) {
         addEventListener('scroll', replace, { passive: true })
         addEventListener('resize', replace)
@@ -162,13 +164,15 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
       }
     }
     // An outside press closes it (on phones the veil covers the outside and closes it on a tap); Esc closes the open
-    // picker wherever focus is (phones do not move focus into the sheet), before the filter panel sees it.
+    // picker wherever focus is (phones do not move focus into the sheet), before the filter panel sees it and without
+    // the dialog around it closing as well (the event sheet's menu of maps).
     const press = (event: globalThis.PointerEvent) => {
       if (element.matches(':popover-open') && !element.contains(event.target as Node) && !trigger()?.contains(event.target as Node)) onClose()
     }
     const key = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape' || !element.matches(':popover-open') || closing.current) return
       event.stopPropagation()
+      event.preventDefault()
       onClose()
     }
     const query = matchMedia('(max-width: 768px)')
@@ -235,10 +239,10 @@ export function PickerPop({ id, title, open, trigger, doneText, onClose, onClear
         <div className={HANDLE} aria-hidden="true" {...grip} />
         <div className={HEAD} {...grip}>
           <strong id={`${id}-title`} className="block overflow-hidden">{title}</strong>
-          <button type="button" className={CLEAR} onClick={onClear}>清除</button>
+          {onClear && <button type="button" className={CLEAR} onClick={onClear}>清除</button>}
         </div>
         <div className="picker-body min-w-0 overflow-hidden">{children}</div>
-        <button type="button" className={DONE} onClick={onClose}>{doneText ? `完成 · ${doneText}` : '完成'}</button>
+        <button type="button" className={DONE} onClick={onClose}>{doneText ? `${doneLabel} · ${doneText}` : doneLabel}</button>
       </div>
     </div>
   )

@@ -1,10 +1,12 @@
 // Browser checks for the built page (bun run check:browser, after bun run build): layout rules at four widths and in
-// the open states (test/browser/layout.js), then the filters, the detail sheet and the full-image preview, in the system
-// Chrome. They prove what they check, not how smooth anything is: frame rates are measured in the iOS simulator.
+// the open states (test/browser/layout.js), then the filters, the detail sheet, the full-image preview and the venue's
+// menu of maps on phones, in the system Chrome. They prove what they check, not how smooth anything is: frame rates are
+// measured in the iOS simulator.
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
 import { chromium, type Page } from 'playwright-core'
+import { mapLinks, platformOf } from '../src/lib/maps'
 
 const root = new URL('..', import.meta.url).pathname
 const port = await new Promise<number>(resolve => {
@@ -23,12 +25,14 @@ const browser = await chromium.launch({ channel: 'chrome', args: ['--headless=ne
 const layout = await Bun.file(new URL('../test/browser/layout.js', import.meta.url)).text()
 const results: string[] = []
 
-async function open(width: number, height = 900, options: { reducedMotion?: 'reduce' | 'no-preference'; hash?: string } = {}) {
-  const page = await browser.newPage({ viewport: { width, height }, reducedMotion: options.reducedMotion ?? 'no-preference' })
+// A phone's user agent also makes the page a touch screen (no hover, a coarse pointer).
+async function open(width: number, height = 900, options: { reducedMotion?: 'reduce' | 'no-preference'; hash?: string; phone?: string } = {}) {
+  const touch = options.phone ? { userAgent: options.phone, hasTouch: true, isMobile: true } : {}
+  const page = await browser.newPage({ viewport: { width, height }, reducedMotion: options.reducedMotion ?? 'no-preference', ...touch })
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
-  await page.goto(base + (options.hash ?? ''), { waitUntil: 'networkidle' })
+  await page.goto(base + (options.hash ?? ''), { waitUntil: options.phone ? 'load' : 'networkidle' })
   await page.addScriptTag({ content: layout })
   await page.waitForTimeout(800)
   return { page, errors }
@@ -233,8 +237,54 @@ try {
     await wait(page, 900)
     assert.ok(!await page.evaluate(selector => (document.querySelector(selector) as HTMLDialogElement).open, preview))
     assert.ok(await page.evaluate(() => (document.getElementById('event-detail') as HTMLDialogElement).open), 'Back closes the preview first')
+    assert.match(await page.getAttribute('.event-detail .venue-target', 'class') ?? '', /\bis-(share|copy)\b/, 'With a mouse the venue shares or copies')
+    assert.equal(await page.$('#venue-maps-popover'), null)
     assert.deepEqual(errors, [])
     results.push('preview')
+    await page.close()
+  }
+
+  // On a touch screen the sheet's venue opens a menu of maps (docs/event-browsing.md Q37–Q42) searching for the place
+  // (src/lib/maps.ts): Apple Maps only on Apple devices, the other maps' apps from iOS and Android browsers in this tab,
+  // their web maps from WeChat in a new tab; a tap on the menu's veil and Esc close the menu, not the sheet.
+  const phones = {
+    android: 'Mozilla/5.0 (Linux; Android 15; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36',
+    iphone: 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Mobile/15E148 Safari/604.1',
+    wechat: 'Mozilla/5.0 (iPhone; CPU iPhone OS 26_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.60(0x18003c2f) NetType/WIFI Language/zh_CN',
+  }
+  for (const [name, phone] of Object.entries(phones)) {
+    const { page, errors } = await open(390, 844, { phone })
+    const venue = await page.evaluate(() => {
+      const row = document.querySelector<HTMLElement>('.event-row:has(.venue-address)')!
+      const line = row.querySelector('.venue-name')!
+      return { id: row.id, city: line.querySelector('.venue-city')!.textContent!, place: line.lastChild!.textContent!, address: [...row.querySelectorAll('.venue-address')].map(address => address.textContent!) }
+    })
+    await page.evaluate(id => document.getElementById(id)!.scrollIntoView({ block: 'center', behavior: 'instant' }), venue.id)
+    await page.tap(`#${venue.id} .event-summary`)
+    await wait(page, 1300)
+    const menu = '#venue-maps-popover'
+    const menuOpen = () => page.evaluate(selector => document.querySelector(selector)!.matches(':popover-open'), menu)
+    const sheetOpen = () => page.evaluate(() => (document.getElementById('event-detail') as HTMLDialogElement).open)
+    await page.tap('.event-detail .venue-target')
+    await wait(page, 1300)
+    assert.ok(await menuOpen(), `${name}: a tap on the venue opens the menu of maps`)
+    const links = await page.$$eval(`${menu} a`, anchors => anchors.map(anchor => ({ name: anchor.textContent, url: anchor.getAttribute('href'), target: anchor.getAttribute('target'), rel: anchor.getAttribute('rel') })))
+    const expected = mapLinks(venue.city, venue.place, venue.address, platformOf(phone, 5))
+    assert.deepEqual(links.map(({ name, url }) => ({ name, url })), expected.map(({ name, url }) => ({ name, url })))
+    assert.deepEqual(links.map(({ target, rel }) => [target, rel]), expected.map(({ app }) => app ? [null, null] : ['_blank', 'noopener noreferrer']),
+      'An app opens in this tab, a web map in a new one')
+    await page.touchscreen.tap(195, 120)
+    await wait(page, 1300)
+    assert.ok(!await menuOpen(), `${name}: a tap on the veil closes the menu`)
+    assert.ok(await sheetOpen(), `${name}: the sheet stays open under the veil`)
+    await page.tap('.event-detail .venue-target')
+    await wait(page, 1300)
+    await page.keyboard.press('Escape')
+    await wait(page, 1300)
+    assert.ok(!await menuOpen(), `${name}: Esc closes the menu`)
+    assert.ok(await sheetOpen(), `${name}: Esc leaves the sheet open`)
+    assert.deepEqual(errors, [])
+    results.push(`maps (${name})`)
     await page.close()
   }
   console.log(`OK: ${results.join(', ')}`)
