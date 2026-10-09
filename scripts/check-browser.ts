@@ -1,7 +1,7 @@
 // Browser checks for the built page (bun run check:browser, after bun run build): layout rules at four widths and in
-// the open states (test/browser/layout.js), then the filters, the detail sheet, the full-image preview and the venue's
-// menu of maps on phones, in the system Chrome. They prove what they check, not how smooth anything is: frame rates are
-// measured in the iOS simulator.
+// the open states (test/browser/layout.js), then the filters with the rolling count, the detail sheet, the full-image
+// preview and the venue's menu of maps on phones, in the system Chrome. They prove what they check, not how smooth
+// anything is: frame rates are measured in the iOS simulator.
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { createServer } from 'node:net'
@@ -73,7 +73,11 @@ try {
     await wait(page, 1400)
     assert.equal(await page.getAttribute('.filter-toggle', 'aria-expanded'), 'true')
     await page.click('label.filter-chip:has(input[value="深圳"])')
-    await wait(page, 700)
+    // The count rolls to the new number and settles within its 0.4s (docs/event-filters.md Q7–Q9).
+    await wait(page, 150)
+    assert.ok(await page.$('#result-count .count-strip'), 'The count rolls to the new number')
+    await wait(page, 550)
+    assert.equal(await page.$('#result-count .count-strip'), null, 'The roll settles')
     const shenzhen = await visible(page)
     assert.ok(shenzhen > 0 && shenzhen < total && Number(await page.textContent('#result-count')) === shenzhen)
     assert.deepEqual(await tags(page), ['深圳'])
@@ -127,6 +131,20 @@ try {
     await check(page)
     assert.deepEqual(errors, [])
     results.push('filters')
+    await page.close()
+  }
+
+  // With reduced motion the count changes at once.
+  {
+    const { page, errors } = await open(1440, 900, { reducedMotion: 'reduce' })
+    await page.click('.filter-toggle')
+    await wait(page, 600)
+    await page.click('label.filter-chip:has(input[value="深圳"])')
+    await wait(page, 50)
+    assert.equal(await page.$('#result-count .count-strip'), null, 'Reduced motion: no roll')
+    assert.equal(Number(await page.textContent('#result-count')), await visible(page))
+    assert.deepEqual(errors, [])
+    results.push('count (reduce)')
     await page.close()
   }
 

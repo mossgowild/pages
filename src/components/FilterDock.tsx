@@ -58,6 +58,71 @@ type Props = {
   pickers: PickerState; venueText: string; venueCount: number; schedule: RefObject<HTMLElement | null>
 }
 
+// The result count rolls like React Bits Counter (docs/event-filters.md Q7–Q9): each place is a window one tabular digit
+// wide, fading out at its top and bottom, and a change slides a strip of the numbers in between through it — the units
+// through every number, the tens through every ten — over the Card Nav 0.4s (eased, so Safari runs it off the main
+// thread), without overshooting. A change mid-roll rolls on from where the strip is. A place that appears or goes does so
+// at once, as in the original; the first render and reduced motion just show the number. The strips are hidden from
+// screen readers.
+const PLACE = 'count-place relative inline-block w-[1ch] h-[1.25em] overflow-clip text-center [mask-image:linear-gradient(transparent,#000_16%,#000_84%,transparent)] [-webkit-mask-image:linear-gradient(transparent,#000_16%,#000_84%,transparent)]'
+const STRIP = 'count-strip absolute inset-x-0 top-0 flex flex-col'
+const CELL = 'block h-[1.25em] leading-[1.25em]'
+
+function RollingCount({ value }: { value: number }) {
+  const places = [...String(value)].map((_, index, all) => 10 ** (all.length - 1 - index))
+  const root = useRef<HTMLElement>(null)
+  const shown = useRef(value)
+  const rolls = useRef(new Map<number, { strip: HTMLElement; digit: HTMLElement; low: number; height: number; animation: Animation }>())
+  useIsomorphicLayoutEffect(() => {
+    const from = shown.current
+    shown.current = value
+    const stop = (place: number) => {
+      const roll = rolls.current.get(place)!
+      roll.animation.cancel()
+      roll.strip.remove()
+      roll.digit.style.removeProperty('visibility')
+      rolls.current.delete(place)
+    }
+    for (const [place, roll] of rolls.current) if (!roll.strip.isConnected || reducedMotion()) stop(place)
+    if (from === value || reducedMotion()) return
+    for (const element of root.current!.querySelectorAll<HTMLElement>('.count-place')) {
+      const place = Number(element.dataset.place)
+      if (place > 1 && place > from) continue
+      const to = Math.floor(value / place)
+      const roll = rolls.current.get(place)
+      // Where the place is now: mid-roll, the strip's offset in its numbers; otherwise the number it showed.
+      const now = roll ? roll.low - new DOMMatrixReadOnly(getComputedStyle(roll.strip).transform).m42 / roll.height : Math.floor(from / place)
+      if (roll) stop(place)
+      if (now === to) continue
+      const digit = element.firstElementChild as HTMLElement
+      // The window is 1.25em, a fraction of a pixel that offsetHeight would round away over a long strip.
+      const height = element.getBoundingClientRect().height
+      const low = Math.min(Math.floor(now), to)
+      const strip = document.createElement('span')
+      strip.className = STRIP
+      strip.setAttribute('aria-hidden', 'true')
+      for (let number = low; number <= Math.max(Math.ceil(now), to); number++) {
+        const cell = document.createElement('span')
+        cell.className = CELL
+        cell.textContent = String(number % 10)
+        strip.append(cell)
+      }
+      element.append(strip)
+      digit.style.visibility = 'hidden'
+      const animation = eased(strip, progress => ({ transform: `translateY(${-(now - low + (to - now) * progress) * height}px)` }))
+      // Held at the end until the strip goes, so its first number never shows for a frame in between.
+      animation.effect!.updateTiming({ fill: 'both' })
+      rolls.current.set(place, { strip, digit, low, height, animation })
+      animation.finished.then(() => { if (rolls.current.get(place)?.animation === animation) stop(place) }, () => {})
+    }
+  }, [value])
+  return (
+    <strong ref={root} id="result-count" className="inline-flex [font:700_17px/1_var(--font-display)] [font-variant-numeric:tabular-nums] text-(--brand-pink)">
+      {places.map(place => <span key={place} className={PLACE} data-place={place}><span className={CELL}>{Math.floor(value / place) % 10}</span></span>)}
+    </strong>
+  )
+}
+
 export function FilterDock({ guide, filters, change, tags, count, summary, valid, pickers, venueText, venueCount, schedule }: Props) {
   // The dock and the pickers' arrows only work with the script.
   const hydrated = useHydrated()
@@ -361,7 +426,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
           </div>
           <button ref={clear} type="reset" form="filters" className="filter-clear flex-none min-h-(--control) [padding:0_8px] [border:0] [background:none] text-(--muted) text-[13px] cursor-pointer" hidden>清空</button>
           <p className="filter-count flex flex-none items-center gap-1 h-7 m-0 [padding:0_0_0_10px] [border-left:1px_solid_rgb(255_255_255/.14)]" role="status" aria-live="polite" aria-atomic="true">
-            <strong id="result-count" className="[font:700_17px/1_var(--font-display)] text-(--brand-pink)">{count}</strong><span className="text-[11px] text-(--muted)" aria-hidden="true">场</span>
+            <RollingCount value={count} /><span className="text-[11px] text-(--muted)" aria-hidden="true">场</span>
             <span className="sr-only" id="result-summary">{summary}</span>
           </p>
         </div>
