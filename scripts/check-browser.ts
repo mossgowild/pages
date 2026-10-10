@@ -195,6 +195,23 @@ try {
     await page.close()
   }
 
+  // Under the mouse a card shrinks to 0.95 (docs/event-browsing.md Q57); reduced motion leaves it be.
+  for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+    const { page, errors } = await open(1440, 900, { reducedMotion })
+    await page.evaluate(() => document.querySelectorAll('.event-masonry')[3].scrollIntoView({ block: 'start', behavior: 'instant' }))
+    await wait(page, 300)
+    const card = await page.evaluate(() => document.querySelectorAll('.event-masonry')[3].children[0].id)
+    await page.hover(`#${card} .event-summary`, { position: { x: 10, y: 10 } })
+    await wait(page, 500)
+    assert.equal(await page.evaluate(id => getComputedStyle(document.getElementById(id)!).scale, card), reducedMotion === 'reduce' ? 'none' : '0.95', 'A card shrinks under the mouse')
+    await page.mouse.move(5, 5)
+    await wait(page, 500)
+    assert.equal(await page.evaluate(id => getComputedStyle(document.getElementById(id)!).scale, card), 'none', 'And comes back when the mouse leaves')
+    assert.deepEqual(errors, [])
+    results.push(`cards (${reducedMotion})`)
+    await page.close()
+  }
+
   // The detail sheet: a row and a wall poster open it, the address follows, the page does not scroll under it, Esc, ×,
   // back and forward close and reopen it, and focus returns to where it came from, ringed only after a key (src/lib/focus.ts:
   // Safari would ring it after a tap too, so the check reads the focusVisible each focus asks for); a shared address opens

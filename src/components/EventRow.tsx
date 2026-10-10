@@ -448,8 +448,9 @@ export function EventDetails({ event, inRow }: { event: EventView; inRow?: boole
   )
 }
 
-// Cards are the 24px frosted glass of the original rows.
-const ROW = 'event-row event-light relative min-w-0 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-clip wrap-anywhere target:[border-color:var(--gold)] scripted:cursor-pointer print:static! print:w-auto! print:[translate:none]! print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
+// Cards are the 24px frosted glass of the original rows; under the mouse a card shrinks to 0.95 over 0.3s power2.out, as
+// in React Bits Masonry (docs/event-browsing.md Q57).
+const ROW = 'event-row event-light relative min-w-0 [transition:scale_.3s_cubic-bezier(.25,.46,.45,.94)] mouse:motion-safe:hover:[scale:.95] [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-clip wrap-anywhere target:[border-color:var(--gold)] scripted:cursor-pointer print:static! print:w-auto! print:[translate:none]! print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
 
 // The list's card. With the script the whole card opens its event's details (a link or button of its own keeps its
 // behaviour; the poster is no link of its own there), and once the page has loaded and the card nears the screen its
