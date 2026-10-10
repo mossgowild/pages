@@ -2,7 +2,7 @@
 module: site-rewrite
 status: 执行中
 shape: 分阶段
-updated: 2026-10-09
+updated: 2026-10-11
 ---
 
 # 用框架重写全站
@@ -22,7 +22,7 @@ updated: 2026-10-09
 | F3 | 要重写的交互（规格见 AGENTS.md 第四、五节，以及 `docs/event-browsing.md`、`docs/glass-effects.md`、`docs/motion-performance.md` 里几十轮问答定下的细节）：首屏 Drift Wall 海报墙；全页 Topography 等高线背景与文字背后的模糊带；按日期分组的手风琴清单与视差；吸顶筛选工具栏（Card Nav 展开、已选条件标签、城市与时段胶囊、风格分体胶囊与小类弹层、场地与日期弹层）；App Store 式详情卡片（从清单行或墙上海报飞出、下拉关闭、`#event-id` 地址、返回键）；原图预览（缩放、拖动、惯性、捏合与下拉关闭）；镜面光（随鼠标、随手机晃动）；分割线星光；复制与系统分享 | AGENTS.md；`assets/*.js` |
 | F4 | 必须保留的约束：无脚本时清单照常显示并在行内展开全部详情；减少动态效果时没有过渡、视差与动画；语义化 HTML、键盘与读屏可用；未知信息不显示也不参加筛选；`data/events.json` 是活动数据唯一的编辑入口。AGENTS.md 现在写着“复用静态 HTML/CSS 与现有脚本，不为资讯维护引入框架或采集平台”，重写要改这一条 | AGENTS.md 第一、五节 |
 | F5 | 前几轮实测的负担与写法无关：手机上每帧重算磨砂玻璃（120 帧的微信尤甚）、详情过场每帧重新排版、大图解码（`docs/motion-performance.md` F5、F27、F30、F36、F38）；换框架本身不减少这几样，Q31 的两项动画改法与图片优化才直接对应 | `docs/motion-performance.md` |
-| F6 | React Bits 的组件原本是 React 写的（部分依赖 GSAP、ogl 或 three）；站内是照原版移植成原生脚本，并按 moss 的选择改了参数与行为（如 Drift Wall 的列宽、斜转与卡内平移）。用 React 时可以直接引入原版组件，再按这些已定的改动调整 | `scripts/hero.mjs`；`.claude/skills/pages-site-visual-choices` |
+| F6 | React Bits 的组件原本是 React 写的（部分依赖 GSAP、ogl 或 three）；站内是照原版移植成原生脚本，并按用户的选择改了参数与行为（如 Drift Wall 的列宽、斜转与卡内平移）。用 React 时可以直接引入原版组件，再按这些已定的改动调整 | `scripts/hero.mjs`；`.claude/skills/pages-site-visual-choices` |
 | F7 | 发布：Vercel 的 `events` 项目从 `main` 部署到 events.cardioravers.com；推送别的分支只生成预览部署，且项目的 Vercel 登录保护已关闭，预览地址公开可开。AGENTS.md 第六节要求直接在 `main` 上提交 | GitHub 部署记录；`docs/unbranded-preview.md` 的记录；AGENTS.md |
 | F8 | TanStack Start：`@tanstack/react-start` 1.168.60（2026-09-30 更新，1.x 正式版），配 React 19.3；基于 Vite，`vite.config.ts` 里 `tanstackStart` 插件的 `prerender` 选项（`enabled`、`crawlLinks`、`filter` 等）可在构建时把页面预渲染成静态 HTML，用于不支持服务端渲染的平台；部署到 Vercel 的官方写法是加 Nitro 的 `nitro/vite` 插件，默认以服务端渲染运行（Vercel 函数）。文档没有写预渲染的页面在无脚本时能否交互（静态内容本身照常显示） | [TanStack Start：Static Prerendering](https://tanstack.com/start/latest/docs/framework/react/guide/static-prerendering)、[Hosting](https://tanstack.com/start/latest/docs/framework/react/guide/hosting)；`npm view`（2026-10-09） |
 | F9 | TanStack Start 不水合时也会往页面里写两样东西：`<HeadContent />` 输出客户端包的 `modulepreload`（约 450KB），路由 `loader` 返回的数据序列化成 `$_TSR` 脚本（本页约 110KB）；两者都不用、在组件里直接取数据时，页面 264KB，与原来的 261KB 相当。L2 开始水合时，数据要以某种方式到客户端（序列化进页面或打进脚本） | L1 构建与本机服务实测 |
@@ -49,7 +49,7 @@ updated: 2026-10-09
 | # | 问题 | 答复 | 影响 |
 | --- | --- | --- | --- |
 | Q1 | 用哪个框架、怎样输出（F2、F4、F6）：A Astro——页面在构建时生成静态 HTML，只有交互部分用 React 组件按需加载，React Bits 原版组件可以直接用，无脚本时清单照常；B React + Vite——构建时预渲染成静态 HTML，再由 React 接管整页；C Svelte（SvelteKit）或 Solid——运行时更小，但 React Bits 原版要手动移植，与现在的做法相同。推荐 A：页面主体是静态清单，Astro 默认不发脚本、只给交互部分发，最接近现在的轻量，又能直接用 React Bits | “tanstack start”（2026-10-09 提问工具） | 用 TanStack Start（React 19、Vite）重写；输出方式见 Q5（F8） |
-| Q2 | 重写后的样子与交互按什么标准（F3、F6）：A 与现在完全一致——每个宽度、每个状态与现在逐项截图对比，只有 Q31 的两项动画换做法、不换样子；B 改用 React Bits 原版组件的样子与参数，与现在不同的地方逐项问你。推荐 A：现在的样子是几十轮问答调出来的 | “B 改用 React Bits 原版”（2026-10-09 提问工具） | 各部件改用 React Bits 原版组件的样子与参数；每做一个部件，先列出与现在不同的地方逐项问 moss（含此前选定的改动，如 Drift Wall 的斜转与卡内平移） |
+| Q2 | 重写后的样子与交互按什么标准（F3、F6）：A 与现在完全一致——每个宽度、每个状态与现在逐项截图对比，只有 Q31 的两项动画换做法、不换样子；B 改用 React Bits 原版组件的样子与参数，与现在不同的地方逐项问你。推荐 A：现在的样子是几十轮问答调出来的 | “B 改用 React Bits 原版”（2026-10-09 提问工具） | 各部件改用 React Bits 原版组件的样子与参数；每做一个部件，先列出与现在不同的地方逐项问用户（含此前选定的改动，如 Drift Wall 的斜转与卡内平移） |
 | Q3 | 开发与上线方式（F7）：A 在单独的分支上重写，推送后用 Vercel 预览地址给你看，全部验收后再合进 `main` 上线（这件事不按“直接在 main 上提交”）；B 直接在 `main` 上分步替换，每层上线一部分。推荐 A：重写期间正式站不受影响 | “B 在 main 上分步替换”（2026-10-09 提问工具） | 直接在 `main` 上分层替换，每层验收后上线一部分；所以第一层就要让 TanStack Start 产出可上线的完整页面（已被 Q8 改变） |
 | Q4 | 活动数据与检查（F2、F4）：A 活动数据仍以 `data/events.json` 为唯一入口，现有的数据断言（Python）保留，页面结构与交互检查改写成新框架下的测试；B 数据断言也改写进框架的构建（TypeScript），不再用 Python。推荐 A：数据规则多（风格分类、未知不显示、去重等），保留现成的断言最稳 | “B 全部改写进框架”（2026-10-09 提问工具） | 活动数据的断言、页面检查与海报生成都改用 TypeScript 写进新的构建，不再用 Python；`data/events.json` 仍是活动数据的唯一入口 |
 | Q5 | 输出与托管（F4、F8）：A 构建时把页面预渲染成静态 HTML（`prerender`），Vercel 只托管静态文件，无脚本时清单照常显示，与现在的托管方式一样；B 用 Nitro 部署成服务端渲染，每次访问由 Vercel 函数生成页面。推荐 A：内容只在更新数据时变，静态最快最稳，也不产生函数调用 | “B 服务端渲染”（2026-10-09 提问工具） | 用 Nitro 部署到 Vercel，以服务端渲染运行（Vercel 函数）；页面仍先输出完整 HTML，无脚本时清单照常 |
@@ -148,7 +148,7 @@ flowchart TD
 
 - 改动：`vite.config.ts`、`tsconfig.json`、`src/`（`router.tsx`、`routes/__root.tsx` 与 `routes/index.tsx`、`components/Page.tsx` 与 `components/EventRow.tsx`、`lib/guide.ts`、`styles/app.css`）、`scripts/build-posters.ts`、`test/`（`data.test.ts`、`page.test.tsx`、`setup.ts`）、`bunfig.toml`、`package.json`（`build` 先跑测试）、`vercel.json`（`bun run build`，Nitro 在 Vercel 上以函数运行）；`assets/` 移到 `public/assets/`，内联的 `hero.css` 移到 `src/styles/`。超出方案的：`build_page.py`、`check_page.py`、`build_posters.py`、`templates/index.html` 与生成的 `index.html` 原定 L3 删，提前在本层删去——旧检查依赖模板与生成页面，已由 TypeScript 的数据规则与测试完整取代；旧的 `check_filters`、`check_detail`、`check_preview` 因 `package.json` 改成 ES 模块而改名 `.cjs` 并改指 `public/assets/`，`check_preview` 与 `check_hero` 里读模板或页面的几条移进 `test/page.test.tsx`；`.gitignore` 原来忽略 `public/`（旧构建的输出目录），改为忽略 `.output/` 等新构建目录
 - 验证：比对新旧页面（旧的是 `main` 的 `index.html`）在无头 Chrome 里的 DOM（去掉注释、合并空白、属性排序）：57/57 场活动行完全一致，整个 `<body>` 一致，`<head>` 只多出 Tailwind 的样式表；关掉脚本按视口逐段截图（整页截图超过 16384px 会重复第一段），桌面 1440 宽 58 段、手机 390 宽 76 段逐字节相同；`bun test` 7 项、4063 条断言通过（数据规则另用 4 个改坏的副本确认会报错；故意改坏 B2B 写法时页面测试失败）；`tsc` 无错误；海报脚本在草稿目录删掉全部 133 个生成文件后重跑，与仓库里的文件和 `sources.json` 逐字节相同，在仓库里重跑没有改动；旧的 4 个 JS 检查通过；本机服务与预览部署里开着脚本时首屏墙、地形、筛选（香港 18 场、清空回 57 场）、详情打开（`#event-18`）与 Esc 关闭正常，控制台无错误；分支推送为 `dbdd31e`，预览部署成功，返回的页面与本机一致（只多出 Vercel 预览自带的反馈脚本），资源全部 200
-- 学习：写入：moss-browser（无头整页截图超过 16384px 重复第一段，长页面按视口分段截图比对，截图前把懒加载图片改成立即加载并解码）；新建 moss-tanstack-start（不水合时去掉 `<HeadContent />` 与 `<Scripts />`、加载器数据会序列化进页面、React 服务端输出拆开相邻文字、旧根目录 `index.html` 会被 Nitro 当成模板、本机与 Vercel 的构建运行）；新建 moss-tailwind（在已有样式表的页面上不带 preflight 分层导入、`source(none)` 限定扫描、`@theme inline` 引用现有令牌）；新建 moss-bun（`bun test` 里处理 Vite 的 `?raw`、`?url` 导入、happy-dom 的类型）
+- 学习：写入：<用户名>-browser（无头整页截图超过 16384px 重复第一段，长页面按视口分段截图比对，截图前把懒加载图片改成立即加载并解码）；新建 <用户名>-tanstack-start（不水合时去掉 `<HeadContent />` 与 `<Scripts />`、加载器数据会序列化进页面、React 服务端输出拆开相邻文字、旧根目录 `index.html` 会被 Nitro 当成模板、本机与 Vercel 的构建运行）；新建 <用户名>-tailwind（在已有样式表的页面上不带 preflight 分层导入、`source(none)` 限定扫描、`@theme inline` 引用现有令牌）；新建 <用户名>-bun（`bun test` 里处理 Vite 的 `?raw`、`?url` 导入、happy-dom 的类型）
 - 验收：“接受”（2026-10-09 提问工具）
 
 ### L2 清单、筛选、详情与预览（已完成）
@@ -164,7 +164,7 @@ flowchart TD
   - 逐元素比对计算样式（与改写成工具类之前的构建并排）：10 个状态（无脚本、静止、筛选面板、场地弹层、日期、空结果、详情、预览、打印、无脚本打印）× 4 个宽度全部相同；比出的 3 处差异已改掉——打印时筛选与弹层套上了手机样式（原规则只对屏幕生效）、时段列的等宽数字被字体简写重置、原图预览的复制品带上了海报舞台的样式。
   - 无脚本时与 `main` 的旧页面逐段截图：桌面 58 段、手机 76 段；整轮里个别段哈希不同，单独重截后与旧页面逐像素相同（图片解码时机的噪点，改写前的构建也一样）。
   - iPhone Air 模拟器，与旧页面交替各 3 轮：筛选面板开 57、关 59 帧（旧 56、59），详情开 57、关 55 帧（旧 55、54），没有脚本错误；与改写前的构建交替各 4 轮见 F20。模拟器里点开详情目视核对：磨砂卡片、关闭按钮、舞台淡出、票价与链接的细线和箭头正常。
-- 学习：写入：moss-tailwind（逐部件改写：旧样式表放进工具类之下的层并关掉 Lightning CSS 优化；按路径逐元素比对计算样式，含打印；`max-[…]` 不带 screen，按原写法定义自定义变体并从宽到窄注册；`hover:` 自带悬停媒体查询；同层工具类按属性顺序输出、简写会重置单项；按元素算清层叠，用自定义变体（含块写法）表达状态；伪元素配方用 `@utility` 配 `after:`；`cloneNode` 会带走工具类；模板字符串里紧挨 `${` 的类扫不到；长列表的页面体积要量）；moss-tanstack-start（路由接管浏览器历史，页面自己压入的 `#` 条目也触发导航与滚动，改用内存历史；长列表整页水合：服务端算好状态、`memo`、每行 `Suspense` 分块、用内联模块脚本加布局类）；moss-browser（手机页面的性能至少在 iPhone Air 模拟器里测，moss 的纠正；模拟器里自动交替对比测速；逐段截图的偶然哈希差异要单独重截确认）
+- 学习：写入：<用户名>-tailwind（逐部件改写：旧样式表放进工具类之下的层并关掉 Lightning CSS 优化；按路径逐元素比对计算样式，含打印；`max-[…]` 不带 screen，按原写法定义自定义变体并从宽到窄注册；`hover:` 自带悬停媒体查询；同层工具类按属性顺序输出、简写会重置单项；按元素算清层叠，用自定义变体（含块写法）表达状态；伪元素配方用 `@utility` 配 `after:`；`cloneNode` 会带走工具类；模板字符串里紧挨 `${` 的类扫不到；长列表的页面体积要量）；<用户名>-tanstack-start（路由接管浏览器历史，页面自己压入的 `#` 条目也触发导航与滚动，改用内存历史；长列表整页水合：服务端算好状态、`memo`、每行 `Suspense` 分块、用内联模块脚本加布局类）；<用户名>-browser（手机页面的性能至少在 iPhone Air 模拟器里测，用户的纠正；模拟器里自动交替对比测速；逐段截图的偶然哈希差异要单独重截确认）
 - 验收：“接受并提交”（2026-10-09 提问工具）
 - 提交：`6163aa2`（L2 改动，已推送）、`ce70eb6`（验收记录）
 
@@ -178,4 +178,4 @@ flowchart TD
   - 样式：`src/styles/legacy.css` 删去——字体、令牌（Tailwind `@theme`，名字不变）、基础样式移进 `app.css`，页眉、页脚、标题组合、更新时间、区块标题改写成工具类；首屏墙的内联样式放进 `components` 层。
   - 文档：AGENTS.md（框架、结构、构建与检查命令、L3 定下的效果）与 README 重写。
 - 验证：`bun test` 15 项、`tsc`、`bun run check:browser` 通过；去掉 legacy.css 前后逐元素计算样式（10 个状态 × 4 个宽度）除去掉的 4 个未用令牌与 `sr-only` 改用 Tailwind 自带的写法外全部相同；分割线光点在 0、1.5、2、3、4、6 秒的位置与不透明度与原版一致（3 秒时两颗在正中、各 50%）；胶囊光带在无头 Chrome 里截图核对（光从上方来时整条上边与下边一起亮）；iPhone Air 模拟器测速见 F26（滚动与开关与旧页面相当，滚动最长一帧更短；关闭详情的第一帧因时间线重算多约 40ms，归入“打开与关上那一刻的长帧另查”）；模拟器里核对了地形、首屏墙、吸顶工具栏与分割线，第一次点按时弹出动作与方向授权（镜面光在水合后启动）。有界面的桌面 Chrome 没有测：要在你的屏幕上开窗口，且手机上的表现以模拟器为准
-- 学习：写入：moss-web-ui（视差脚本改 CSS 滚动驱动动画：`overflow: hidden` 让祖先成为滚动容器、`view-timeline-inset` 默认取滚动留白、简写重置长写、限幅公式按每一成写关键帧、并排量位置核对、锁滚动的开关让时间线重算；移植组件库效果时照实际渲染取参数——Star Border 的不透明度与位置、Specular Button 的 WebGL 上下文上限与椭圆法线取窗映射到锥形渐变）；moss-tailwind（令牌不改名搬进 `@theme static`；`@utility` 与块写法变体里嵌状态与 at-rule，输出原生嵌套）；moss-browser（模拟器测滚动：先确认到了“等滑动”、滑动一次一个调用、重启后先预热各个地址、`simctl boot` 偶尔失败再 boot 一次、授权提示只在点按时出现）
+- 学习：写入：<用户名>-web-ui（视差脚本改 CSS 滚动驱动动画：`overflow: hidden` 让祖先成为滚动容器、`view-timeline-inset` 默认取滚动留白、简写重置长写、限幅公式按每一成写关键帧、并排量位置核对、锁滚动的开关让时间线重算；移植组件库效果时照实际渲染取参数——Star Border 的不透明度与位置、Specular Button 的 WebGL 上下文上限与椭圆法线取窗映射到锥形渐变）；<用户名>-tailwind（令牌不改名搬进 `@theme static`；`@utility` 与块写法变体里嵌状态与 at-rule，输出原生嵌套）；<用户名>-browser（模拟器测滚动：先确认到了“等滑动”、滑动一次一个调用、重启后先预热各个地址、`simctl boot` 偶尔失败再 boot 一次、授权提示只在点按时出现）

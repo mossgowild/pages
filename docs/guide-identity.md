@@ -2,7 +2,7 @@
 module: guide-identity
 status: 已完成
 shape: 分阶段
-updated: 2026-10-10
+updated: 2026-10-11
 ---
 
 # 站点名称与专题范围
@@ -20,7 +20,7 @@ updated: 2026-10-10
 | F1 | 站名由 `data/events.json` 的 `title` 拼成：`region`“大湾区”＋`topic`“国庆电音”＋`guide`“指南”，用在页面 `<title>`、页眉标题的读屏名与页脚品牌；另有 `src/routes/__root.tsx` 的搜索描述写死“2026 大湾区国庆电音活动指南。…” | `data/events.json`；`src/lib/guide.server.ts`（`fullTitle`）；`src/components/Page.tsx`；`src/routes/__root.tsx` |
 | F2 | 页眉标题组合（第 260、263、264、272–284 题）：上行是 `topic`＋`guide`（现在“国庆电音指南”，Noto Sans SC Black 22px、手机 20px，斜切 12°，两端对齐撑满），下行左边“大湾区”（13px、60% 白）、右边 “by”＋有氧RAVERS Logo；两行等宽、左右两端对齐，整块与右侧“资讯更新”等高。去掉“国庆”后上行只剩“电音指南”4 个字，比下行窄，两端对齐会把 4 个字拉开 | `src/components/Page.tsx` 的 `LOCKUP`、`WORDMARK`、`REGION`；AGENTS.md 项目目标一节 |
 | F3 | 标题字体是自托管的 Noto Sans SC Black 子集（`public/assets/fonts/noto-sans-sc-title-900.woff2`）；“大湾区电音指南”这几个字都已在用（原来的“国庆电音指南”与“大湾区”），不用重新取子集 | `src/styles/app.css` 的 `@font-face`；现有页面 |
-| F4 | 日期范围由 `data/events.json` 的 `start_date`、`end_date`（现在 2026-09-30、2026-10-07）决定：清单按这段日期每天一组（没有活动的日子显示“当日暂无活动信息”），筛选日历只能选这段日期，页脚写“2026 / 09.30 — 10.07 · 粤港澳大湾区”。AGENTS.md 写着“当前专题为 2026 年 9 月 30 日–10 月 7 日。新的专题以 moss 指定范围为准” | `src/lib/guide.server.ts`（`days`、`dateRange`）；`src/components/Pickers.tsx` 的 `DateRange`；AGENTS.md |
+| F4 | 日期范围由 `data/events.json` 的 `start_date`、`end_date`（现在 2026-09-30、2026-10-07）决定：清单按这段日期每天一组（没有活动的日子显示“当日暂无活动信息”），筛选日历只能选这段日期，页脚写“2026 / 09.30 — 10.07 · 粤港澳大湾区”。AGENTS.md 写着当前专题为 2026 年 9 月 30 日–10 月 7 日，新的专题以用户指定的范围为准 | `src/lib/guide.server.ts`（`days`、`dateRange`）；`src/components/Pickers.tsx` 的 `DateRange`；AGENTS.md |
 | F5 | 站名还写在：AGENTS.md（“当前专题标题为‘大湾区国庆电音指南’”）、项目技能 `pages-site-visual-choices` 的描述；活动名称、海报替代文字与研究规则里的“国庆”（如“PLAY X 国庆总海报”）是活动本身或检索用语，不属于站名 | `grep -rn 国庆` |
 | F6 | 页眉三种排法的候选（现在、A、B、C，桌面 1440 与手机 390 宽，直接改页面截图）：A 只换字，上行“电音指南”被拉开成“电  音  指  南”；B 上行“大湾区电音指南”撑满，下行只留右对齐的 “by”＋Logo；C 一行“大湾区电音指南”，“by”＋Logo 跟在右边，页眉变成一行 | [候选截图](guide-identity/lockup-candidates.png)；草稿目录 `lockup/candidates.ts` |
 | F7 | 用到起止日期的地方：`src/lib/guide.server.ts` 的数据断言（起始不晚于结束、每场在范围内）、每日分组、页脚的年份与“09.30 — 10.07”、传给筛选日历的 `startDate`／`endDate`；测试与检查脚本不直接读这两个字段 | `grep -rn start_date src test scripts` |
