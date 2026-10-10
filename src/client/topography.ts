@@ -256,7 +256,7 @@ export function initTopography(canvas: HTMLCanvasElement, reel: HTMLElement, sen
     const barBottom = bottom(sentinel) + dock.offsetHeight;
     const groups = [...document.querySelectorAll('.day-group:not([hidden])')];
     const days = groups.map((day, i) => {
-      const heading = day.querySelector('.day-heading')!, empty = day.querySelector('.empty-day'), cards = day.querySelector('.event-accordion');
+      const heading = day.querySelector('.day-heading')!, empty = day.querySelector('.empty-day'), cards = day.querySelector('.event-masonry');
       const dayTop = top(day), drift = headingDrift(dayTop - y);
       return {
         dayTop, drifts: !empty, top: top(heading) - drift, bottom: empty ? bottom(empty) : bottom(heading) - drift,
@@ -299,7 +299,7 @@ export function initTopography(canvas: HTMLCanvasElement, reel: HTMLElement, sen
   }).observe(canvas);
   addEventListener('scroll', requestRender, { passive: true });
   addEventListener('resize', () => { view = innerHeight; requestRender(); });
-  // The first layout and every change of the page's size (the window, filters, the accordion, fonts): measure again.
+  // The first layout and every change of the page's size (the window, filters, the cards' layout, fonts): measure again.
   new ResizeObserver(() => {
     places = measure();
     requestRender();

@@ -364,7 +364,7 @@ export function FilterDock({ guide, filters, change, tags, count, summary, valid
       dock.current!.classList.toggle('is-stuck', !entry.isIntersecting && entry.boundingClientRect.top < 0)
     }, { rootMargin: '0px 0px 100000px 0px' })
     stuck.observe(sentinel.current!)
-    // The list also changes size after a filter (a row opening in the accordion, posters loading), so the room and,
+    // The list also changes size after a filter (the cards laid out again, posters loading), so the room and,
     // with the panel open, the page's place at the start of the results follow its size. Deferred a frame: adjusting
     // the page inside the observer's own callback would re-trigger layout observers in WebKit.
     const sized = new ResizeObserver(() => requestAnimationFrame(() => {

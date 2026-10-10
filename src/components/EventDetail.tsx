@@ -15,7 +15,7 @@ const BACK = 'cubic-bezier(.65,0,.35,1)'
 const OPEN = 500, CLOSE = 420
 
 export type DetailApi = { open: (row: HTMLElement, origin: HTMLElement) => void }
-type Box = { left: number; top: number; width: number; height: number; radius: number; turn: number; open: boolean; pan?: string }
+type Box = { left: number; top: number; width: number; height: number; radius: number; turn: number; open: boolean; pan?: string; posters?: number }
 type Current = { row: HTMLElement; origin: HTMLElement; pushed: boolean; closing: boolean; pan?: string; from: Box | null; finish?: () => void }
 
 const onScreen = (box: DOMRect) => box.width > 0 && box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth
@@ -27,14 +27,15 @@ const rowById = (id: string) => {
   return row?.classList.contains('event-row') ? row : null
 }
 
-// Where the sheet comes from and returns to, in viewport pixels: a row's own box, or the wall poster's square, which the
-// wall turns by --wall-turn (its bounding box is that square's turned outline). Null when it is not on the screen.
+// Where the sheet comes from and returns to, in viewport pixels: a card's own box (and the height of its poster, which
+// keeps its shape at the card's top), or the wall poster's square, which the wall turns by --wall-turn (its bounding box
+// is that square's turned outline). Null when it is not on the screen.
 function sourceOf(origin: HTMLElement): Box | null {
   if (!origin.isConnected || origin.closest('[hidden]')) return null
   if (origin.classList.contains('event-row')) {
     const box = origin.getBoundingClientRect()
-    return onScreen(box) ? { left: box.left, top: box.top, width: box.width, height: box.height, radius: 24, turn: 0,
-      open: origin.classList.contains('is-active') } : null
+    const posters = origin.querySelector('.event-posters')!.getBoundingClientRect().height
+    return onScreen(box) ? { left: box.left, top: box.top, width: box.width, height: box.height, radius: 24, turn: 0, open: true, posters } : null
   }
   const inner = origin.querySelector<HTMLElement>('.drift-wall__inner')!
   const box = inner.getBoundingClientRect()
@@ -58,7 +59,7 @@ function panOf(origin: HTMLElement) {
 
 // A wall poster's look in the sheet's stage: the whole poster as the wall pans it, without the stage's downward fade.
 const wallLook = (pan: string) => ({ objectPosition: pan, scale: '1', translate: '0px 0px' })
-const unfaded = { maskSize: '100% 1000%, 100% 100%', webkitMaskSize: '100% 1000%, 100% 100%' }
+const unfaded = { maskSize: '100% 1000%', webkitMaskSize: '100% 1000%' }
 
 // One page-level dialog over a half-dark veil; shrinking back, the dialog is an ordinary layer above the page that lets
 // clicks through (is-leaving), with a veil of its own fading out in place of the backdrop.
@@ -134,8 +135,7 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
   }, [shown?.key])
 
   // The sheet's box eases from the source's to its own while the poster stage grows from the source's height into the
-  // sheet's: a collapsed row's poster takes the open look, a wall poster turns from its view on the wall into the
-  // stage's crop, and their text fades in. The flight holds its first frame until a downloaded poster has decoded (at
+  // sheet's: a wall poster turns from its view on the wall into the stage's crop, and its text fades in. The flight holds its first frame until a downloaded poster has decoded (at
   // most 0.15s), so the poster never appears halfway; one still downloading does not hold it. Once the sheet lands, the
   // details and the × rise in on the Card Nav rhythm (50px, 0.08s apart) and the poster takes its original.
   function flyIn(from: Box, image: HTMLImageElement | null) {
@@ -148,15 +148,12 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
       sheet.current!.animate([frame(from), frame({ left: to.left, top: to.top, width: to.width, height: to.height, radius, turn: 0, open: true })], timing),
       box.animate([{ minHeight: `${from.height}px` }, { minHeight: `${height}px` }], timing),
     ]
+    // A card's poster starts at its own shape at the top of the card and comes to fill the sheet's stage.
+    if (from.posters) flight.push(box.querySelector('.event-posters')!.animate([{ bottom: `${from.height - from.posters}px` }, { bottom: '0px' }], timing))
     if (!from.open) {
       flight.push(box.querySelector('.event-summary')!.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 150, easing: EASE, fill: 'backwards' }))
-      if (from.pan) {
-        flight.push(box.querySelector('.event-posters')!.animate([{ offset: 0, ...unfaded }], timing))
-        if (image) flight.push(image.animate([{ offset: 0, ...wallLook(from.pan) }], timing))
-      } else {
-        flight.push(box.animate([{ '--open': 0 }, { '--open': 1 }], timing))
-        if (image) flight.push(image.animate([{ filter: 'grayscale(.3)' }, { filter: 'grayscale(0)' }], timing))
-      }
+      flight.push(box.querySelector('.event-posters')!.animate([{ offset: 0, ...unfaded }], timing))
+      if (image && from.pan) flight.push(image.animate([{ offset: 0, ...wallLook(from.pan) }], timing))
     }
     flight.forEach(animation => animation.pause())
     const play = () => flight.forEach(animation => animation.play())
@@ -189,16 +186,12 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
     if (offset) scroller.current!.animate([{ translate: `0 ${-offset}px` }, { translate: '0 0' }], timing)
     const shrinking = element.animate([frame({ left: box.left, top: box.top, width: box.width, height: box.height, radius, turn: 0, open: true }), frame(to)], timing)
     stageBox.animate([{ minHeight: `${stageBox.getBoundingClientRect().height}px` }, { minHeight: `${to.height}px` }], timing)
+    if (to.posters) stageBox.querySelector('.event-posters')!.animate([{ bottom: '0px' }, { bottom: `${to.height - to.posters}px` }], timing)
     if (!to.open) {
       stageBox.querySelector('.event-summary')!.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease-out', fill: 'forwards' })
       const image = stageBox.querySelector<HTMLImageElement>('.event-posters img')
-      if (to.turn) {
-        stageBox.querySelector('.event-posters')!.animate([{ offset: 1, ...unfaded }], timing)
-        if (image && current.current?.pan) image.animate([{ offset: 1, ...wallLook(current.current.pan) }], timing)
-      } else {
-        stageBox.animate([{ '--open': 1 }, { '--open': 0 }], timing)
-        image?.animate([{ filter: 'grayscale(0)' }, { filter: 'grayscale(.3)' }], timing)
-      }
+      stageBox.querySelector('.event-posters')!.animate([{ offset: 1, ...unfaded }], timing)
+      if (image && current.current?.pan) image.animate([{ offset: 1, ...wallLook(current.current.pan) }], timing)
     }
     return shrinking.finished
   }

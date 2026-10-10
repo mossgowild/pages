@@ -80,10 +80,9 @@
 @custom-variant screen-to-768 (@media screen and (max-width: 768px));
 @custom-variant screen-from-701 (@media screen and (min-width: 701px));
 @custom-variant screen-to-700 (@media screen and (max-width: 700px));
-/* Page states: the accordion (the rows' collapsed state applies only with the script) and the scroll depth, which runs
+/* Page states: the script (the list's cards take their masonry look only with it) and the scroll depth, which runs
    where motion is allowed and the browser has scroll-driven animations (Safari 26, Chrome 115; docs/site-rewrite.md Q31). */
-@custom-variant scripted (.accordion-ready &);
-@custom-variant collapsed (.accordion-ready .event-row:not(.is-active) &);
+@custom-variant scripted (.scripted &);
 @custom-variant scroll-motion { @media (prefers-reduced-motion: no-preference) { @supports (animation-timeline: view()) { @slot; } } }
 /* A mouse or trackpad (the preview's toolbar and × show only there). */
 @custom-variant mouse (@media (hover: hover) and (pointer: fine));
@@ -155,16 +154,11 @@ html.is-filtering { overflow: hidden; scrollbar-gutter: stable; }
 }
 
 /* ---------- Event list (Page.tsx, EventRow.tsx) ---------- */
-/* Rows are the 24px frosted glass of the original cards. The poster fades out by an alpha mask straight into the glass
-   (no dark overlay): downward on the open row (fully clear by 70% of the stage, where its text sits), toward the text
-   side on collapsed rows. --open (registered, so it interpolates) blends the two masks over the accordion's 0.6s. */
-@property --open { syntax: "<number>"; inherits: true; initial-value: 1; }
+/* Cards are the 24px frosted glass of the original rows. The poster fades out downward by an alpha mask straight into
+   the glass (no dark overlay), fully clear by 70% of the stage, where its text sits. */
 @utility poster-fade {
-  --fade: calc(1 - var(--open));
-  -webkit-mask-image: linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(#000 10%,rgb(0 0 0/calc(1 - var(--open)*.15)) 22%,rgb(0 0 0/calc(1 - var(--open)*.50)) 34%,rgb(0 0 0/calc(1 - var(--open)*.80)) 46%,rgb(0 0 0/calc(1 - var(--open)*.94)) 58%,rgb(0 0 0/var(--fade)) 70%),linear-gradient(90deg,rgb(0 0 0/calc(.06 + var(--open)*.94)),rgb(0 0 0/calc(.16 + var(--open)*.84)) 50%,rgb(0 0 0/calc(.36 + var(--open)*.64)));
-  mask-composite: intersect;
+  -webkit-mask-image: linear-gradient(#000 10%,rgb(0 0 0/.85) 22%,rgb(0 0 0/.5) 34%,rgb(0 0 0/.2) 46%,rgb(0 0 0/.06) 58%,transparent 70%);
+  mask-image: linear-gradient(#000 10%,rgb(0 0 0/.85) 22%,rgb(0 0 0/.5) 34%,rgb(0 0 0/.2) 46%,rgb(0 0 0/.06) 58%,transparent 70%);
 }
 /* Details read as an editorial ledger (no pills or buttons): a hairline fading to the right under each timetable row,
    ticket tier and link, as a pseudo-element (after:ledger-line). */
@@ -182,25 +176,12 @@ html.is-filtering { overflow: hidden; scrollbar-gutter: stable; }
 @custom-variant copy-hover { @media (hover: hover) { .copy-target:not(:disabled):hover & { @slot; } } }
 
 /* ---------- Scroll depth (EventRow.tsx, Page.tsx) ---------- */
-/* Layered depth on the compositor, scroll-driven (docs/site-rewrite.md Q31): a row's cover, 1.25× from its top edge, moves
-   from -20% of its frame as the frame enters at the bottom to 0 as it leaves at the top (the frame's view timeline, inset 0
-   rather than the page's scroll padding), plus
-   the accordion's --drift, the two clamped to the 25% overhang so the cover always fills the frame. The clamp is kept at
-   every tenth of the way (a kink between two steps is off by at most half a percent of the frame); --drift eases over the
-   accordion's 0.6s when the rows change. */
-@property --drift { syntax: "<length>"; inherits: true; initial-value: 0px; }
+/* Layered depth on the compositor, scroll-driven (docs/site-rewrite.md Q31): a card's cover, 1.25× from its top edge,
+   moves from -20% of its frame as the frame enters at the bottom to 0 as it leaves at the top (the frame's view timeline,
+   inset 0 rather than the page's scroll padding), within the 25% overhang so the cover always fills the frame. */
 @keyframes poster-parallax {
-  0% { translate: 0 clamp(-25%, calc(var(--drift) - 20%), 0%); }
-  10% { translate: 0 clamp(-25%, calc(var(--drift) - 18%), 0%); }
-  20% { translate: 0 clamp(-25%, calc(var(--drift) - 16%), 0%); }
-  30% { translate: 0 clamp(-25%, calc(var(--drift) - 14%), 0%); }
-  40% { translate: 0 clamp(-25%, calc(var(--drift) - 12%), 0%); }
-  50% { translate: 0 clamp(-25%, calc(var(--drift) - 10%), 0%); }
-  60% { translate: 0 clamp(-25%, calc(var(--drift) - 8%), 0%); }
-  70% { translate: 0 clamp(-25%, calc(var(--drift) - 6%), 0%); }
-  80% { translate: 0 clamp(-25%, calc(var(--drift) - 4%), 0%); }
-  90% { translate: 0 clamp(-25%, calc(var(--drift) - 2%), 0%); }
-  100% { translate: 0 clamp(-25%, var(--drift), 0%); }
+  from { translate: 0 -20%; }
+  to { translate: 0 0; }
 }
 /* A day heading moves at 0.9× the scroll while its day passes the middle of the screen: over the 360px of scroll from its
    day's top 260px below the middle to 100px above it, from 26px up to 10px down, so it never meets the rows (the day's

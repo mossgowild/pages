@@ -217,41 +217,72 @@ function checkLayout() {
     assert(!document.querySelector('.hero-detail, .hero-controls, .hero-arrow'), 'The wall has no featured details, arrows or page numbers');
     assert(getComputedStyle(hero).overscrollBehaviorY === 'auto', 'Vertical scrolling over the wall must reach the page');
   }
-  const lists = [...document.querySelectorAll('.event-accordion')].filter(list => list.getClientRects().length);
+  // The day lists are React Bits Masonry (docs/event-browsing.md Q46–Q47): with the script, as many columns as the
+  // original's breakpoints on the window's width, edge to edge with 12px between the cards, no card over another, each
+  // stage at least as tall as its poster across the card; without it, one column with the details.
+  const scripted = document.documentElement.classList.contains('scripted');
+  const columns = !scripted ? 1 : innerWidth >= 1500 ? 5 : innerWidth >= 1000 ? 4 : innerWidth >= 600 ? 3 : innerWidth >= 400 ? 2 : 1;
+  const lists = [...document.querySelectorAll('.event-masonry')].filter(list => list.getClientRects().length);
   let visible = 0;
   for (const list of lists) {
+    const date = list.closest('.day-group').dataset.date;
     const rows = [...list.querySelectorAll('.event-row')].filter(row => !row.hidden);
-    const active = rows.filter(row => row.classList.contains('is-active'));
-    assert(active.length === 1, `${list.closest('.day-group').dataset.date}: each day needs exactly one open row`);
-    const openHeight = viewport <= 700 ? 520 : 560;
     const boxes = rows.map(row => row.getBoundingClientRect());
+    const frame = list.getBoundingClientRect();
+    const lefts = [...new Set(boxes.map(box => Math.round(box.left)))].sort((a, b) => a - b);
+    assert(lefts.length === Math.min(columns, rows.length), `${date}: ${lefts.length} columns instead of ${columns}`);
+    assert(Math.abs(lefts[0] - frame.left) <= 1, `${date}: the first column starts at the list's edge`);
+    if (rows.length >= columns) assert(Math.abs(Math.max(...boxes.map(box => box.right)) - frame.right) <= 1, `${date}: the last column ends at the list's edge`);
+    for (let c = 1; c < lefts.length; c++) {
+      const right = Math.max(...boxes.filter(box => Math.round(box.left) === lefts[c - 1]).map(box => box.right));
+      assert(Math.abs(lefts[c] - right - 12) <= 1, `${date}: 12px between columns`);
+    }
+    for (const left of lefts) {
+      const stack = boxes.filter(box => Math.round(box.left) === left).sort((a, b) => a.top - b.top);
+      for (let k = 1; k < stack.length; k++) assert(Math.abs(stack[k].top - stack[k - 1].bottom - 12) <= 1, `${date}: 12px between cards in a column`);
+    }
+    for (let a = 0; a < boxes.length; a++) for (let b = a + 1; b < boxes.length; b++) {
+      const x = boxes[a], y = boxes[b];
+      assert(x.right <= y.left + 1 || y.right <= x.left + 1 || x.bottom <= y.top + 1 || y.bottom <= x.top + 1, `${rows[a].id} and ${rows[b].id} overlap`);
+    }
+    assert(Math.max(...boxes.map(box => box.bottom)) <= frame.bottom + 1, `${date}: the list holds its cards`);
     for (let i = 0; i < rows.length; i++) {
-      const row = rows[i], box = boxes[i], open = row === active[0];
-      assert(box.width > 0 && box.height > 0, `${row.id}: empty row`);
-      assert(box.left >= -1 && box.right <= viewport + 1, `${row.id}: row outside viewport`);
+      const row = rows[i], box = boxes[i];
+      assert(box.width > 0 && box.height > 0, `${row.id}: empty card`);
+      assert(box.left >= -1 && box.right <= viewport + 1, `${row.id}: card outside viewport`);
       assert(row.scrollWidth <= row.clientWidth, `${row.id}: overflowing content`);
       // Unknown lineup and genres are left out (question 183); the other four categories are always there.
       const known = 4 + (JSON.parse(row.dataset.genres).length > 0) + (row.querySelector('.row-artists') !== null);
       const field = name => row.querySelector(`[data-field="${name}"]`);
       assert(row.querySelectorAll('[data-field]').length === known && ['name', 'location', 'info', 'posters'].every(field), `${row.id}: missing information`);
-      assert(getComputedStyle(row).borderTopLeftRadius === '24px', `${row.id}: rows use the shared radius`);
-      assert(getComputedStyle(row).transform === 'none', `${row.id}: rows lie flat (docs/glass-effects.md)`);
+      assert(getComputedStyle(row).borderTopLeftRadius === '24px', `${row.id}: cards use the shared radius`);
+      assert(getComputedStyle(row).transform === 'none', `${row.id}: cards lie flat (docs/glass-effects.md)`);
       const stage = row.querySelector('.event-stage').getBoundingClientRect();
-      assert(open ? stage.height >= openHeight - 1 : stage.height >= 84, `${row.id}: wrong ${open ? 'open' : 'collapsed'} height`);
-      // Rows do not switch or expand any more: the title opens the event's detail sheet (docs/event-browsing.md Q20–Q25).
+      const image = row.querySelector('.event-posters img');
+      const ratio = image ? Number(image.getAttribute('height')) / Number(image.getAttribute('width')) : 1;
+      assert(scripted ? stage.height >= stage.width * ratio - 1 : stage.height >= (viewport <= 700 ? 520 : 560) - 1, `${row.id}: the stage is shorter than its poster`);
+      assert(row.querySelector('.event-summary').getBoundingClientRect().bottom <= stage.bottom + 1, `${row.id}: the text runs past the stage`);
+      if (scripted) {
+        // The poster keeps its shape at the top of the card, and the text starts no higher than halfway down it.
+        const posters = row.querySelector('.event-posters').getBoundingClientRect();
+        assert(Math.abs(posters.height - posters.width * ratio) <= 1.5 && Math.abs(posters.top - stage.top) <= 1, `${row.id}: the poster keeps its shape at the top`);
+        const text = row.querySelector('.event-summary').getBoundingClientRect();
+        const start = parseFloat(getComputedStyle(row.querySelector('.event-summary')).paddingTop);
+        assert(text.top + start >= stage.top + posters.height / 2 - 1, `${row.id}: the text covers the upper half of the poster`);
+      }
+      // Cards do not switch or expand: the title opens the event's detail sheet (docs/event-browsing.md Q20–Q25).
       const toggle = row.querySelector('.event-toggle');
       assert(toggle.getAttribute('aria-haspopup') === 'dialog' && !toggle.hasAttribute('aria-expanded'), `${row.id}: the title opens the details`);
       assert(!row.querySelector('.event-more'), `${row.id}: no details line`);
       const summary = row.querySelector('.row-artists')?.textContent ?? '';
       assert([...row.querySelectorAll('.artist-table tr:not(.crew-row) .artist-name')].every(name => summary.includes(name.textContent)),
-        `${row.id}: the collapsed row must list every artist`);
+        `${row.id}: the card must list every artist`);
       assert(!row.querySelector('.row-genres') || row.querySelector('.row-genres').children.length > 0, `${row.id}: a genre line needs genres`);
       const details = row.querySelector('.event-details');
-      if (document.documentElement.classList.contains('accordion-ready')) assert(!details || !details.getClientRects().length, `${row.id}: details stay out of the row while the script runs`);
+      if (scripted) assert(!details || !details.getClientRects().length, `${row.id}: details stay out of the card while the script runs`);
       for (const link of row.querySelectorAll('.row-genres span')) {
         if (link.getClientRects().length) assert(parseFloat(getComputedStyle(link).borderTopLeftRadius) >= link.offsetHeight / 2, `${row.id}: pills must be fully rounded`);
       }
-      if (i) assert(box.top >= boxes[i - 1].bottom - 1, `${row.id}: rows overlap or lose date/time order`);
       for (const image of row.querySelectorAll('.event-posters > a > img')) {
         const size = image.getBoundingClientRect();
         const frame = image.parentElement.getBoundingClientRect();

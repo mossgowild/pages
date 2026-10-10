@@ -4,7 +4,7 @@
 import { forwardRef, Fragment, memo, useEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { startLabel, type Artist, type EventView, type Part, type Price, type Stage } from '../lib/guide'
 import { mapLinks, platformOf } from '../lib/maps'
-import { EASE, reducedMotion, useIsomorphicLayoutEffect, useMedia } from '../lib/motion'
+import { useMedia } from '../lib/motion'
 import { PickerPop } from './Pickers'
 import { SectionTitle } from './SectionTitle'
 
@@ -313,7 +313,7 @@ function DetailSection({ name, english, label, caption, className, children }: {
 }
 
 // Collapsed rows on wider screens set the artists and genres beside the name as columns of their own.
-const ROW_ARTISTS = 'row-artists [grid-column:2] flex flex-wrap [gap:2px_16px] [margin:4px_0_0] p-0 list-none [font:600_13px/1.7_var(--font-display)] tracking-[.03em] uppercase text-[#eee] screen-from-901:collapsed:[grid-column:3] screen-from-901:collapsed:[grid-row:1/span_3] screen-from-901:collapsed:m-0'
+const ROW_ARTISTS = 'row-artists [grid-column:2] flex flex-wrap [gap:2px_16px] [margin:4px_0_0] p-0 list-none [font:600_13px/1.7_var(--font-display)] tracking-[.03em] uppercase text-[#eee]'
 
 // One line per lineup entry for the row summary: B2B and other pairings stay together, Live and the like follow the name.
 function ArtistSummary({ artists }: { artists: Artist[] }) {
@@ -332,54 +332,43 @@ function ArtistSummary({ artists }: { artists: Artist[] }) {
 // the accent colour, here the brand pink, centred where the name's capitals are.
 const BAR = 'w-[3px] h-[26px] mr-3 rounded-[3px] bg-brand-pink align-[calc(.37em-13px)] shadow-[0_0_12px_color-mix(in_srgb,var(--brand-pink)_60%,transparent)]'
 
-// The stage is 560px (520px on phones) open and an 84px strip collapsed; printed, it shrinks to the text.
-const STAGE = 'event-stage relative flex items-end min-h-[560px] overflow-clip screen-to-700:min-h-[520px] collapsed:min-h-[84px] collapsed:cursor-pointer print:min-h-0!'
-// The poster fills the stage at its upper middle; collapsed it greys a little, and with the scroll depth it is 1.25× from
-// its top edge and moves within the spare quarter (app.css). A sheet poster not downloaded yet stays hidden and fades in
-// whole when it arrives (EventDetail.tsx).
-const POSTER = 'block w-full h-full object-cover [object-position:center_25%] [filter:grayscale(var(--gray,0))] [transition:filter_.6s_var(--ease-card),translate_.6s_var(--ease-card),opacity_.3s_ease-out,--drift_.6s_var(--ease-card)] scroll-motion:origin-top scroll-motion:[scale:1.25] collapsed:[--gray:.3] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] print:scroll-motion:[animation-name:none] [.is-pending_&]:opacity-0'
-// In a row the cover runs its frame's scroll timeline (poster-parallax in app.css); in the detail sheet it rests where a
+// The stage is a container the text lays out by. In a card the poster keeps its own shape across the card's width at
+// the top (square without a poster) and the stage is as tall as it (docs/event-browsing.md Q47); longer text starts no
+// higher than halfway down the poster and makes the card taller below it, so the poster neither zooms nor hides under
+// the text. In the detail sheet, and in the list without the script, the stage is 560px (520px on phones) with the
+// poster filling it. Printed, it shrinks to the text.
+const STAGE = 'event-stage @container relative flex items-end overflow-clip min-h-[560px] screen-to-700:min-h-[520px] print:min-h-0!'
+// A zero-wide spacer as tall as the poster sets the card's least height, and the text's top margin keeps it below the
+// poster's upper half (percentages of the card's width; Safari does not grow an aspect-ratio box with clipped content).
+const CARD_STAGE = "scripted:min-h-0 scripted:before:content-[''] scripted:before:[padding-top:calc(var(--depth)*100%)] scripted:[&>.event-summary]:mt-[calc(var(--depth)*50%)] print:before:content-none print:[&>.event-summary]:mt-0"
+const CARD_POSTERS = 'scripted:bottom-auto scripted:[aspect-ratio:var(--ratio)]'
+// The poster fills the stage at its upper middle; with the scroll depth it is 1.25× from its top edge and moves within
+// the spare quarter (app.css). A sheet poster not downloaded yet stays hidden and fades in whole when it arrives
+// (EventDetail.tsx).
+const POSTER = 'block w-full h-full object-cover [object-position:center_25%] [transition:opacity_.3s_ease-out] scroll-motion:origin-top scroll-motion:[scale:1.25] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] print:scroll-motion:[animation-name:none] [.is-pending_&]:opacity-0'
+// In a card the cover runs its frame's scroll timeline (poster-parallax in app.css); in the detail sheet it rests where a
 // cover entering the screen starts.
 const ROW_PARALLAX = 'scroll-motion:[animation-name:poster-parallax] scroll-motion:[animation-timing-function:linear] scroll-motion:[animation-fill-mode:both] scroll-motion:[animation-timeline:--poster]'
-const SHEET_PARALLAX = 'scroll-motion:[translate:0_clamp(-25%,calc(var(--drift)_-_20%),0%)]'
+const SHEET_PARALLAX = 'scroll-motion:[translate:0_-20%]'
 // The text over the poster's faded part: the start time and city in a column of their own, then the name, venue and
-// time, notes, artists and genres; collapsed rows on wider screens spread over four columns.
-const SUMMARY = 'event-summary relative z-2 grid grid-cols-[110px_minmax(0,1fr)] [align-items:start] [gap:10px_24px] w-full p-[26px] [text-shadow:0_1px_12px_rgb(0_0_0/.55)] screen-from-901:collapsed:grid-cols-[110px_minmax(0,1.1fr)_minmax(0,1.3fr)_minmax(0,.9fr)] screen-to-700:grid-cols-[64px_minmax(0,1fr)] screen-to-700:[gap:6px_14px] screen-to-700:p-5 print:[text-shadow:none] print:text-[#111]'
-const TITLE = '[grid-column:2] m-0 [font:600_24px/1.25_var(--font-display)] tracking-[-.01em] text-pretty collapsed:text-[19px] screen-to-700:text-[17px] screen-to-700:collapsed:text-[17px] print:text-[18px]'
+// time, notes, artists and genres. Below 700px of stage the column narrows; in a card under 300px wide everything
+// stacks, the time and city above the name.
+const SUMMARY = 'event-summary relative z-2 grid grid-cols-[110px_minmax(0,1fr)] [align-items:start] [gap:10px_24px] w-full p-[26px] [text-shadow:0_1px_12px_rgb(0_0_0/.55)] @max-[700px]:grid-cols-[64px_minmax(0,1fr)] @max-[700px]:[gap:6px_14px] @max-[700px]:p-5 @max-[300px]:flex @max-[300px]:flex-col @max-[300px]:items-start @max-[300px]:gap-1.5 @max-[300px]:p-4 print:[text-shadow:none] print:text-[#111]'
+const TITLE = '[grid-column:2] m-0 [font:600_24px/1.25_var(--font-display)] tracking-[-.01em] text-pretty @max-[700px]:text-[17px] @max-[300px]:text-[15px] print:text-[18px]'
 const TOGGLE = 'event-toggle relative inline p-0 [border:0] [background:none] text-inherit [font:inherit] text-left [text-shadow:inherit] cursor-pointer focus-visible:[outline:2px_solid_var(--focus)] focus-visible:[outline-offset:4px] focus-visible:rounded-[4px]'
 const GENRE = '[padding:3px_10px] [border:1px_solid_rgb(255_255_255/.18)] rounded-[999px] [background:var(--glass-pill)] [font:500_11px/1.4_var(--font-display)] text-[#ddd] [text-shadow:none]'
 
 // The poster stage: the poster with the summary over its faded part. In the detail sheet it is a copy whose poster opens
-// the full image and starts as the version the row showed (`full`: the original once it has downloaded there).
-export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?: { full: boolean }; active?: boolean }>(
-  function EventStage({ event, sheet, active }, ref) {
+// the full image and starts as the version the card showed (`full`: the original once it has downloaded there).
+export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?: { full: boolean } }>(
+  function EventStage({ event, sheet }, ref) {
     const { id, poster } = event
-    const bar = useRef<HTMLSpanElement>(null)
-    const title = useRef<HTMLButtonElement>(null)
-    // The bar is the open row's; it stays while it leaves. A row that becomes the open one brings its bar and name in as
-    // the original's label does: from 14px to the left, fading in, 0.06s apart over 0.6s; a row that stops being it lets
-    // its bar go over 0.36s. The first layout does not animate. The name is inline text, so it moves by its relative
-    // offset rather than a transform.
-    const [leaving, setLeaving] = useState(false)
-    const was = useRef(active)
-    if (was.current && !active && !leaving) setLeaving(true)
-    useIsomorphicLayoutEffect(() => {
-      if (sheet || was.current === active) return
-      was.current = active
-      if (reducedMotion()) return setLeaving(false)
-      if (active) {
-        setLeaving(false)
-        const timing = (delay: number) => ({ duration: 600, delay, easing: EASE, fill: 'backwards' as const })
-        bar.current?.animate([{ opacity: 0, translate: '-14px 0' }, { opacity: 1, translate: '0 0' }], timing(0))
-        title.current?.animate([{ opacity: 0, left: '-14px' }, { opacity: 1, left: '0' }], timing(60))
-      } else bar.current?.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '-14px 0' }], { duration: 360, easing: EASE, fill: 'forwards' })
-        .finished.then(() => { if (!was.current) setLeaving(false) }, () => {})
-    }, [active, sheet])
     return (
-      <div className={STAGE} ref={ref}>
+      <div className={`${STAGE} ${sheet ? '' : CARD_STAGE}`} ref={ref}
+        style={sheet ? undefined : { '--ratio': poster ? `${poster.width} / ${poster.height}` : '1', '--depth': poster ? poster.height / poster.width : 1 } as CSSProperties}>
         {/* Off-screen rows skip rendering their poster, so its lazy image waits until the row nears the screen instead of
             taking bandwidth from the hero wall (docs/event-browsing.md Q34). */}
-        <div className={`event-posters poster-fade absolute inset-0 z-0 print:hidden ${sheet ? '' : '[content-visibility:auto] scroll-motion:[view-timeline-name:--poster] scroll-motion:[view-timeline-inset:0]'}`} data-field="posters">
+        <div className={`event-posters poster-fade absolute inset-0 z-0 print:hidden ${sheet ? '' : `${CARD_POSTERS} [content-visibility:auto] scroll-motion:[view-timeline-name:--poster] scroll-motion:[view-timeline-inset:0]`}`} data-field="posters">
           {/* The light version shows first; near the screen, in the detail sheet and in the preview the full-size version
               takes over (data-full: the original's same-size WebP where it has one; docs/event-browsing.md Q34). */}
           {poster
@@ -387,20 +376,19 @@ export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?:
                 <img className={`${POSTER} ${sheet ? SHEET_PARALLAX : ROW_PARALLAX}`} width={poster.width} height={poster.height} src={poster.thumbnail} data-full={poster.full}
                   srcSet={sheet?.full ? poster.full : undefined} loading={sheet ? 'eager' : 'lazy'} fetchPriority={sheet ? 'high' : 'low'} alt={poster.alt} />
               </a>
-            : <div className="poster-empty grid place-items-center h-full pb-[180px] text-(--muted) text-[13px] collapsed:hidden">暂无图片</div>}
+            : <div className="poster-empty grid place-items-center h-full pb-[50%] text-(--muted) text-[13px]">暂无图片</div>}
         </div>
         {/* In the sheet the text over the poster lets taps through, as the whole poster opens the full image
             (docs/event-browsing.md F35), and it fades while the image is open. */}
         <div className={`${SUMMARY} ${sheet ? 'pointer-events-none [transition:opacity_.2s_ease-out] [.is-previewing_&]:opacity-0' : ''}`}>
           <header className="event-heading contents" data-field="name">
-            <p className="event-start [grid-row:1/span_2] m-0 [font:600_26px/1_var(--font-display)] tracking-[-.01em] text-(--brand-yellow) screen-to-700:text-[19px]">
+            <p className="event-start [grid-row:1/span_2] m-0 [font:600_26px/1_var(--font-display)] tracking-[-.01em] text-(--brand-yellow) @max-[700px]:text-[19px] @max-[300px]:text-[17px]">
               {event.starts.length ? startLabel(event) : ''}<small className="block mt-2 [font:500_11px/1.4_var(--font-display)] tracking-[.06em] text-[#bbb]">{event.city}</small>
             </p>
             {sheet
               ? <h4 id="event-detail-title" className={TITLE}><span className={`${BAR} inline-block`} aria-hidden="true" />{event.name}</h4>
               : <h4 id={`${id}-title`} className={TITLE}>
-                  {(active || leaving) && <span ref={bar} className={`${BAR} hidden scripted:inline-block`} aria-hidden="true" />}
-                  <button ref={title} type="button" className={TOGGLE} aria-haspopup="dialog" aria-controls="event-detail">{event.name}</button>
+                  <button type="button" className={TOGGLE} aria-haspopup="dialog" aria-controls="event-detail"><span className={`${BAR} inline-block`} aria-hidden="true" />{event.name}</button>
                 </h4>}
             <p className="event-meta [grid-column:2] m-0 text-[12px] leading-[1.6] text-[#d8cce3]">
               {event.venues.length > 0 && `${event.venues.join('、')} · `}
@@ -410,7 +398,7 @@ export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?:
           </header>
           <ArtistSummary artists={event.artists} />
           {event.genres.length > 0 && (
-            <p className="row-genres [grid-column:2] flex flex-wrap gap-1.5 m-0 screen-from-901:collapsed:[grid-column:4] screen-from-901:collapsed:[grid-row:1/span_3]" data-field="genres" aria-label="风格">
+            <p className="row-genres [grid-column:2] flex flex-wrap gap-1.5 m-0" data-field="genres" aria-label="风格">
               {event.genres.map(genre => <span key={genre} className={GENRE}>{genre}</span>)}
             </p>
           )}
@@ -460,16 +448,15 @@ export function EventDetails({ event, inRow }: { event: EventView; inRow?: boole
   )
 }
 
-// Rows are the 24px frosted glass of the original cards; with the script, collapsed rows (not .is-active) blend their
-// poster mask toward the text side over the accordion's 0.6s (--open, poster-fade in app.css).
-const ROW = 'event-row event-light [--open:1] relative min-w-0 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-clip wrap-anywhere [transition:--open_.6s_var(--ease-card)] target:[border-color:var(--gold)] scripted:cursor-pointer scripted:not-[.is-active]:[--open:0] motion-reduce:[transition:none] print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
+// Cards are the 24px frosted glass of the original rows.
+const ROW = 'event-row event-light relative min-w-0 [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.40)] [box-shadow:var(--glass-shadow)] [-webkit-backdrop-filter:var(--glass-blur)] [backdrop-filter:var(--glass-blur)] scroll-mt-[96px] overflow-clip wrap-anywhere target:[border-color:var(--gold)] scripted:cursor-pointer print:static! print:w-auto! print:[translate:none]! print:[break-inside:avoid] print:[transform:none] print:[background:#fff] print:[border-color:#aaa] print:[box-shadow:none]'
 
-// The list row. With the script the whole row opens its event's details (a link or button of its own keeps its
-// behaviour; the poster is no link of its own there), and its poster swaps the light version for the full-size one once
-// the page has loaded and the row nears the screen, the light version staying until that has downloaded (Q34); without it
-// the details stay in the row. Rows only render again when their own props change, so a filter or the page hydrating
-// does not redraw the whole list.
-export const EventRow = memo(function EventRow({ event, hidden, active, onOpen }: { event: EventView; hidden: boolean; active: boolean; onOpen: (row: HTMLElement) => void }) {
+// The list's card. With the script the whole card opens its event's details (a link or button of its own keeps its
+// behaviour; the poster is no link of its own there), and once the page has loaded and the card nears the screen its
+// poster swaps the light version for the full-size one where the light one has fewer pixels than the card shows, the
+// light version staying until that has downloaded (Q34); without it the details stay in the card. Cards only render
+// again when their own props change, so a filter or the page hydrating does not redraw the whole list.
+export const EventRow = memo(function EventRow({ event, hidden, onOpen }: { event: EventView; hidden: boolean; onOpen: (row: HTMLElement) => void }) {
   const { id } = event
   const row = useRef<HTMLElement>(null)
   const json = (value: unknown) => JSON.stringify(value)
@@ -484,16 +471,24 @@ export const EventRow = memo(function EventRow({ event, hidden, active, onOpen }
     onOpen(row.current!)
   }
   return (
-    <article ref={row} className={active ? `${ROW} is-active` : ROW} id={id} hidden={hidden} data-families={json(event.families)} data-date={event.date}
+    <article ref={row} className={ROW} id={id} hidden={hidden} data-families={json(event.families)} data-date={event.date}
       data-city={event.city} data-venues={json(event.venues)} data-genres={json(event.genres)} data-starts={json(event.starts)}
       aria-labelledby={`${id}-title`} onClick={open}>
-      <EventStage event={event} active={active} />
+      <EventStage event={event} />
       <EventDetails event={event} inRow />
     </article>
   )
 })
 
-// One observer for every row poster, started once the page has loaded so the originals do not take bandwidth from the
+// The light version is enough while it has as many pixels across as the screen shows of the cover (the cover is 1.25× for
+// the scroll depth and may be cropped at its sides).
+function sharpenIfSoft(poster: HTMLImageElement) {
+  const box = poster.getBoundingClientRect()
+  const shown = Math.max(box.width, box.height * poster.naturalWidth / poster.naturalHeight) * devicePixelRatio
+  if (poster.naturalWidth < shown) poster.srcset = poster.dataset.full!
+}
+
+// One observer for every card poster, started once the page has loaded so the originals do not take bandwidth from the
 // hero wall's first posters.
 let sharpen: IntersectionObserver | undefined
 const waiting: HTMLImageElement[] = []
@@ -505,7 +500,8 @@ function sharpenNearScreen(image: HTMLImageElement | null | undefined) {
         if (!isIntersecting) continue
         sharpen!.unobserve(target)
         const poster = target as HTMLImageElement
-        poster.srcset = poster.dataset.full!
+        if (poster.complete) sharpenIfSoft(poster)
+        else poster.addEventListener('load', () => sharpenIfSoft(poster), { once: true })
       }
     }, { rootMargin: '50% 0px' })
     const watch = () => waiting.splice(0).forEach(poster => sharpen!.observe(poster))

@@ -7,7 +7,8 @@ import { hasConditions, matchesEvent, NO_FILTERS, validRange, type Filters } fro
 import { moveFocus } from '../lib/focus'
 import { startGlass } from '../lib/glass'
 import type { EventView, Guide } from '../lib/guide'
-import { useIsomorphicLayoutEffect } from '../lib/motion'
+import { columnCount, place } from '../lib/masonry'
+import { eased, reducedMotion, useIsomorphicLayoutEffect } from '../lib/motion'
 import { EventDetail, type DetailApi } from './EventDetail'
 import { EventRow, LINK } from './EventRow'
 import { FilterDock, TAG_CLOSE, tagsOf, type PickerState } from './FilterDock'
@@ -60,26 +61,56 @@ const EMPTY = `empty-state grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-16
 const CONDITION = 'empty-condition relative flex w-full items-center justify-between gap-3 min-h-[52px] [padding:8px_0] [border:0] [background:none] text-left text-[#f1ecf7] [font:600_15px/1.4_var(--font-display)] cursor-pointer before:ledger-line hover:text-white'
 const KINDS: Record<string, string> = { city: '城市', family: '风格', genre: '风格', period: '时段', venue: '场地', to: '日期' }
 
-// React Bits Accordion Gallery, vertical, as a day's list (docs/event-browsing.md Q20–Q25): the first visible row stays
-// open with its full poster stage, the rest collapsed but still listing artists and genres; any row opens its event's
-// details. The rows after the open one drift as in the original (docs/site-rewrite.md Q14): by the open poster stage's
-// height × 0.06 × the parallax 0.5 for each row, at most 1.5 rows' worth.
+// React Bits Masonry as a day's list (docs/event-browsing.md Q46–Q47): every card is the open card the list used to
+// show first, as tall as its poster (EventRow.tsx), and the cards go into the shortest column in turn, as many columns
+// as the original's breakpoints give (src/lib/masonry.ts). Until the script lays them out they sit in a grid of as many
+// columns; without the script, in one column with their details. When the window's width or the filters change, the
+// cards that stay move to their new places over the original's 0.6s power3.out (eased, so Safari runs it off the main
+// thread); a card that comes back just appears in its place.
+const LIST = 'event-masonry flex flex-col gap-2.5 print:flex! print:h-auto! scripted:grid scripted:items-start scripted:gap-3 scripted:grid-cols-1 min-[400px]:scripted:grid-cols-2 min-[600px]:scripted:grid-cols-3 min-[1000px]:scripted:grid-cols-4 min-[1500px]:scripted:grid-cols-5'
+
 function DayGroup({ day, hidden, visible, onOpen }: {
   day: Guide['days'][number]; hidden: boolean; visible: EventView[]; onOpen: (row: HTMLElement) => void
 }) {
-  // The open row is known on the server too (its class only takes effect with the script's accordion-ready).
   const list = useRef<HTMLDivElement>(null)
-  const active = visible[0]?.id
+  // Where each shown card was placed last, so a new layout can move it from there.
+  const spots = useRef(new Map<string, { x: number; y: number }>())
   useIsomorphicLayoutEffect(() => {
-    if (!list.current) return
+    const element = list.current
+    if (!element) return
     const arrange = () => {
-      const rows = visible.map(event => document.getElementById(event.id)!)
-      const media = rows[0]?.querySelector('.event-stage')?.getBoundingClientRect().height ?? 0
-      rows.forEach((row, index) => row.style.setProperty('--drift', index ? `${(Math.max(-1.5, -index) * 0.5 * media * 0.06).toFixed(1)}px` : '0px'))
+      const cards = visible.map(event => document.getElementById(event.id)!)
+      const columns = columnCount()
+      const { cardWidth } = place([], columns, element.clientWidth)
+      Object.assign(element.style, { display: 'block', position: 'relative' })
+      for (const card of cards) Object.assign(card.style, { position: 'absolute', top: '0', left: '0', width: `${cardWidth}px` })
+      const layout = place(cards.map(card => card.offsetHeight), columns, element.clientWidth)
+      const move = !reducedMotion()
+      cards.forEach((card, index) => {
+        const to = layout.spots[index], last = spots.current.get(card.id)
+        // A card already moving to its place goes on; one moving elsewhere starts again from where it is now.
+        const moving = card.getAnimations().filter(animation => animation.id === 'masonry-move')
+        if (moving.length && last?.x === to.x && last.y === to.y) return
+        const [x, y] = moving.length ? getComputedStyle(card).translate.split(' ').map(parseFloat) : []
+        const from = moving.length ? { x, y: y || 0 } : last
+        moving.forEach(animation => animation.cancel())
+        card.style.translate = `${to.x}px ${to.y}px`
+        if (move && from && (from.x !== to.x || from.y !== to.y)) {
+          eased(card, progress => ({ translate: `${from.x + (to.x - from.x) * progress}px ${from.y + (to.y - from.y) * progress}px` }), { duration: 600 }).id = 'masonry-move'
+        }
+      })
+      spots.current = new Map(cards.map((card, index) => [card.id, layout.spots[index]]))
+      element.style.height = `${layout.height}px`
     }
     arrange()
+    // The cards' heights change with the fonts arriving and the width with the window.
+    let live = true
+    document.fonts.ready.then(() => { if (live) arrange() })
     addEventListener('resize', arrange)
-    return () => removeEventListener('resize', arrange)
+    return () => {
+      live = false
+      removeEventListener('resize', arrange)
+    }
   }, [visible])
   // Up and down move between the day's visible rows.
   function keys(event: KeyboardEvent<HTMLDivElement>) {
@@ -102,11 +133,11 @@ function DayGroup({ day, hidden, visible, onOpen }: {
         <Divider className="relative flex-1" />
       </h3>
       {day.events.length
-        ? <div ref={list} className="event-accordion flex flex-col gap-2.5" onKeyDown={keys}>
+        ? <div ref={list} className={LIST} onKeyDown={keys}>
             {/* Each row hydrates as its own unit after the rest of the page, so the toolbar works sooner and no long task
                 hydrates the whole list at once; a row tapped before then hydrates first and gets the tap. */}
             {day.events.map(event => (
-              <Suspense key={event.id}><EventRow event={event} hidden={!shown.has(event.id)} active={event.id === active} onOpen={onOpen} /></Suspense>
+              <Suspense key={event.id}><EventRow event={event} hidden={!shown.has(event.id)} onOpen={onOpen} /></Suspense>
             ))}
           </div>
         : <p className={`empty-day text-[13px] text-(--muted) ${TEXT_SHADOW}`}>当日暂无活动信息。</p>}

@@ -27,9 +27,9 @@ function RootDocument() {
             (docs/motion-performance.md), as components between the base and the utilities. */}
         <style dangerouslySetInnerHTML={{ __html: `@layer components{${heroCss.trim()}}` }} />
         {SCRIPTS.map(name => <script key={name} src={`assets/${name}.js`} defer />)}
-        {/* The list takes its accordion look once the page has been parsed, as it did before the rewrite: the rows collapse
-            over 0.6s then, alongside the wall and the terrain starting, rather than later when React has hydrated. */}
-        <script type="module" dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('accordion-ready')" }} />
+        {/* The list takes its scripted look (the cards in columns) once the page has been parsed, alongside the wall and the
+            terrain starting, rather than later when React has hydrated. */}
+        <script type="module" dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('scripted')" }} />
       </head>
       <body id="top">
         <Outlet />
