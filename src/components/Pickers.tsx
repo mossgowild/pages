@@ -8,6 +8,7 @@
 // A sheet let go past the drag threshold leaves from where it was dropped. Reduced motion shows and hides at once.
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode, type Ref } from 'react'
 import { shortDate } from '../lib/filters'
+import { moveFocus } from '../lib/focus'
 import { eased, OUT, reducedMotion } from '../lib/motion'
 
 const narrow = () => matchMedia('(max-width: 768px)').matches
@@ -160,7 +161,7 @@ export function PickerPop({ id, title, open, trigger, doneLabel = '完成', done
       } else {
         removeEventListener('scroll', replace)
         removeEventListener('resize', replace)
-        if (element.contains(document.activeElement) || document.activeElement === document.body) trigger()?.focus({ preventScroll: true })
+        if (element.contains(document.activeElement) || document.activeElement === document.body) moveFocus(trigger())
       }
     }
     // An outside press closes it (on phones the veil covers the outside and closes it on a tap); Esc closes the open
@@ -332,7 +333,7 @@ export function DateRange({ first, last, from, to, onChange, opened }: {
   useEffect(() => {
     if (!opened || narrow()) return
     const all = buttons();
-    (all.find(button => button.getAttribute('aria-pressed') === 'true') ?? all[0])?.focus({ preventScroll: true })
+    moveFocus(all.find(button => button.getAttribute('aria-pressed') === 'true') ?? all[0])
   }, [opened])
   function pick(value: string) {
     const single = from && from === to

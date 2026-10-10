@@ -196,9 +196,19 @@ try {
   }
 
   // The detail sheet: a row and a wall poster open it, the address follows, the page does not scroll under it, Esc, ×,
-  // back and forward close and reopen it, and focus returns to where it came from; a shared address opens it at load.
+  // back and forward close and reopen it, and focus returns to where it came from, ringed only after a key (src/lib/focus.ts:
+  // Safari would ring it after a tap too, so the check reads the focusVisible each focus asks for); a shared address opens
+  // it at load.
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {
     const { page, errors } = await open(390, 844, { reducedMotion })
+    const ring = () => page.evaluate(() => (window as unknown as { ring?: boolean }).ring)
+    await page.evaluate(() => {
+      const focus = HTMLElement.prototype.focus
+      HTMLElement.prototype.focus = function (options?: FocusOptions) {
+        (window as unknown as { ring?: boolean }).ring = options?.focusVisible
+        focus.call(this, options)
+      }
+    })
     await page.evaluate(() => document.getElementById('event-4')!.scrollIntoView({ block: 'center', behavior: 'instant' }))
     const y = await page.evaluate(() => scrollY)
     await page.click('#event-4 .event-summary', { position: { x: 200, y: 20 } })
@@ -213,6 +223,7 @@ try {
     assert.equal(await page.evaluate(() => location.hash), '')
     assert.equal(await page.evaluate(() => scrollY), y, 'Closing does not scroll the page')
     assert.equal(await page.evaluate(() => document.activeElement?.closest('.event-row')?.id), 'event-4', 'Focus returns to the row')
+    assert.equal(await ring(), true, 'Closed with Esc, the row shows its focus ring')
     await page.goForward()
     await wait(page, 1300)
     assert.ok(await page.evaluate(() => (document.getElementById('event-detail') as HTMLDialogElement).open), 'Forward reopens it')
@@ -233,6 +244,8 @@ try {
       await page.click('.event-detail-close')
       await wait(page, 1200)
       assert.equal(await page.evaluate(tile => document.activeElement === tile, tile), true, 'Focus returns to the wall poster')
+      assert.equal(await ring(), false, 'Closed with a click, the poster shows no focus ring')
+      assert.equal(await page.evaluate(tile => (tile as HTMLElement).matches(':focus-visible, .is-active'), tile), false, 'The wall does not take it for keyboard focus')
     }
     assert.deepEqual(errors, [])
     results.push(`detail (${reducedMotion})`)

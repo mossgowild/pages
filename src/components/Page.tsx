@@ -4,6 +4,7 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import logo from '../../public/assets/brand/youyang-ravers-horizontal.svg?raw'
 import { hasConditions, matchesEvent, NO_FILTERS, validRange, type Filters } from '../lib/filters'
+import { moveFocus } from '../lib/focus'
 import { startGlass } from '../lib/glass'
 import type { EventView, Guide } from '../lib/guide'
 import { useIsomorphicLayoutEffect } from '../lib/motion'
@@ -195,7 +196,7 @@ export function Page({ guide }: { guide: Guide }) {
                   <li key={tag.key}>
                     <button type="button" className={CONDITION} aria-label={`移除条件：${tag.label}`} onClick={() => {
                       change(tag.remove(filters))
-                      document.querySelector<HTMLElement>('.filter-toggle')?.focus()
+                      moveFocus(document.querySelector<HTMLElement>('.filter-toggle'))
                     }}>
                       <span><span className="inline-block w-16 text-[11px] font-medium tracking-[.12em] text-(--muted)">{KINDS[tag.key.split('|')[0]]}</span><span className="condition-value">{tag.label}</span></span>
                       <span className={TAG_CLOSE} aria-hidden="true">×</span>
@@ -205,7 +206,7 @@ export function Page({ guide }: { guide: Guide }) {
               </ul>
               <button type="button" className={`${LINK} w-full [border:0] [background:none] cursor-pointer`} id="reset-empty" onClick={() => {
                 change(NO_FILTERS)
-                document.querySelector<HTMLElement>('.filter-toggle')?.focus()
+                moveFocus(document.querySelector<HTMLElement>('.filter-toggle'))
               }}>清空全部条件</button>
             </div>
           </section>

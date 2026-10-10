@@ -6,6 +6,7 @@
 // top of the sheet (touch), Esc, the backdrop (wide screens) and the browser's back button: opening pushes #event-id, so
 // the address can be shared. Reduced motion shows and hides at once. Without the script the rows keep their details.
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { moveFocus } from '../lib/focus'
 import type { EventView } from '../lib/guide'
 import { EASE, OUT, reducedMotion, useIsomorphicLayoutEffect } from '../lib/motion'
 import { EventDetails, EventStage } from './EventRow'
@@ -226,7 +227,7 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
       origin.classList.remove('event-detail-origin')
       document.documentElement.classList.remove('is-detail')
       document.dispatchEvent(new Event('detail-toggle'))
-      ;(origin.classList.contains('event-row') ? origin.querySelector<HTMLElement>('.event-toggle')! : origin).focus({ preventScroll: true })
+      moveFocus(origin.classList.contains('event-row') ? origin.querySelector<HTMLElement>('.event-toggle') : origin)
       current.current = null
       setShown(null)
     }

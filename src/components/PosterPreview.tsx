@@ -11,6 +11,7 @@
 // draws the dialog and leaves the image inside the view to it.
 // @ts-nocheck -- ported unchanged from the page's own script; typing it adds nothing until it is reworked.
 import { useEffect, useRef } from 'react'
+import { moveFocus } from '../lib/focus'
 import { CLOSE_BUTTON } from './EventDetail'
 
 // A full-screen dialog over a dark, blurred veil, the image centred within the safe area; the image itself (a copy of the
@@ -245,7 +246,7 @@ export function PosterPreview() {
       dialog.style.removeProperty('--veil');
       animation?.cancel();
       source.classList.remove('poster-preview-origin');
-      source.focus({ preventScroll: true });
+      moveFocus(source);
       closing = false;
     };
     // It shrinks back into the sheet's poster from wherever a gesture left it.
