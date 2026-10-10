@@ -217,18 +217,25 @@ function checkLayout() {
     assert(!document.querySelector('.hero-detail, .hero-controls, .hero-arrow'), 'The wall has no featured details, arrows or page numbers');
     assert(getComputedStyle(hero).overscrollBehaviorY === 'auto', 'Vertical scrolling over the wall must reach the page');
   }
-  // The day lists are React Bits Masonry (docs/event-browsing.md Q46–Q47): with the script, as many columns as the
-  // original's breakpoints on the window's width, edge to edge with 12px between the cards, no card over another, each
-  // stage at least as tall as its poster across the card; without it, one column with the details.
+  // The day lists are React Bits Masonry (docs/event-browsing.md Q47, Q53, Q55): with the script, as many columns as fit
+  // with no card under 260px, edge to edge with 12px between the cards, no card over another, each stage at least as tall as
+  // its poster across the card; without it, one column with the details.
   const scripted = document.documentElement.classList.contains('scripted');
-  const columns = !scripted ? 1 : innerWidth >= 1500 ? 5 : innerWidth >= 1000 ? 4 : innerWidth >= 600 ? 3 : innerWidth >= 400 ? 2 : 1;
   const lists = [...document.querySelectorAll('.event-masonry')].filter(list => list.getClientRects().length);
   let visible = 0;
   for (const list of lists) {
     const date = list.closest('.day-group').dataset.date;
     const rows = [...list.querySelectorAll('.event-row')].filter(row => !row.hidden);
-    const boxes = rows.map(row => row.getBoundingClientRect());
     const frame = list.getBoundingClientRect();
+    const columns = scripted ? Math.max(1, Math.floor((frame.width + 12) / 272)) : 1;
+    // Where the layout puts each card (its translate in the list), not where a card flying in or shrinking under the
+    // mouse shows right now.
+    const boxes = rows.map(row => {
+      if (!scripted || row.style.position !== 'absolute') return row.getBoundingClientRect();
+      const [x = 0, y = 0] = (row.style.translate || '0px').split(' ').map(parseFloat);
+      const left = frame.left + x, top = frame.top + y;
+      return { left, top, right: left + row.offsetWidth, bottom: top + row.offsetHeight, width: row.offsetWidth, height: row.offsetHeight };
+    });
     const lefts = [...new Set(boxes.map(box => Math.round(box.left)))].sort((a, b) => a - b);
     assert(lefts.length === Math.min(columns, rows.length), `${date}: ${lefts.length} columns instead of ${columns}`);
     assert(Math.abs(lefts[0] - frame.left) <= 1, `${date}: the first column starts at the list's edge`);

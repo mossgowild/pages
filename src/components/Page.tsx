@@ -61,13 +61,13 @@ const EMPTY = `empty-state grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-16
 const CONDITION = 'empty-condition relative flex w-full items-center justify-between gap-3 min-h-[52px] [padding:8px_0] [border:0] [background:none] text-left text-[#f1ecf7] [font:600_15px/1.4_var(--font-display)] cursor-pointer before:ledger-line hover:text-white'
 const KINDS: Record<string, string> = { city: '城市', family: '风格', genre: '风格', period: '时段', venue: '场地', to: '日期' }
 
-// React Bits Masonry as a day's list (docs/event-browsing.md Q46–Q47): every card is the open card the list used to
+// React Bits Masonry as a day's list (docs/event-browsing.md Q47, Q53, Q55): every card is the open card the list used to
 // show first, as tall as its poster (EventRow.tsx), and the cards go into the shortest column in turn, as many columns
-// as the original's breakpoints give (src/lib/masonry.ts). Until the script lays them out they sit in a grid of as many
+// as fit with no card under 260px (src/lib/masonry.ts). Until the script lays them out they sit in a grid of as many
 // columns; without the script, in one column with their details. When the window's width or the filters change, the
 // cards that stay move to their new places over the original's 0.6s power3.out (eased, so Safari runs it off the main
 // thread); a card that comes back just appears in its place.
-const LIST = 'event-masonry flex flex-col gap-2.5 print:flex! print:h-auto! scripted:grid scripted:items-start scripted:gap-3 scripted:grid-cols-1 min-[400px]:scripted:grid-cols-2 min-[600px]:scripted:grid-cols-3 min-[1000px]:scripted:grid-cols-4 min-[1500px]:scripted:grid-cols-5'
+const LIST = 'event-masonry flex flex-col gap-2.5 print:flex! print:h-auto! scripted:grid scripted:items-start scripted:gap-3 scripted:grid-cols-[repeat(auto-fill,minmax(min(260px,100%),1fr))]'
 
 function DayGroup({ day, hidden, visible, onOpen }: {
   day: Guide['days'][number]; hidden: boolean; visible: EventView[]; onOpen: (row: HTMLElement) => void
@@ -80,7 +80,7 @@ function DayGroup({ day, hidden, visible, onOpen }: {
     if (!element) return
     const arrange = () => {
       const cards = visible.map(event => document.getElementById(event.id)!)
-      const columns = columnCount()
+      const columns = columnCount(element.clientWidth)
       const { cardWidth } = place([], columns, element.clientWidth)
       Object.assign(element.style, { display: 'block', position: 'relative' })
       for (const card of cards) Object.assign(card.style, { position: 'absolute', top: '0', left: '0', width: `${cardWidth}px` })

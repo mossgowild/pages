@@ -1,10 +1,10 @@
-// React Bits Masonry's layout (docs/event-browsing.md Q46–Q47): the column count follows the original's media queries on
-// the window's width, and each card in turn goes into the column that is shortest so far. The columns run edge to edge
-// with the gap between them, so the cards line up with the toolbar and the day headings.
+// React Bits Masonry's layout (docs/event-browsing.md Q47): each card in turn goes into the column that is shortest so far.
+// The list has as many columns as fit with no card narrower than 260px (Q53, Q55, in place of the original's breakpoints on
+// the window's width), edge to edge with the gap between them, so the cards line up with the toolbar and the day headings.
 export const GAP = 12
-const COLUMNS = [['(min-width: 1500px)', 5], ['(min-width: 1000px)', 4], ['(min-width: 600px)', 3], ['(min-width: 400px)', 2]] as const
+export const MIN_WIDTH = 260
 
-export const columnCount = () => COLUMNS.find(([query]) => matchMedia(query).matches)?.[1] ?? 1
+export const columnCount = (width: number) => Math.max(1, Math.floor((width + GAP) / (MIN_WIDTH + GAP)))
 
 // Where each card goes, from the cards' heights in order: their left and top within the list, and the list's height.
 export function place(heights: number[], columns: number, width: number) {
