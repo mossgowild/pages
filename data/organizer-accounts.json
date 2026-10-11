@@ -1,0 +1,222 @@
+{
+  "accounts": [
+    {
+      "entity": "OIL Club",
+      "city": "深圳",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "OIL油",
+      "original_id": "gh_056a05aa3463",
+      "biz": "MzUyNDQwODQ3Ng==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzUyNDQwODQ3Ng==",
+      "verified_from": "OIL 2026 十月活动预告（2026-10-03 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "GUM",
+      "city": "广州",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "GUM Guangzhou",
+      "original_id": "gh_066316ba0225",
+      "biz": "Mzk4ODExMjI5Mg==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzk4ODExMjI5Mg==",
+      "verified_from": "灯灭之前 不说再见｜GUM十月活动预告（2026-09-30 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "Club Droowning",
+      "city": "广州",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "DROOWNING",
+      "original_id": "gh_2861a2519828",
+      "biz": "Mzk0NDYyNzgxNA==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzk0NDYyNzgxNA==",
+      "verified_from": "本机公众号推送（2026-09-20 起 8 条）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "Club Droowning",
+      "city": "广州",
+      "role": "venue",
+      "platform": "xiaohongshu",
+      "name": "CLUB DROOWNING",
+      "user_id": "61a0ec7f00000000100048df",
+      "url": "https://www.xiaohongshu.com/user/profile/61a0ec7f00000000100048df",
+      "verified_from": "小红书主页笔记列表（Club Droowning 九月国庆派对预览等）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "PLAY X",
+      "city": "深圳",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "PLAY X 深圳",
+      "original_id": "gh_2c76a5f58114",
+      "biz": "MzYzMTA2MDc1NA==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzYzMTA2MDc1NA==",
+      "verified_from": "本周重磅💥两位殿堂级制作人节后接力（2026-10-08 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "PSYCORE PARK 幻声公园",
+      "city": "广州",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "PSYCORE PARK 幻声公园",
+      "original_id": "gh_f6ffc9389e8a",
+      "biz": "MzI1OTM3MDIwNw==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI1OTM3MDIwNw==",
+      "verified_from": "锐舞相亲角 Vol.0.1（2026-10-10 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "LOST & CHILL",
+      "city": "广州",
+      "role": "promoter",
+      "platform": "wechat_official",
+      "name": "LOST & CHILL",
+      "original_id": "gh_7b3acbe99dce",
+      "biz": "Mzk5MDgwODUzOA==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzk5MDgwODUzOA==",
+      "verified_from": "10.17 | LNC 中国风主题DressCode江景天台日落派对（2026-10-11 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "海岛狂放 Island Wildness",
+      "city": "深圳",
+      "role": "promoter",
+      "platform": "wechat_official",
+      "name": "海岛狂放 Island wildness",
+      "original_id": "gh_853587ee0127",
+      "biz": "MzYyMTEwNDA1MA==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzYyMTEwNDA1MA==",
+      "verified_from": "海岛狂放 × AFRO COAST 泳池派对（2026-10-03 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "光芒 Enlightening",
+      "city": "广州",
+      "role": "venue",
+      "platform": "wechat_official",
+      "name": "光芒enlightening",
+      "original_id": "gh_bc67afebdfb9",
+      "biz": "Mzg2Nzk0MDMyNw==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=Mzg2Nzk0MDMyNw==",
+      "verified_from": "10/25 ENLIGHTENING SYNTH ARTS #002（2026-10-09 推文）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "Live Nation Entertainment Asia",
+      "city": "香港",
+      "role": "promoter",
+      "platform": "wechat_official",
+      "name": "LiveNationEA",
+      "original_id": "gh_8ea8f642e9c9",
+      "biz": "MzI3NTc4NDcxOA==",
+      "url": "https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzI3NTc4NDcxOA==",
+      "verified_from": "SPOOKY Halloween 2026 推文（2026-09-24）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "PLAY X",
+      "city": "深圳",
+      "role": "venue",
+      "platform": "xiaohongshu",
+      "name": "PLAY X",
+      "user_id": "660ac906000000000600c7bc",
+      "url": "https://www.xiaohongshu.com/user/profile/660ac906000000000600c7bc",
+      "verified_from": "小红书主页笔记：PLAY X 十月排期（10/14–10/31）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "Ours",
+      "city": "深圳",
+      "role": "promoter",
+      "platform": "xiaohongshu",
+      "name": "Ours.pres",
+      "user_id": "67376cad000000001c01be92",
+      "url": "https://www.xiaohongshu.com/user/profile/67376cad000000001c01be92",
+      "verified_from": "小红书主页笔记：10.17 一盅兩件 Dim Sum Rave 海报",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "Tea Rave 茶馆锐舞",
+      "city": "深圳",
+      "role": "promoter",
+      "platform": "xiaohongshu",
+      "name": "Tea Rave茶馆锐舞",
+      "user_id": "6271c14c0000000021027365",
+      "url": "https://www.xiaohongshu.com/user/profile/6271c14c0000000021027365",
+      "verified_from": "小红书笔记：TEA RAVE 十月巡游",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "DayDayUpHood",
+      "city": "深圳",
+      "role": "promoter",
+      "platform": "xiaohongshu",
+      "name": "DayDayUpHood",
+      "user_id": "6800776d00000000070023a1",
+      "url": "https://www.xiaohongshu.com/user/profile/6800776d00000000070023a1",
+      "verified_from": "小红书主页笔记：10.31 浪浪拍泳池派对、11.1 锐舞巴士",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "亚潮计划",
+      "city": "东莞",
+      "role": "promoter",
+      "platform": "xiaohongshu",
+      "name": "亚潮计划",
+      "user_id": "5982f4066a6a69195b0524e5",
+      "url": "https://www.xiaohongshu.com/user/profile/5982f4066a6a69195b0524e5",
+      "verified_from": "小红书笔记：东莞亚比派对改期 10.24",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "TECHNO BUS",
+      "city": "广州",
+      "role": "promoter",
+      "platform": "xiaohongshu",
+      "name": "TECHNO BUS",
+      "user_id": "5d25909d00000000160101be",
+      "url": "https://www.xiaohongshu.com/user/profile/5d25909d00000000160101be",
+      "verified_from": "小红书笔记：TECHNOBUS×WATSONS 10.16–10.17",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "STEREO.52",
+      "city": "广州",
+      "role": "venue",
+      "platform": "xiaohongshu",
+      "name": "STEREO.52",
+      "user_id": "696fbc9e0000000037032518",
+      "url": "https://www.xiaohongshu.com/user/profile/696fbc9e0000000037032518",
+      "verified_from": "小红书主页笔记：10.10 广州隐藏空间声场测试",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "King's Bar",
+      "city": "深圳",
+      "role": "venue",
+      "platform": "xiaohongshu",
+      "name": "KINGSsz",
+      "user_id": "588660445e87e77d95032f42",
+      "url": "https://www.xiaohongshu.com/user/profile/588660445e87e77d95032f42",
+      "verified_from": "小红书笔记：King's 万圣节双夜派对公告（10/30、10/31）",
+      "verified_at": "2026-10-12"
+    },
+    {
+      "entity": "NEW GEN POP NIGHT",
+      "city": "广州",
+      "role": "organizer",
+      "platform": "xiaohongshu",
+      "name": "柠檬草",
+      "user_id": "659bb98700000000220068b0",
+      "url": "https://www.xiaohongshu.com/user/profile/659bb98700000000220068b0",
+      "verified_from": "小红书笔记：柠檬草 PRESENTS NEW GEN POP NIGHT 10/17 海报",
+      "verified_at": "2026-10-12"
+    }
+  ]
+}

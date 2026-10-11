@@ -11,19 +11,19 @@ const count = (values: Partial<Filters>) => filter(values).length
 
 test('dates, cities, venues and genres', () => {
   expect(count({})).toBe(events.length)
-  expect(count({ from: '2026-09-30', to: '2026-09-30' })).toBe(8)
-  expect(count({ city: ['香港'], from: '2026-10-02', to: '2026-10-02', genres: ['Hard Techno'] })).toBe(1)
+  expect(count({ from: '2026-10-16', to: '2026-10-16' })).toBe(10)
+  expect(count({ city: ['东莞'], from: '2026-10-24', to: '2026-10-24', genres: ['Hard Techno'] })).toBe(1)
   expect(count({ city: ['澳门'], venue: ['深圳|PLAY X'] })).toBe(0)
-  expect(count({ venue: ['深圳|PLAY X'] })).toBe(7)
-  expect(filter({ from: '2026-10-07' }).map(event => event.id)).toEqual([])
+  expect(count({ venue: ['深圳|PLAY X'] })).toBe(11)
+  expect(filter({ from: '2026-11-02' }).map(event => event.id)).toEqual([])
   expect(validRange({ from: '2026-10-04', to: '2026-10-01' })).toBe(false)
   expect(count({ from: '2026-10-04', to: '2026-10-01' })).toBe(0)
-  const verknipt = filter({ city: ['香港'], from: '2026-10-02', to: '2026-10-02', genres: ['Hard Techno'] })[0]
-  expect(matchesEvent(verknipt, { families: ['Techno'] })).toBe(true)
-  expect(matchesEvent(verknipt, { genres: ['Techno'] })).toBe(false)
-  expect(matchesEvent(verknipt, { from: '2026-10-02', to: '2026-10-02', period: ['day'] })).toBe(true)
-  expect(matchesEvent(verknipt, { from: '2026-10-03' })).toBe(false)
-  expect(matchesEvent(events.find(event => event.genres.includes('Psytrance'))!, { families: ['Trance'] })).toBe(true)
+  const massive = filter({ city: ['东莞'], from: '2026-10-24', to: '2026-10-24', genres: ['Hard Techno'] })[0]
+  expect(matchesEvent(massive, { families: ['Techno'] })).toBe(true)
+  expect(matchesEvent(massive, { genres: ['Techno'] })).toBe(false)
+  expect(matchesEvent(massive, { from: '2026-10-24', to: '2026-10-24', period: ['night'] })).toBe(true)
+  expect(matchesEvent(massive, { from: '2026-10-25' })).toBe(false)
+  expect(matchesEvent(events.find(event => event.genres.includes('Uplifting Trance'))!, { families: ['Trance'] })).toBe(true)
 })
 
 test('genre families match by explicit membership, not by name', () => {
@@ -51,10 +51,10 @@ test('any value within a facet, every facet with values', () => {
 test('unknown starts and venues are not filters (question 182)', () => {
   expect(count({ period: ['day', 'night'] })).toBe(events.filter(event => event.starts.length).length)
   expect(events.some(event => event.genres.includes('Live'))).toBe(false)
-  const both = events.find(event => event.starts.includes(1020) && event.starts.includes(1320))!
+  const both = events.find(event => event.starts.some(time => time < 1080) && event.starts.some(time => time >= 1080))!
   expect(matchesEvent(both, { period: ['day'] }) && matchesEvent(both, { period: ['night'] })).toBe(true)
-  expect(matchesEvent(filter({ venue: ['深圳|PLAY X'], from: '2026-10-06', to: '2026-10-06' })[0], { period: ['night'] })).toBe(true)
-  const unknown = filter({ venue: ['深圳|PLAY X'], to: '2026-09-30' })[0]
+  expect(matchesEvent(filter({ venue: ['深圳|OIL'], from: '2026-10-15', to: '2026-10-15' })[0], { period: ['night'] })).toBe(true)
+  const unknown = filter({ venue: ['广州|GUM'], to: '2026-10-16' })[0]
   expect(unknown.starts.length).toBe(0)
   expect(matchesEvent(unknown, { period: ['night'] }) || matchesEvent(unknown, { period: ['day'] })).toBe(false)
   expect(events.some(event => !event.venues.length && matchesEvent(event, { venue: [`${event.city}|`] }))).toBe(false)

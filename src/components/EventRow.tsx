@@ -278,15 +278,26 @@ function SheetVenue({ city, place, address, text, children }: { city: string; pl
 
 type InfoKey = keyof EventView['more_info']
 
+// A fact in the details' ledger, like a ticket tier: a muted label in a narrow column beside it when it has one, a
+// hairline under it, each line of the text on its own line.
+function Fact({ label, children }: { label?: string; children: ReactNode }) {
+  return (
+    <div className="info-fact relative grid [grid-template-columns:6em_minmax(0,1fr)] gap-x-4 [padding:11px_0] text-[13px] leading-[1.6] text-[#e9e3f2] after:ledger-line print:text-[#111]">
+      {label && <span className="fact-label text-[12px] text-(--muted)">{label}</span>}
+      <span className={`whitespace-pre-line wrap-anywhere ${label ? '' : '[grid-column:1/-1]'}`}>{children}</span>
+    </div>
+  )
+}
+
 function InfoPart({ name, event }: { name: InfoKey; event: EventView }) {
   const info = event.more_info
   let content: ReactNode
   if (name === 'prices') content = <ul className="ticket-prices list-none m-0 p-0">{info.prices.map((price, index) => <TicketPrice key={index} price={price} />)}</ul>
-  else if (name === 'notes') content = info.notes.map((note, index) => <p key={index} className="m-0 text-[12px] leading-[1.7] text-(--muted) [p+&]:mt-[5px]">{note}</p>)
+  else if (name === 'notes') content = info.notes.map((note, index) => <Fact key={index}>{note}</Fact>)
   else content = (
     <div className="info-actions">
       {info[name].map((part, index) => part.type === 'text'
-        ? <p key={index} className="[margin:6px_0] text-[13px] leading-[1.7] text-[#d8cce3] [p+&]:mt-[5px]"><RichPart part={part} /></p>
+        ? <Fact key={index} label={part.label}>{part.text}</Fact>
         : <RichPart key={index} part={part} />)}
     </div>
   )

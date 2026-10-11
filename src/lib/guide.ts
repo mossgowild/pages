@@ -3,7 +3,8 @@
 import type { Guide } from './guide.server'
 
 export type Part =
-  | { type: 'text'; text: string }
+  // A fact on its own ledger row, under a short label when it has one; a new line in the text starts a new line.
+  | { type: 'text'; text: string; label?: string }
   | { type: 'break' }
   | { type: 'link'; url: string; label: string }
   | { type: 'mini-program'; label: string; code: string; note: string }

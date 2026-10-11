@@ -118,8 +118,8 @@ try {
     await wait(page, 900)
     await page.click('[aria-controls="dates-popover"]')
     await wait(page, 900)
-    // Techno has no event on the last day.
-    await page.click('#dates-popover button.dr-day >> nth=-1')
+    // Techno has no event on 10/28.
+    await page.click('#dates-popover button.dr-day[data-date="2026-10-28"]')
     await wait(page, 600)
     assert.equal(await visible(page), 0)
     assert.ok(await page.isVisible('#empty-state'), 'No results show the empty state')
@@ -137,7 +137,7 @@ try {
     await wait(page, 1400)
     await page.click('[aria-controls="dates-popover"]')
     await wait(page, 900)
-    await page.click('#dates-popover button.dr-day >> nth=-1')
+    await page.click('#dates-popover button.dr-day[data-date="2026-10-28"]')
     await wait(page, 600)
     await page.keyboard.press('Escape')
     await wait(page, 900)
