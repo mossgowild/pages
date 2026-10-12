@@ -190,6 +190,7 @@ export function Page({ guide }: { guide: Guide }) {
   return (
     <>
       <title>{guide.fullTitle}</title>
+      <meta property="og:title" content={guide.fullTitle} />
       <canvas className="topography fixed top-0 left-0 -z-1 w-full h-lvh pointer-events-none print:hidden!" aria-hidden="true" />
       <a className="skip-link fixed top-2 left-4 [transform:translateY(-200%)] z-100 [background:var(--gold)] text-(--bg) p-3 focus:[transform:none]" href="#schedule">跳至活动筛选与清单</a>
       <header className={`topbar ${WRAP} ${TOPBAR}`}>

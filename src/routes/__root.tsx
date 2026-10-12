@@ -7,6 +7,11 @@ import appCss from '../styles/app.css?url'
 // React hydrates, which leaves what they draw alone.
 export const SCRIPTS = ['hero', 'topography']
 
+const DESCRIPTION = '大湾区电音活动指南。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。'
+// The card a link shows when it is shared from a browser (to WeChat, Telegram, iMessage…); the title is beside the
+// page's own <title> (Page.tsx). Inside WeChat a forwarded page keeps WeChat's default card unless it uses the JS-SDK.
+const SITE = 'https://events.cardioravers.com/'
+
 export const Route = createRootRoute({ component: RootDocument })
 
 function RootDocument() {
@@ -16,7 +21,14 @@ function RootDocument() {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#0b0b10" />
-        <meta name="description" content="大湾区电音活动指南。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。" />
+        <meta name="description" content={DESCRIPTION} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={SITE} />
+        <meta property="og:description" content={DESCRIPTION} />
+        <meta property="og:image" content={`${SITE}assets/brand/share.png`} />
+        <meta property="og:image:width" content="600" />
+        <meta property="og:image:height" content="600" />
+        <meta name="twitter:card" content="summary" />
         <HeadContent />
         <link rel="icon" href="assets/brand/favicon-32.png" type="image/png" sizes="32x32" />
         <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" sizes="any" />
