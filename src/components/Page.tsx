@@ -34,13 +34,16 @@ const WRAP = 'wrap w-[min(1480px,100%_-_96px)] mx-auto max-[1101px]:w-[calc(100%
 // A low header (question 272): the title lockup on the left, the update stamp on the right, their tops and bottoms level.
 const TOPBAR = 'relative min-h-[72px] [padding-block:10px] [border-bottom:1px_solid_transparent] grid grid-cols-[auto_auto] content-center items-center justify-between gap-6 max-[701px]:min-h-[68px] max-[701px]:gap-4 max-[361px]:gap-3 print:min-h-0 print:[border:0] print:[padding:0_0_24px]'
 const BRAND = 'flex no-underline text-[14px] font-semibold whitespace-nowrap max-[701px]:text-[15px] max-[381px]:text-[13px]'
-// The title 大湾区电音指南 on top, “by [logo]” right-aligned below it (question 260, Y2; docs/guide-identity.md Q1); Noto
+// The title 全网电音日历 on top; below it 大湾区 on the left and “by [logo]” on the right (question 260, Y2;
+// docs/guide-identity.md Q3); Noto
 // Sans SC Black slanted 12° to match the logo (question 263), “by” in Syne 400 slanted alike (question 278). Both rows
 // skew from their bottom-left corner, so their right edges line up; the byline keeps the 13px line the region had, so
 // the lockup stays as tall as the update block (question 272).
 const LOCKUP = `brand title-lockup ${BRAND} flex-none flex-col items-stretch gap-1.5 tracking-[0] text-(--brand-ink) print:text-[#111]`
 const SLANT = '[transform:skewX(-12deg)] origin-[0_100%]'
 const WORDMARK = `title-wordmark m-0 [font:900_22px/1.1_'Guide_Title','PingFang_SC','Microsoft_YaHei',sans-serif] whitespace-nowrap [text-align:justify] [text-align-last:justify] ${SLANT} max-[701px]:text-[20px]`
+// The region under the title, grey and slanted like it (docs/guide-identity.md Q3).
+const REGION = `title-region inline-block [font:900_12px/1_'Guide_Title','PingFang_SC','Microsoft_YaHei',sans-serif] tracking-[.06em] text-(--muted) ${SLANT}`
 // “by” is a corner mark at the logo's top left (question 283): its glyph tops sit 2px above the logo's top edge.
 const BY = `title-by inline-block [font:400_7px/1_var(--font-display)] tracking-[.04em] ${SLANT} [translate:0_-2.6px]`
 // 资讯更新 over “月.日 | 时:分”, right-aligned (question 272).
@@ -195,8 +198,9 @@ export function Page({ guide }: { guide: Guide }) {
       <a className="skip-link fixed top-2 left-4 [transform:translateY(-200%)] z-100 [background:var(--gold)] text-(--bg) p-3 focus:[transform:none]" href="#schedule">跳至活动筛选与清单</a>
       <header className={`topbar ${WRAP} ${TOPBAR}`}>
         <a className={LOCKUP} href="#top" aria-label={brandLabel}>
-          <h1 id="site-title" className={WORDMARK}>{guide.fullTitle}</h1>
-          <span className="title-byline flex items-center justify-end h-[13px]">
+          <h1 id="site-title" className={WORDMARK}>{guide.title.name}</h1>
+          <span className="title-byline flex items-center justify-between h-[13px]">
+            <span className={REGION}>{guide.title.region}</span>
             <span className="title-credit inline-flex items-start gap-px" dangerouslySetInnerHTML={{ __html: `<span class="${BY}">by</span>${LOGO}` }} />
           </span>
         </a>

@@ -19,7 +19,7 @@ function checkLayout() {
   // The label's trailing letter-spacing hangs past the edge, so its last glyph lines up with the time.
   assert(Math.abs(updateLabel.getBoundingClientRect().right - parseFloat(getComputedStyle(updateLabel).letterSpacing) - updateTime.getBoundingClientRect().right) < 1,
     'Right-align both update lines');
-  assert(document.querySelector('.title-wordmark').textContent === '大湾区电音指南' && wordmark.bottom <= logo.top,
+  assert(document.querySelector('.title-wordmark').textContent === '全网电音日历' && wordmark.bottom <= logo.top,
     'The title leads; “by [logo]” sits below it (question 260, docs/guide-identity.md Q1)');
   // Both rows skew 12° from their bottom-left corner, so the title's box overhangs on the right by its height × tan 12°.
   const overhang = wordmark.height * Math.tan(12 * Math.PI / 180);

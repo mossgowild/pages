@@ -113,7 +113,7 @@ function build() {
   const { title, publisher } = data
   const [, updatedDate, updatedTime] = data.updated_at.match(/^\d{4}-(\d\d-\d\d)T(\d\d:\d\d)/)!
   return {
-    title, fullTitle: title.region + title.topic + title.guide, byline: `By ${publisher.name}${publisher.latin}`,
+    title, fullTitle: `${title.name} · ${title.region}`, byline: `By ${publisher.name}${publisher.latin}`,
     updatedIso: data.updated_at, updatedDate: updatedDate.replace('-', '.'), updatedTime,
     editionYear: first.slice(0, 4), dateRange: `${monthDay(first)} — ${monthDay(last)}`,
     startDate: first, endDate: last, eventCount: events.length, days,

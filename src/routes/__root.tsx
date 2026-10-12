@@ -7,7 +7,7 @@ import appCss from '../styles/app.css?url'
 // React hydrates, which leaves what they draw alone.
 export const SCRIPTS = ['hero', 'topography']
 
-const DESCRIPTION = '大湾区电音活动指南。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。'
+const DESCRIPTION = '大湾区电音活动日历，全网收录。按城市、场地、日期与音乐风格查找派对，浏览完整阵容、海报和购票入口。'
 // The card a link shows when it is shared from a browser (to WeChat, Telegram, iMessage…); the title is beside the
 // page's own <title> (Page.tsx). Inside WeChat a forwarded page keeps WeChat's default card unless it uses the JS-SDK.
 const SITE = 'https://events.cardioravers.com/'
