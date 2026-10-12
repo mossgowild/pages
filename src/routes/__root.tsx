@@ -25,10 +25,10 @@ function RootDocument() {
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE} />
         <meta property="og:description" content={DESCRIPTION} />
-        <meta property="og:image" content={`${SITE}assets/brand/share.png`} />
-        <meta property="og:image:width" content="600" />
-        <meta property="og:image:height" content="600" />
-        <meta name="twitter:card" content="summary" />
+        <meta property="og:image" content={`${SITE}assets/brand/share.jpg`} />
+        <meta property="og:image:width" content="1536" />
+        <meta property="og:image:height" content="1024" />
+        <meta name="twitter:card" content="summary_large_image" />
         <HeadContent />
         <link rel="icon" href="assets/brand/favicon-32.png" type="image/png" sizes="32x32" />
         <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml" sizes="any" />
