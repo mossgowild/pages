@@ -191,7 +191,7 @@
     "name": "有氧",
     "latin": "RAVERS"
   },
-  "updated_at": "2026-10-12T07:40+08:00",
+  "updated_at": "2026-10-12T09:38+08:00",
   "featured": [
     "event-1",
     "event-2",
@@ -277,18 +277,19 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "夜影假面派对 Midnight Masquerade",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "GOLDEN FACE",
+          "note": "夜影假面派对 Midnight Masquerade"
+        }
+      ]
     },
     {
       "id": "event-2",
@@ -1243,8 +1244,7 @@
       },
       "stages": [
         {
-          "name": "Le Baron",
-          "note": "说唱 / 国内 DJ"
+          "name": "Le Baron"
         },
         {
           "name": "XLAB"
@@ -2613,8 +2613,7 @@
           "name": "LIVE EDM"
         },
         {
-          "name": "Le Baron",
-          "note": "说唱 / 国内 DJ"
+          "name": "Le Baron"
         },
         {
           "name": "XLAB"
@@ -3172,7 +3171,8 @@
         {
           "names": [
             "狂野力量"
-          ]
+          ],
+          "stage": "Le Baron"
         }
       ],
       "location": [
@@ -3196,23 +3196,22 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "说唱 / 国内 DJ",
-            "label": "Le Baron"
-          },
-          {
-            "type": "text",
-            "text": "非主流复兴年华 Emo Nostalgia Era",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "Le Baron"
+        },
+        {
+          "name": "GOLDEN FACE",
+          "note": "非主流复兴年华 Emo Nostalgia Era"
+        }
+      ]
     },
     {
       "id": "event-36",
@@ -3352,18 +3351,19 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "非主流复兴年华 Emo Nostalgia Era",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "GOLDEN FACE",
+          "note": "非主流复兴年华 Emo Nostalgia Era"
+        }
+      ]
     },
     {
       "id": "event-38",
@@ -3706,8 +3706,7 @@
           "name": "LIVE EDM"
         },
         {
-          "name": "Le Baron",
-          "note": "说唱 / 国内 DJ"
+          "name": "Le Baron"
         },
         {
           "name": "XLAB"
@@ -4340,6 +4339,7 @@
           "names": [
             "泰格西"
           ],
+          "format": "Rapper",
           "stage": "Le Baron"
         },
         {
@@ -4382,8 +4382,7 @@
           "name": "LIVE EDM"
         },
         {
-          "name": "Le Baron",
-          "note": "说唱 / 国内 DJ"
+          "name": "Le Baron"
         },
         {
           "name": "XLAB"
@@ -4624,12 +4623,14 @@
         {
           "names": [
             "DJ ERIC"
-          ]
+          ],
+          "stage": "Le Baron"
         },
         {
           "names": [
             "狗哥"
-          ]
+          ],
+          "stage": "Le Baron"
         }
       ],
       "location": [
@@ -4653,23 +4654,22 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "说唱 / 国内 DJ",
-            "label": "Le Baron"
-          },
-          {
-            "type": "text",
-            "text": "万圣节派对 Happy Halloween",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "Le Baron"
+        },
+        {
+          "name": "GOLDEN FACE",
+          "note": "万圣节派对 Happy Halloween"
+        }
+      ]
     },
     {
       "id": "event-53",
@@ -4795,18 +4795,19 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "万圣节派对 Happy Halloween",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "GOLDEN FACE",
+          "note": "万圣节派对 Happy Halloween"
+        }
+      ]
     },
     {
       "id": "event-55",
@@ -5429,11 +5430,6 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "万圣节派对 Happy Halloween",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
@@ -5447,11 +5443,14 @@
           "note": "PLAY X × 茶馆锐舞 Tea Rave"
         },
         {
-          "name": "Le Baron",
-          "note": "说唱 / 国内 DJ"
+          "name": "Le Baron"
         },
         {
           "name": "XLAB"
+        },
+        {
+          "name": "GOLDEN FACE",
+          "note": "万圣节派对 Happy Halloween"
         }
       ]
     },
@@ -6673,7 +6672,8 @@
         {
           "names": [
             "ELLIOTTSOUND"
-          ]
+          ],
+          "stage": "Le Baron"
         }
       ],
       "location": [
@@ -6697,23 +6697,22 @@
         ],
         "details": [
           {
-            "type": "text",
-            "text": "说唱 / 国内 DJ",
-            "label": "Le Baron"
-          },
-          {
-            "type": "text",
-            "text": "万圣节派对 Happy Halloween",
-            "label": "GOLDEN FACE"
-          },
-          {
             "type": "link",
             "label": "PLAY X 十月嘉宾（场地小红书）",
             "url": "https://www.xiaohongshu.com/explore/6abfb862000000001402c2e9?xsec_token=AB1Saa1qZeKCdqcZCqla50ydU1k2DqhPjZAoYvXuHyUXc%3D&xsec_source=pc_user"
           }
         ],
         "notes": []
-      }
+      },
+      "stages": [
+        {
+          "name": "Le Baron"
+        },
+        {
+          "name": "GOLDEN FACE",
+          "note": "万圣节派对 Happy Halloween"
+        }
+      ]
     },
     {
       "id": "event-74",

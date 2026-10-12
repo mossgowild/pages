@@ -108,7 +108,8 @@ function artistTable(event: EventView): ReactNode {
   const { artists } = event
   const hasTime = artists.some(artist => artist.time)
   const hasGenres = artists.some(artist => artist.genres?.length)
-  const stages = [...new Set(artists.map(artist => artist.stage ?? ''))]
+  // Columns in the order of the event's stages, a stage with no artists (a venue's theme night) included.
+  const stages = [...new Set([...(event.stages ?? []).map(stage => stage.name), ...artists.map(artist => artist.stage ?? '')])]
   const grouped = !(hasTime || hasGenres) && stages.length > 1 && stages.every(Boolean)
   if (!(hasTime || hasGenres || grouped)) return null
   const stageInfo = new Map((event.stages ?? []).map(stage => [stage.name, stage]))
@@ -164,14 +165,14 @@ function artistTable(event: EventView): ReactNode {
 }
 
 // The lineup area: the table when the lineup has one. Otherwise, when the area still shows (a caption, or rooms whose
-// artists the sources do not place), it lists the rooms as stage heading lines and every artist on a line of their own,
-// forms kept, so it is never small print alone (question 203).
+// artists the sources do not place, or a room with only its theme), it lists the rooms as stage heading lines and every
+// artist on a line of their own, forms kept, so it is never small print alone (question 203).
 function lineupContent(event: EventView): ReactNode {
   const table = artistTable(event)
   if (table) return table
   const placed = new Set(event.artists.map(artist => artist.stage))
   const rooms = (event.stages ?? []).filter(stage => !placed.has(stage.name))
-  if (!(rooms.length || event.lineup_caption?.length) || !event.artists.length) return null
+  if (!rooms.length && !(event.lineup_caption?.length && event.artists.length)) return null
   return (
     <>
       {rooms.length > 0 && (
@@ -179,7 +180,7 @@ function lineupContent(event: EventView): ReactNode {
           {rooms.map(stage => <li key={stage.name}><StageHeading name={stage.name} info={stage} /></li>)}
         </ul>
       )}
-      <ul className={LIST}>{event.artists.map((artist, index) => <li key={index}><ArtistLabel artist={artist} /></li>)}</ul>
+      {event.artists.length > 0 && <ul className={LIST}>{event.artists.map((artist, index) => <li key={index}><ArtistLabel artist={artist} /></li>)}</ul>}
     </>
   )
 }

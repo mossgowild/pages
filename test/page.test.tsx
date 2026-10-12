@@ -170,7 +170,7 @@ function checkLineup(card: Element, event: GuideEvent) {
   const lineup = lineups[0]
   const tables = all(card, 'table')
   const hasDetails = artists.some(artist => artist.time || artist.genres?.length)
-  const stages = [...new Set(artists.map(artist => artist.stage ?? ''))]
+  const stages = [...new Set([...(event.stages ?? []).map(stage => stage.name), ...artists.map(artist => artist.stage ?? '')])]
   const grouped = !hasDetails && stages.length > 1 && stages.every(Boolean)
   expect(tables.length).toBe(Number(hasDetails || grouped))
   const timed = artists.some(artist => artist.time)
@@ -206,8 +206,8 @@ function checkLineup(card: Element, event: GuideEvent) {
     expect(pairs).toContain(artist.names.map(name => `<span class="artist-name">${escape(name)}</span>`).join('<small class="artist-b2b">B2B</small>'))
   }
   if (!tables.length) {
-    // Without a table the area still lists the lineup, never small print alone (question 203).
-    expect(artists.length).toBeGreaterThan(0)
+    // Without a table the area still lists the lineup or the rooms, never small print alone (question 203).
+    expect(artists.length + (event.stages?.length ?? 0)).toBeGreaterThan(0)
     for (const artist of artists) {
       for (const name of artist.names) expect(lineupText).toContain(name)
       for (const key of ['format', 'note'] as const) expect(lineupText).toContain(artist[key] ?? '')
