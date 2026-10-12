@@ -343,8 +343,8 @@ function ArtistSummary({ artists }: { artists: Artist[] }) {
 // the accent colour, here the brand pink, centred where the name's capitals are.
 const BAR = 'w-[3px] h-[26px] mr-3 rounded-[3px] bg-brand-pink align-[calc(.37em-13px)] shadow-[0_0_12px_color-mix(in_srgb,var(--brand-pink)_60%,transparent)]'
 
-// The stage is a container the text lays out by. In a card the poster keeps its own shape across the card's width at
-// the top (square without a poster) and the stage is as tall as it (docs/event-browsing.md Q47); longer text starts no
+// The stage is a container the text lays out by. In a card the poster keeps its own shape (up to 2:3) across the card's
+// width at the top (square without a poster) and the stage is as tall as it (docs/event-browsing.md Q47); longer text starts no
 // higher than halfway down the poster and makes the card taller below it, so the poster neither zooms nor hides under
 // the text. In the detail sheet, and in the list without the script, the stage is 560px (520px on phones) with the
 // poster filling it. Printed, it shrinks to the text.
@@ -353,10 +353,13 @@ const STAGE = 'event-stage @container relative flex items-end overflow-clip min-
 // poster's upper half (percentages of the card's width; Safari does not grow an aspect-ratio box with clipped content).
 const CARD_STAGE = "scripted:min-h-0 scripted:before:content-[''] scripted:before:[padding-top:calc(var(--depth)*100%)] scripted:[&>.event-summary]:mt-[calc(var(--depth)*50%)] print:before:content-none print:[&>.event-summary]:mt-0"
 const CARD_POSTERS = 'scripted:bottom-auto scripted:[aspect-ratio:var(--ratio)]'
-// The poster fills the stage at its upper middle; with the scroll depth it is 1.25× from its top edge and moves within
-// the spare quarter (app.css). A sheet poster not downloaded yet stays hidden and fades in whole when it arrives
-// (EventDetail.tsx).
-const POSTER = 'block w-full h-full object-cover [object-position:center_25%] [transition:opacity_.3s_ease-out] scroll-motion:origin-top scroll-motion:[scale:1.25] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] print:scroll-motion:[animation-name:none] [.is-pending_&]:opacity-0'
+// A card is at most 2:3 deep: a longer poster would leave a long empty stretch below its fade, so it is cut short there,
+// keeping its top, where the event's name usually is (2026-10-12). The sheet, the preview and the hero show it whole.
+const CARD_DEPTH = 1.5
+// The poster fills the stage at its upper middle (a card's cut-short poster from its top); with the scroll depth it is
+// 1.25× from its top edge and moves within the spare quarter (app.css). A sheet poster not downloaded yet stays hidden
+// and fades in whole when it arrives (EventDetail.tsx).
+const POSTER = 'block w-full h-full object-cover [transition:opacity_.3s_ease-out] scroll-motion:origin-top scroll-motion:[scale:1.25] motion-reduce:[transition:none] print:scroll-motion:[scale:none] print:scroll-motion:[translate:none] print:scroll-motion:[animation-name:none] [.is-pending_&]:opacity-0'
 // In a card the cover runs its frame's scroll timeline (poster-parallax in app.css); in the detail sheet it rests where a
 // cover entering the screen starts.
 const ROW_PARALLAX = 'scroll-motion:[animation-name:poster-parallax] scroll-motion:[animation-timing-function:linear] scroll-motion:[animation-fill-mode:both] scroll-motion:[animation-timeline:--poster]'
@@ -374,9 +377,11 @@ const GENRE = '[padding:3px_10px] [border:1px_solid_rgb(255_255_255/.18)] rounde
 export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?: { full: boolean } }>(
   function EventStage({ event, sheet }, ref) {
     const { id, poster } = event
+    const cut = !sheet && poster !== null && poster.height / poster.width > CARD_DEPTH
+    const depth = poster ? Math.min(poster.height / poster.width, CARD_DEPTH) : 1
     return (
       <div className={`${STAGE} ${sheet ? '' : CARD_STAGE}`} ref={ref}
-        style={sheet ? undefined : { '--ratio': poster ? `${poster.width} / ${poster.height}` : '1', '--depth': poster ? poster.height / poster.width : 1 } as CSSProperties}>
+        style={sheet ? undefined : { '--ratio': `1 / ${depth}`, '--depth': depth } as CSSProperties}>
         {/* Off-screen rows skip rendering their poster, so its lazy image waits until the row nears the screen instead of
             taking bandwidth from the hero wall (docs/event-browsing.md Q34). */}
         <div className={`event-posters poster-fade absolute inset-0 z-0 print:hidden ${sheet ? '' : `${CARD_POSTERS} [content-visibility:auto] scroll-motion:[view-timeline-name:--poster] scroll-motion:[view-timeline-inset:0]`}`} data-field="posters">
@@ -384,7 +389,7 @@ export const EventStage = forwardRef<HTMLDivElement, { event: EventView; sheet?:
               takes over (data-full: the original's same-size WebP where it has one; docs/event-browsing.md Q34). */}
           {poster
             ? <a className="block h-full no-underline cursor-zoom-in focus-visible:[outline-offset:-5px]" href={poster.full} aria-haspopup="dialog" aria-label={`预览：${poster.alt}`}>
-                <img className={`${POSTER} ${sheet ? SHEET_PARALLAX : ROW_PARALLAX}`} width={poster.width} height={poster.height} src={poster.thumbnail} data-full={poster.full}
+                <img className={`${POSTER} ${cut ? '[object-position:center_top]' : '[object-position:center_25%]'} ${sheet ? SHEET_PARALLAX : ROW_PARALLAX}`} width={poster.width} height={poster.height} src={poster.thumbnail} data-full={poster.full}
                   srcSet={sheet?.full ? poster.full : undefined} loading={sheet ? 'eager' : 'lazy'} fetchPriority={sheet ? 'high' : 'low'} alt={poster.alt} />
               </a>
             : <div className="poster-empty grid place-items-center h-full pb-[50%] text-(--muted) text-[13px]">暂无图片</div>}

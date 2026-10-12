@@ -266,7 +266,8 @@ function checkLayout() {
       assert(getComputedStyle(row).transform === 'none', `${row.id}: cards lie flat (docs/glass-effects.md)`);
       const stage = row.querySelector('.event-stage').getBoundingClientRect();
       const image = row.querySelector('.event-posters img');
-      const ratio = image ? Number(image.getAttribute('height')) / Number(image.getAttribute('width')) : 1;
+      // A card is at most 2:3 deep (CARD_DEPTH in EventRow.tsx); a longer poster is cut short there.
+      const ratio = image ? Math.min(Number(image.getAttribute('height')) / Number(image.getAttribute('width')), 1.5) : 1;
       assert(scripted ? stage.height >= stage.width * ratio - 1 : stage.height >= (viewport <= 700 ? 520 : 560) - 1, `${row.id}: the stage is shorter than its poster`);
       assert(row.querySelector('.event-summary').getBoundingClientRect().bottom <= stage.bottom + 1, `${row.id}: the text runs past the stage`);
       if (scripted) {
