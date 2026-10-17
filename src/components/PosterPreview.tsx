@@ -12,11 +12,12 @@
 // @ts-nocheck -- ported unchanged from the page's own script; typing it adds nothing until it is reworked.
 import { useEffect, useRef } from 'react'
 import { moveFocus } from '../lib/focus'
+import * as modal from '../lib/modal'
 import { CLOSE_BUTTON } from './EventDetail'
 
-// A full-screen dialog over a dark, blurred veil, the image centred within the safe area; the image itself (a copy of the
+// A full-screen dialog, modal without showModal() (src/lib/modal.ts), over a dark, blurred veil of its own, the image centred within the safe area; the image itself (a copy of the
 // sheet's poster) takes its look from the view.
-const PREVIEW = 'poster-preview fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) open:grid open:grid-rows-[minmax(0,1fr)] backdrop:[background:#05050bea] backdrop:[backdrop-filter:blur(12px)] backdrop:[opacity:var(--veil,1)] backdrop:[animation:preview-backdrop_.26s_ease-out] [&.is-closing]:backdrop:[animation:preview-backdrop_.22s_ease-in_reverse_forwards] print:open:hidden'
+const PREVIEW = 'poster-preview fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) open:grid open:grid-rows-[minmax(0,1fr)] z-1001 before:fixed before:inset-0 before:[background:#05050bea] before:[backdrop-filter:blur(12px)] before:[opacity:var(--veil,1)] before:[animation:preview-backdrop_.26s_ease-out] [&.is-closing]:before:[animation:preview-backdrop_.22s_ease-in_reverse_forwards] print:open:hidden'
 const VIEW = 'poster-preview-view flex items-center justify-center min-w-0 min-h-0 overflow-hidden overscroll-contain touch-none select-none [padding:max(16px,env(safe-area-inset-top))_max(16px,env(safe-area-inset-right))_max(16px,env(safe-area-inset-bottom))_max(16px,env(safe-area-inset-left))] focus:[outline:none] [&.is-keyboard]:focus:[outline:2px_solid_var(--focus)] [&.is-keyboard]:focus:[outline-offset:-4px] [&_img]:block [&_img]:flex-none [&_img]:w-auto [&_img]:h-auto [&_img]:max-w-full [&_img]:max-h-full [&_img]:object-contain [&_img]:[transform-origin:center] [&_img]:cursor-default [&_img]:[-webkit-user-drag:none] [&_img]:[box-shadow:0_16px_64px_#0008] [&_img]:[transition:opacity_.3s_ease-out] [&_img.is-pending]:opacity-0 [&.is-zoomed_img]:cursor-grab [&.is-dragging_img]:cursor-grabbing'
 // With a mouse, the toolbar and the × show while the mouse moves and fade after 2s of rest (has-tools); touch screens never
 // show them.
@@ -214,7 +215,7 @@ export function PosterPreview() {
       for (const type of ['load', 'error']) image.addEventListener(type, sharpen, { once: true });
     }
     view.classList.toggle('is-keyboard', event.detail === 0);
-    dialog.showModal();
+    modal.showModal(dialog);
     view.focus({ preventScroll: true });
     reset();
     source.classList.add('poster-preview-origin');
@@ -241,7 +242,7 @@ export function PosterPreview() {
     view.classList.remove('is-dragging');
     dialog.classList.add('is-closing');
     const finish = () => {
-      dialog.close();
+      modal.close(dialog);
       dialog.classList.remove('is-closing');
       dialog.style.removeProperty('--veil');
       animation?.cancel();

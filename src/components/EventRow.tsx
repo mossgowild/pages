@@ -254,7 +254,7 @@ const VENUE_TARGET = 'venue-target p-0 [border:0]'
 // tap opens a menu of maps searching for the place (src/lib/maps.ts) — an app's own link in this tab, a web map in a new
 // one — in the filter pickers' popover: a bottom sheet titled with the place on phones, a dropdown under the venue on
 // wider screens.
-// The popover stays inside the sheet's dialog, as a modal dialog leaves everything outside it inert. With a mouse, and
+// The popover stays inside the sheet's dialog, which keeps the keyboard to itself (src/lib/modal.ts). With a mouse, and
 // in the first render, the venue shares or copies as in a row.
 function SheetVenue({ city, place, address, text, children }: { city: string; place: string; address: string[]; text: string; children: ReactNode }) {
   const touch = useMedia('not all and (hover: hover) and (pointer: fine)')

@@ -7,6 +7,7 @@
 // the address can be shared. Reduced motion shows and hides at once. Without the script the rows keep their details.
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { moveFocus } from '../lib/focus'
+import * as modal from '../lib/modal'
 import type { EventView } from '../lib/guide'
 import { EASE, OUT, reducedMotion, useIsomorphicLayoutEffect } from '../lib/motion'
 import { EventDetails, EventStage } from './EventRow'
@@ -61,9 +62,9 @@ function panOf(origin: HTMLElement) {
 const wallLook = (pan: string) => ({ objectPosition: pan, scale: '1', translate: '0px 0px' })
 const unfaded = { maskSize: '100% 1000%', webkitMaskSize: '100% 1000%' }
 
-// One page-level dialog over a half-dark veil; shrinking back, the dialog is an ordinary layer above the page that lets
-// clicks through (is-leaving), with a veil of its own fading out in place of the backdrop.
-const DIALOG = 'event-detail fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) overflow-hidden backdrop:sheet-veil backdrop:[animation:preview-backdrop_.4s_ease-out] motion-reduce:backdrop:[animation:none] [&.is-leaving]:z-1000 [&.is-leaving]:pointer-events-none [&.is-leaving]:before:sheet-veil [&.is-leaving]:before:fixed [&.is-leaving]:before:inset-0 [&.is-leaving]:before:[animation:preview-backdrop_.42s_ease-in_reverse_forwards] print:hidden!'
+// One page-level dialog above the page, modal without showModal() (src/lib/modal.ts), over a half-dark veil of its own;
+// shrinking back, it lets clicks through (is-leaving) while the veil fades out.
+const DIALOG = 'event-detail fixed inset-0 w-full h-dvh max-w-none max-h-none m-0 p-0 [border:0] [background:transparent] text-(--ink) overflow-hidden z-1000 before:sheet-veil before:fixed before:inset-0 before:[animation:preview-backdrop_.4s_ease-out] motion-reduce:before:[animation:none] [&.is-leaving]:pointer-events-none [&.is-leaving]:before:[animation:preview-backdrop_.42s_ease-in_reverse_forwards] print:hidden!'
 // The sheet: frosted glass (docs/glass-effects.md Q1), a centred card up to 760px wide with the event rows' light (the ::after
 // event-light, app.css), full screen on phones. While it flies it scales about its centre.
 const SHEET = 'event-detail-sheet event-light screen-to-700:after:hidden absolute top-[24px] bottom-[24px] left-[max(24px,calc(50%_-_380px))] right-[max(24px,calc(50%_-_380px))] flex flex-col [border:1px_solid_var(--glass-edge)] rounded-(--radius) [background:rgb(19_19_27/.5)] [-webkit-backdrop-filter:blur(28px)_saturate(1.5)] [backdrop-filter:blur(28px)_saturate(1.5)] [box-shadow:0_30px_80px_rgb(0_0_0/.55)] overflow-hidden wrap-anywhere [transform-origin:50%_0] [.is-flying_&]:[transform-origin:50%_50%] screen-to-700:inset-0 screen-to-700:[border:0] screen-to-700:rounded-none screen-to-700:[box-shadow:none]'
@@ -127,7 +128,7 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
     if (state.from) dialog.current!.classList.add('is-flying', 'is-arriving')
     document.documentElement.classList.add('is-detail')
     document.dispatchEvent(new Event('detail-toggle'))
-    dialog.current!.showModal()
+    modal.showModal(dialog.current!)
     scroller.current!.focus({ preventScroll: true })
     state.origin.classList.add('event-detail-origin')
     if (state.from) flyIn(state.from, image)
@@ -212,7 +213,7 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
       if (done) return
       done = true
       sheet.current!.getAnimations({ subtree: true }).forEach(animation => animation.cancel())
-      dialog.current!.close()
+      modal.close(dialog.current!)
       dialog.current!.classList.remove('is-flying', 'is-arriving', 'is-leaving')
       sheet.current!.style.removeProperty('transform')
       sheet.current!.style.removeProperty('border-radius')
@@ -225,10 +226,9 @@ export const EventDetail = forwardRef<DetailApi, { events: EventView[] }>(functi
       setShown(null)
     }
     if (!motion()) return finish()
-    // While it shrinks back the page is live again: the sheet leaves the top layer for an ordinary, click-through layer
-    // above the page (DIALOG's is-leaving), so a tap on another event during the flight opens it.
-    dialog.current!.close()
-    dialog.current!.show()
+    // While it shrinks back the page is live again: the sheet lets go of the keyboard and lets clicks through (DIALOG's
+    // is-leaving), so a tap on another event during the flight opens it.
+    modal.release(dialog.current!)
     dialog.current!.classList.add('is-leaving')
     flyOut(sourceOf(origin)).then(finish, finish)
   }
